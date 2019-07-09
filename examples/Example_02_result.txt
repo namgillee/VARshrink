@@ -1,0 +1,107 @@
+> set.seed(100)
+> #Canada
+> data(Canada, package = "vars")
+
+> EstimRidge2 = VARshrink(Canada, p = 2, const = 'const', method = 'ridge')
+> EstimRidge2
+VARshrink Estimation Results:
+=============================
+Call:
+VARshrink(Y = Canada, p = 2, const_type = "const", method = "ridge")
+
+Estimated coefficients:
+        e.lag1 prod.lag1   rw.lag1    U.lag1    e.lag2 prod.lag2   rw.lag2    U.lag2     const
+e     1.402259  0.185809 -0.051378 -0.102249 -0.434989 -0.110239  0.051295  0.144113 -0.007295
+prod -0.034292  1.135588  0.066833 -0.428029  0.042404 -0.163353 -0.060795  0.543853 -0.008342
+rw   -0.235071 -0.079132  0.889075  0.008781  0.295074 -0.011498  0.073210 -0.209904 -0.001845
+U    -0.514084 -0.094378  0.005714  0.788862  0.529680  0.065512 -0.010544  0.142351  0.009330
+
+$Sigma for noise:
+             e      prod        rw         U
+e     0.144374  0.003137 -0.039619 -0.080789
+prod  0.003137  0.438868  0.067312 -0.000418
+rw   -0.039619  0.067312  0.601445  0.031113
+U    -0.080789 -0.000418  0.031113  0.090452
+
+$dof for noise: Inf (estimated: FALSE ) 
+$lambda: 0.01 0.05 0.1 0.5 1 5 10 50 100 500 (estimated: TRUE ) 
+$GCV: 1.39258 1.4128 1.46363 1.81764 2.08108 3.49262 4.68108 8.63984 13.22006 65.92001 
+
+> Estimns2 = VARshrink(Canada, p = 2, const = 'const', method = 'ns')
+> Estimns2
+VARshrink Estimation Results:
+=============================
+Call:
+VARshrink(Y = Canada, p = 2, const_type = "const", method = "ns")
+
+Estimated coefficients:
+        e.lag1 prod.lag1   rw.lag1    U.lag1    e.lag2 prod.lag2   rw.lag2    U.lag2      const
+e     0.318985  0.180599  0.059405 -0.815584  0.239602  0.055855  0.064169  0.275177  271.49567
+prod  0.036636  0.706377 -0.001755 -0.194821  0.015249  0.251290 -0.003497  0.389717  -31.04812
+rw    0.444768 -0.063783  0.324513  1.186797  0.531481 -0.016724  0.292593  0.213804 -731.72401
+U    -0.058839 -0.088212  0.017183  0.829150 -0.000488 -0.017815  0.013531 -0.105944   88.29838
+
+$Sigma for noise:
+             e      prod        rw         U
+e     0.489978  0.036249 -0.398750 -0.184816
+prod  0.036249  0.564019  0.012864 -0.004752
+rw   -0.398750  0.012864  1.358860  0.104534
+U    -0.184816 -0.004752  0.104534  0.132818
+
+$dof for noise: Inf (estimated: FALSE ) 
+$lambda: 0.02599794 (estimated: TRUE ) 
+$lambda_var: 0.0178206 (estimated: TRUE ) 
+
+> EstimFB2 = VARshrink(Canada, p = 2, const = 'const', method = 'fbayes', dof = NULL, 
++                      burnincycle = 1000, mcmccycle = 2000)
+> EstimFB2
+VARshrink Estimation Results:
+=============================
+Call:
+VARshrink(Y = Canada, p = 2, const_type = "const", method = "fbayes", 
+    dof = NULL, burnincycle = 1000, mcmccycle = 2000)
+
+Estimated coefficients:
+        e.lag1 prod.lag1   rw.lag1    U.lag1    e.lag2 prod.lag2   rw.lag2    U.lag2     const
+e     1.388018  0.208445 -0.090566 -0.064926 -0.417719 -0.137075  0.088269  0.093186  0.002742
+prod  0.061714  1.135821  0.063057 -0.304110 -0.049865 -0.172087 -0.056557  0.387061 -0.001582
+rw   -0.229047 -0.030410  0.917731  0.024799  0.283005 -0.047481  0.045146 -0.208137  0.017540
+U    -0.396880 -0.101833  0.020774  0.894203  0.410706  0.074438 -0.023745  0.055615  0.017599
+
+$Sigma for noise:
+             e      prod        rw         U
+e     0.115769 -0.012125 -0.027275 -0.060807
+prod -0.012125  0.337309  0.050317  0.009592
+rw   -0.027275  0.050317  0.428512  0.019300
+U    -0.060807  0.009592  0.019300  0.073151
+
+$dof for noise: 6.584745 (estimated: TRUE ) 
+$lambda: 4.263422 (estimated: TRUE ) 
+
+> EstimSB2 = VARshrink(Canada, p = 2, const = 'const', method = 'sbayes', dof = NULL, 
++                      lambda = NULL, lambda_var = NULL, prior_type = 'NCJ', num_folds = 10, m0 = ncol(Canada))
+> EstimSB2
+VARshrink Estimation Results:
+=============================
+Call:
+VARshrink(Y = Canada, p = 2, const_type = "const", method = "sbayes", 
+    lambda = NULL, lambda_var = NULL, dof = NULL, prior_type = "NCJ", 
+    num_folds = 10, m0 = ncol(Canada))
+
+Estimated coefficients:
+        e.lag1 prod.lag1   rw.lag1    U.lag1    e.lag2 prod.lag2   rw.lag2    U.lag2     const
+e     1.296919  0.199287 -0.061484 -0.102476 -0.328347 -0.128675  0.059113  0.117932 -0.339635
+prod -0.111680  1.179047  0.085428 -0.399197  0.126153 -0.214495 -0.080631  0.458320 -0.866932
+rw   -0.259376 -0.021385  0.899674  0.032606  0.308228 -0.038601  0.061746 -0.148921 -0.149323
+U    -0.488454 -0.144082  0.000078  0.986064  0.511436  0.099982 -0.004640 -0.038679  0.635627
+
+$Sigma for noise:
+             e      prod        rw         U
+e     8.709830 -0.076632 -0.225841 -0.453717
+prod -0.076632  3.916703  0.477158  0.036934
+rw   -0.225841  0.477158 52.799400  0.245068
+U    -0.453717  0.036934  0.245068  1.369698
+
+$dof for noise: 0.5 (estimated: TRUE ) 
+$lambda: 0.003268559 (estimated: TRUE ) 
+$lambda_var: 0.07297321 (estimated: TRUE ) 
