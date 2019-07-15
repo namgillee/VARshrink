@@ -14,6 +14,14 @@ calcSSE_VARcoef <- function(model1, model2, include_const_vector = FALSE)
 	p1 = length(model1$Coef$A)
 	p2 = length(model2$Coef$A)
 
+	# Replace NULL in const vectors, Coef$c, with zeros
+	if (is.null(model1$Coef$c)) {
+	  model1$Coef$c <- matrix(0,d,1)
+	}
+	if (is.null(model2$Coef$c)) {
+	  model2$Coef$c <- matrix(0,d,1)
+	}
+
 
 	if (p1 != p2)  {
     warning("Input model1 and model2 have different orders..")
