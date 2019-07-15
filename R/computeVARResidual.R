@@ -21,7 +21,8 @@ computeVARResidual <- function(Y, varparam) {
   for (i in 1:p) {
     Res <- Res - Y[(p+1-i):(lenT-i),] %*% t(varparam$Coef$A[[i]])
   }
-  Res <- Res - rep(varparam$Coef$c, each=lenT-p)
+  if (!is.null(varparam$Coef$c))
+    Res <- Res - rep(varparam$Coef$c, each=lenT-p)
 
   return(Res)
 }
