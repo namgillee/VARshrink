@@ -1,2 +1,2 @@
 # VARshrink
-Shrinkage estimation methods for vector autoregressive models 
+Shrinkage Estimation Methods for Vector Autoregressive (VAR) Models 
