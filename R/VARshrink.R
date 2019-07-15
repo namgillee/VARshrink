@@ -329,14 +329,21 @@ VARshrink  <- function(Y, p = 1, const_type = c('const', 'none', 'mean'),
   }
 
   estim$residual = computeVARResidual(Y = Y, varparam = estim$varparam)
+  #estim$datamat = cbind(datY, datX)
+  #estim$y
+  estim$type     = const_type
   estim$p        = p
-  estim$K        = p*colY + 1 - identical(const_type,'none')  #ncol(datX) + identical(const_type,'mean')
+  estim$K        = colY #p*colY + 1 - identical(const_type,'none')  #ncol(datX) + identical(const_type,'mean')
   estim$obs      = N #rowY - p == nrow(datY) == N
   estim$totobs   = rowY
-  estim$const_type = const_type
   estim$method   = method
   estim$call     = cl
   estim$tsnames  = colnames(Y)
+
+  #--------------------------------------------
+  #estim$varparam <- convCoef2varresult(estim$varparam$Coef)
+  #names(estim)[which(names(estim)=="varparam")] <- "varresult"
+  #--------------------------------------------
 
   class(estim) <- c('varshrinkest')
 
