@@ -1,8 +1,9 @@
+#' @export
 testStationarityVARmodel <- function(model)
 
 #testStationarityVARmodel <- function(model)
 # Returns TRUE if the given VAR model is covariance stationary,
-# based on Hamilton (1994), proposition 10.1. 
+# based on Hamilton (1994), proposition 10.1.
 #
 # Inputs:
 #  model : an object of VARparam
@@ -14,7 +15,7 @@ testStationarityVARmodel <- function(model)
 # The VAR Model is covariance stationary if |x| < 1 for all
 # values of x satisfying
 #
-#      det(F-xI) = | I x^p - A1 x^{p-1} - ... - Ap | = 0. 
+#      det(F-xI) = | I x^p - A1 x^{p-1} - ... - Ap | = 0.
 #
 # In other words, all eigenvalues of the marix F is |x|<1.
 #------

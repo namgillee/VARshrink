@@ -1,6 +1,7 @@
+#' @export
 calcSSE_VARcoef <- function(model1, model2, include_const_vector = FALSE)
-  
-#Calculate sum of squared error (SSE) to measure 
+
+#Calculate sum of squared error (SSE) to measure
 #the difference between coefficients of two VARs
 #
 # Inputs:
@@ -12,14 +13,14 @@ calcSSE_VARcoef <- function(model1, model2, include_const_vector = FALSE)
   d = dim(model1$Coef$A[[1]])[1]
 	p1 = length(model1$Coef$A)
 	p2 = length(model2$Coef$A)
-  
-	
+
+
 	if (p1 != p2)  {
     warning("Input model1 and model2 have different orders..")
     return(-1)
 	}
-	
-	
+
+
 	#sseValue <- 0
 	# (1) constant vector
 	if (include_const_vector) {
