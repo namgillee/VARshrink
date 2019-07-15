@@ -13,7 +13,7 @@ computeVARResidual <- function(Y, varparam) {
   #   Res        : (T-p)xD matrix of residuals
 
   p <- length(varparam$Coef$A)
-  d <- nrow(varparam$Coef$A)
+  #d <- nrow(varparam$Coef$A[[1]])
   lenT <- nrow(Y)
 
   # Compute residuals
