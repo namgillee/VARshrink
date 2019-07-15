@@ -37,10 +37,12 @@
 #    an object of class 'varshrinkest' with components:
 #       $varparam
 #       $se.varparam
+#       $residual
 #       $p, $K, $obs, $totobs,
 #       $const_type, $method,
 #       $lambda, $lambda_var
 #       $call
+#       $tsnames
 
 Class 'VARparam': An object of class is a list with the following attributes: 
 
