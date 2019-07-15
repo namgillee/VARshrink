@@ -23,7 +23,7 @@ convPsi2Coefs <- function(Psi)
     f = rep( 1:p, rep(d^2,p) )
     PsiSplit = split(t(Psi), f = f)
     Coefs$A = lapply(PsiSplit, matrix, d)
-    Coefs$c = matrix(0, d, 1)
+    Coefs$c = NULL
   } else {
     f = rep( 1:(p+1), c(d, rep(d^2,p)) )
     PsiSplit = split(t(Psi), f = f)
