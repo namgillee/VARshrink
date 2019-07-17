@@ -6,15 +6,11 @@
 
 	1) 상속: class <- c("varshrinkest', "varest")
 
-	2) "varshrinkest"의 field 조정
+	2) "varshrinkest"의 field 조정: "varest"의 필수 필드 포함
 
-	3) class "VARparam" 고치기 -- field 중 "varparam"이었던 것
+	3) VARshrink() 내부에서 class "VARparam" 이용 장소 없애기 -- 모의자료 생성시에만 한정적 이용
 
-3. const_type = "mean", method = c("sbayes", "fbayes") 오류 고치기 
-
-	행렬 크기 오류: 
-
-	VARshrink(diff(Canada), 1, const_type = "mean", method = "sbayes")
+3. const_type = "mean", method = c("sbayes", "fbayes") 오류 고치기 *****해결*****
 
 	Error in matrix(Dv, d * p + 1, d) * (t(eXX$vectors) %*% mXY %*% eVhat$vectors) : 
 	  non-conformable arrays
@@ -23,8 +19,6 @@
 	  data length [32] is not a sub-multiple or multiple of the number of rows [9]
 
 4. #' importFrom 계열의 코멘트 이용하기 
-
-
 
 ================== VARshrink() ==================
 

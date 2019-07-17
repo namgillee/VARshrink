@@ -1,73 +1,74 @@
+#' @importFrom ars ars
 lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
 {
   #lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
-  # Gibbs MCMC algorithm for sampling and estimating VAR parameters from 
-  # conditional posterior distributions. 
+  # Gibbs MCMC algorithm for sampling and estimating VAR parameters from
+  # conditional posterior distributions.
   #
-  # The likelihood function (distribution for noise vector) 
+  # The likelihood function (distribution for noise vector)
   #is multivariate t-distribution with degree of freedom dof=nu \geq 0.
   #
-  # The priors are noninformative priors: 
-  #   1) the shrinkage prior for the VAR coefficients, and 
-  #   2) the reference prior for the VAR noise covariance matrix. 
+  # The priors are noninformative priors:
+  #   1) the shrinkage prior for the VAR coefficients, and
+  #   2) the reference prior for the VAR noise covariance matrix.
   #
-  # For further detail, see Ni & Sun (2005). 
+  # For further detail, see Ni & Sun (2005).
   #
-  # Note: Lag order p cannot be estimated but fixed, and 
+  # Note: Lag order p cannot be estimated but fixed, and
   #       it is inferred from data matrix Y and X (see below)
   #
-  # INPUTS: 
-  #   Y, X: Y is an N x D matrix, 
-  #         X is an N x K matrix, 
-  #         The size K is either (K = D^2p, or, K = D(Dp+1)). 
-  #         So, p can be estimated by 
+  # INPUTS:
+  #   Y, X: Y is an N x D matrix,
+  #         X is an N x K matrix,
+  #         The size K is either (K = D^2p, or, K = D(Dp+1)).
+  #         So, p can be estimated by
   #            p == K %/% D
   #
-  #   dof : If dof = Inf, then we apply multivarate normal distribution, and do not estimate Q. 
-  #         If dof = 'a finite positive value', then we apply the multivariate t-distribution 
+  #   dof : If dof = Inf, then we apply multivarate normal distribution, and do not estimate Q.
+  #         If dof = 'a finite positive value', then we apply the multivariate t-distribution
   #                  with fixed dof, and estimate Q
   #         If dof = NULL or dof <= 0, we estimate both dof and Q
   #
   # OUTPUT
-  #   Returns a list of two VARparam objects, 
-  #   one for estimates of Psi, Sig, dof, etc., 
+  #   Returns a list of two VARparam objects,
+  #   one for estimates of Psi, Sig, dof, etc.,
   #   and the other one for SE of the estimates.
-  #   See Ni & Sun (2005) for the posterior mean estimate 
+  #   See Ni & Sun (2005) for the posterior mean estimate
   #   and LINEXloss estimate.
-  #   
+  #
   #   $param$Psi :   The coefficient matrix Psi computed by a posterior mean
   #   $param$Sigma : The Sigma matrix computed as a posteror mean
   #   $param$dof : The dof value, which is either estimated or fixed
   #   $param$delta
   #   $param$lambda
-  #   $se.param$Psi, 
-  #   $se.param$Sigma, 
-  #   $se.param$dof, 
-  #   $se.param$delta, 
+  #   $se.param$Psi,
+  #   $se.param$Sigma,
+  #   $se.param$dof,
+  #   $se.param$delta,
   #   $se.param$lambda
-  #           : The standard errors for the posterior mean estimates, 
-  #             which is computed by sd_of_samples / sqrt(mcmccycle). 
-  #             where sd_of_samples is the sd of MCMC samples. 
-  #             If dof is fixed (given as an argument), then 
-  #             se.param$dof==0. 
-  #   $LINEXVARmodel : list with $Psi and $SE.Psi, 
-  #           representing a LINEX loss estimate with aij=-4. 
+  #           : The standard errors for the posterior mean estimates,
+  #             which is computed by sd_of_samples / sqrt(mcmccycle).
+  #             where sd_of_samples is the sd of MCMC samples.
+  #             If dof is fixed (given as an argument), then
+  #             se.param$dof==0.
+  #   $LINEXVARmodel : list with $Psi and $SE.Psi,
+  #           representing a LINEX loss estimate with aij=-4.
   #           See, loss #2 in Ni & Sun (2005)
   #
   # Last modified at Nov. 8th, 2018 by Namgil Lee, Kangwon National University, South Korea.
   # Reference: Ni and Sun (2005)
-  
+
   # Find the lag order p
   d = ncol(Y)   #size D
   K = ncol(X)   #size K = D^2p, D(Dp+1)
   p = K %/% d   #lag order
-  
+
   N = nrow(X)
 	J = d*K
 
 	#initial values
   delta = 0.001
-  
+
   estimate_dof = FALSE
   if (is.null(dof)) {
     estimate_dof = TRUE
@@ -90,7 +91,7 @@ lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
   #Gibbs sampler: burn-in cycles & MCMC cycles
 	Psi01 <- Psi02 <- Sig01 <- dof01 <- delta01 <- 0
 	Psi01SE <- Psi02SE <- Sig01SE <- dof01SE <- delta01SE <- 0
-	
+
 	for (i in 1:(burnincycle+mcmccycle))
 	{
 	  #update phi, delta and Sig:
@@ -104,7 +105,7 @@ lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
 	  #	U'phi ~ N_J(U' mu, D)
 	  #               = N_J(U'V vecXY, D)
 	  #               = N_J(DU' vecXY, D)
-	  #    Since U = kron(Us, Ux), we have 
+	  #    Since U = kron(Us, Ux), we have
 	  #    U'phi ~ N_J (D vec(Ux' (X'QY Sig^{-1}) Us), D)
 	  #
 	  if (i==1) {
@@ -116,7 +117,7 @@ lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
 
 	  Dv = 1/( kronecker(1/pmax(eSig$values,1e-14) , pmax(eXX$values,1e-14)) + 1/delta) # eigenvalues D=Dv of V_Q
 	  #Dv = 1/( kronecker(1/abs(eSig$values) , abs(eXX$values)) + 1/delta) # eigenvalues D=Dv of V_Q
-	  
+
 	  mu0 = Dv * as.vector( t(eXX$vectors) %*% mXY %*% eSig$vectors  ) # mean in U'phi ~ N_J(mu0, Dv)
 	  phi = mu0 + sqrt(Dv) * rnorm(J, 0, 1)		# U'phi
 	  dim(phi) = c(d*p+1, d)
@@ -141,21 +142,21 @@ lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
 	  SigStar <- (eSig$vectors)%*%diag(logLambda)%*%t(eSig$vectors) # Sig_star
 
           zij <- rnorm(d*(d+1)/2)					# z_ij are standard normals.
-          zij <- zij/sqrt(sum(zij^2))				# v_ij are upper-triangular part of V, 
+          zij <- zij/sqrt(sum(zij^2))				# v_ij are upper-triangular part of V,
 	  V <- matrix(0, d, d)						#that are normalized standard normals.
-	  V[upper.tri(V,diag=TRUE)] <- zij			# 
+	  V[upper.tri(V,diag=TRUE)] <- zij			#
 	  for (j in 2:d)							#
 	    for (k in 1:(j-1))						#
 	      V[j,k] <- V[k,j]						# V is a symmetric metric
 
     W <- SigStar + rnorm(1)*V				# W = Sigstar + z*V
-    eW <- eigen(W)						
+    eW <- eigen(W)
 	  id_sort <- sort.list(eW$values,decreasing=TRUE)
 	  eW$values <- eW$values[id_sort]
 	  eW$vectors <- eW$vectors[,id_sort]
-	  Cstar <- eW$values 
+	  Cstar <- eW$values
 
-	  alpha_k <- N/2*sum(logLambda-Cstar) + 
+	  alpha_k <- N/2*sum(logLambda-Cstar) +
 	      1/2*sum( (invSig - eW$vectors%*%diag(1/exp(Cstar))%*%t(eW$vectors)) * Sk )
 	  for (j in 1:(d-1)) {
 	    for (k in (j+1):d) {
@@ -169,20 +170,20 @@ lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
       Sig <- eW$vectors%*%diag(exp(Cstar))%*%t(eW$vectors)
     	invSig <- eW$vectors%*%diag( 1/pmax(exp(Cstar),1e-20) )%*%t(eW$vectors)
 	  	eSig <- list(vectors=eW$vectors, values=exp(Cstar))
-	  } #if not, use previous eSig 
+	  } #if not, use previous eSig
   	######################################
 
 	  ##### (4) draw Q from gamma #####
 	  if (is.null(dof) || !is.infinite(dof) )
 	  {
-	  	#If dof is Inf, then it is a multivarate normal distribution, and do not update Q. 
+	  	#If dof is Inf, then it is a multivarate normal distribution, and do not update Q.
 	  	#If dof is not Inf, then it is a multivariate t-distribution, and update Q
 	    if (is.infinite(w)) {
-	      Q = rep(1,N) 
+	      Q = rep(1,N)
 	    } else {
 	      x = (Y - X %*% phi)
 	      x = w + 0.5* rowSums(x * (x %*% invSig))				  # x : rate, beta, 1/scale
-	      Q = rgamma(N, shape=(w + 0.5*d), scale=1) / x	#alpha=(0.5(nu + d)), scale = 1/x  
+	      Q = rgamma(N, shape=(w + 0.5*d), scale=1) / x	#alpha=(0.5(nu + d)), scale = 1/x
 	    }
 	  }
 		######################################
@@ -210,13 +211,13 @@ lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
 
 	  ##### update Psi01, Psi02, Sig01 #####
     if (i>=(burnincycle+1)) {
-      
+
         Psi01 <- Psi01 + phi / mcmccycle
 	      Psi02 <- Psi02 + exp(-vec_a4 * phi) / mcmccycle
 	      Sig01 <- Sig01 + Sig / mcmccycle
         delta01 <- delta01 + delta / mcmccycle
         dof01 <- dof01 + w*2/mcmccycle
-        
+
         # Note that, SE^2 = S^2/n = sum(x_i^2/n/(n-1)) - xbar^2/(n-1)
         Psi01SE <- Psi01SE + phi^2 / mcmccycle / (mcmccycle-1)
         Psi02SE <- Psi02SE + (exp(-vec_a4 * phi))^2 / mcmccycle / (mcmccycle-1)
@@ -224,7 +225,7 @@ lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
         delta01SE <- delta01SE + delta^2 / mcmccycle / (mcmccycle-1)
         if (estimate_dof)
           dof01SE <- dof01SE + (w*2)^2 /mcmccycle / (mcmccycle-1)
-        
+
 	  }
 	  ##########
 
@@ -235,10 +236,10 @@ lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
 	Psi02 = -log(Psi02)/vec_a4     #(after -log)
 	myPsi02 = matrix(Psi02, K, d)  #(after -log)
 	mySE.Psi02 = mySE.Psi02 / abs(vec_a4)  #Lipshitz constant: 1/a
-	
-	
+
+
 	#######
-	
+
 	# Collect return values
 	myPsi01 = matrix(Psi01, K, d)   # Psi01 matrix
 	mySE.Psi01 = matrix( sqrt( Psi01SE - Psi01^2 / (mcmccycle-1) ) ,K,d)
@@ -257,7 +258,7 @@ lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
   } else {
     x = (Y - X %*% myPsi01)
     x = 0.5*mydof + 0.5*rowSums(x * t(solve( mySigma, t(x) )))
-    myq = (0.5*mydof + 0.5*d - 1)/min(x, 1e10) 
+    myq = (0.5*mydof + 0.5*d - 1)/min(x, 1e10)
   }
 
   res <- NULL
@@ -269,18 +270,18 @@ lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
   res$lambda.estimated = TRUE
   res$dof.estimated = estimate_dof
   res$q = myq
-  
+
   res$se.param <- NULL
   res$se.param$Psi = mySE.Psi01
   res$se.param$Sigma = mySE.Sigma
   res$se.param$dof = mySE.dof
   res$se.param$delta = sqrt( delta01SE - delta01^2 / (mcmccycle-1) )
   res$se.param$lambda = res$se.param$delta / delta01^2
- 
+
 	res$LINEXparam <- NULL
 	res$LINEXparam$Psi = myPsi02
 	res$se.LINEXparam <- NULL
 	res$se.LINEXparam$Psi = mySE.Psi02
-	
+
 	res
 }

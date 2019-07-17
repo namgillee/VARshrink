@@ -1,18 +1,11 @@
-#' @export
-VARshrink  <- function(Y, p = 1, const_type = c('const', 'none', 'mean'),
-                   method = c('ridge', 'ns', 'fbayes', 'sbayes','kcv'),
-                   lambda = NULL, lambda_var = NULL, dof = Inf, ...)
-# Shrinkage estimation of VAR parameters
-#
-#      y_t = sum_i A_i y_{t-i} + const. + eps_t
-#
-# Inputs:
-#    Y:   T x D time series data
-#    p:   lag order
-#    const_type: 1) const - Estimate the const.
-#                2) none  - Estimate without the const., i.e., c=0.
-#                3) mean  - Use the sample mean, bar{y}, to center
+#' Shrinkage estimation of VAR parameters
+#'
+#' @param y T-by-K time series data
+#' @param p lag order
+#    type:       1) const - Estimate the const.
+#                2) mean  - Use the sample mean, bar{y}, to center
 #                     the time series data, and estimate the const.
+#                3) none  - Estimate without the const., i.e., c=0.
 #
 #    method:     1) ridge - multivariate ridge regression
 #                2) ns    - nonparametric shrinkage
@@ -30,102 +23,99 @@ VARshrink  <- function(Y, p = 1, const_type = c('const', 'none', 'mean'),
 #          If dof=Inf, it means multivariate normal distribution.
 #
 # Output:
-#    an object of class 'varshrinkest' with components:
-#       $varparam
-#       $se.varparam
-#       $p, $K, $obs, $totobs,
-#       $const_type, $method,
+#    an object of class c('varshrinkest','varest') including the following fields:
+#       $varresult
+#       $datamat
+#       $y
+#       $type
+#       $p, $K, $obs, $totobs, $restrictions
+#       $method,
 #       $lambda, $lambda_var
 #       $call
 #
+#' @importFrom corpcor cov.shrink
+#' @import vars
+#' @export
+VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
+                   method = c('ridge', 'ns', 'fbayes', 'sbayes','kcv'),
+                   lambda = NULL, lambda_var = NULL, dof = Inf, ...)
+
 {
   cl <- match.call()
-  rowY = nrow(Y) #T
-  colY = ncol(Y) #D
-
-  ######## Build Input-Output Data Matrix ########
-  datX  = NULL
-  datY  = NULL
-
-  if (const_type == 'mean') {
-    # Use the sample mean vector of Y
-    ybar = colMeans(Y)
-    Y = Y - rep(ybar, each=rowY)
+  totobs = nrow(y)   #total number of observations
+  K = ncol(y)        #dimension of output response
+  N = totobs - p     #sample size
+  M = K * p + ifelse(identical(tolower(type), "const"), 1, 0) #dimension of input covariates
+  if (is.null(tsnames <- colnames(y))) {
+    tsnames <- paste("y", 1:K, sep = "")
   }
 
-  datY = Y[-(1:p),]
+  if (totobs <= (p+1) ){
+    error('In:VARshrink:', 'Number of total observations must be > p+1')
+  }
+
+  ######## Build Data Matrices: datX, datY ########
+
+  ybar = NULL
+  dybar = dxbar = NULL
+  if (identical(tolower(type), 'mean')) {
+    # Subtract the mean from y: use the sample mean vector of y
+    ybar = colMeans(y)
+    y = y - rep(ybar, each = totobs)
+  }
+
+  datY = y[(p+1):totobs, ] #N-by-K
+  datX = matrix(1, N, M) #N-by-M
   for (h in 1:p) {
-    datX = cbind(datX, Y[(p+1-h):(rowY-h),])
-  }
-  N = nrow(datY)
-
-  if (const_type == 'const') {
-    # Append 1 to datX, because we will estimate
-    # constant vector by shrinkage
-    datX = cbind(1, datX)
+    # Note that, if type=='const', then 1's are at the last column, since M>(K*p)
+    datX[, (1+(h-1)*K):(h*K)] = y[(p+1-h):(totobs-h), ]
   }
 
+  colnames(datX) <- ifelse(identical(tolower(type), "const"),
+    c(paste(rep(tsnames, times = p) , ".l", rep(1:p, each = K), sep = ""), "const"),
+    paste(rep(tsnames, times = p) , ".l", rep(1:p, each = K), sep = "")
+  )
 
-  ######## Run a Shrinkage Estimation Method ########
+  #### Run a Shrinkage Estimation Method: estim ####
 
   estim = NULL
 
   #---------- (1) Multivariate Ridge ----------------
   if (method == 'ridge') {
 
-    # Set lambda by a sequence
-    if (is.null(lambda)) {
-      lambda = as.vector(c(1,5) %o% rep(10^c(-2:2)))
-    }
-
-    # ridge estimates: $Coefs (list of all Psi_hat's), $lambda, $GCV
+    # Compute the coefficient matrix: myPsi (M-by-K)
+    # resu_ridge is a list of $Psi, $lambda, $GCV
     resu_ridge  = lm_multiv_ridge(datY, datX, lambda, ...)
+    id_min_gcv = which.min(resu_ridge$GCV) # Select the minimum GCV
+    myPsi = resu_ridge$Psi[[id_min_gcv]]
 
-    # Select the minimum GCV
-    id_min_gcv = which.min(resu_ridge$GCV)
-    myPsi = resu_ridge$Coefs[[id_min_gcv]]
-
-    # Residuals and covariance matrix for noise
-    myResid = datY - datX %*% myPsi
-    sing_val = svd(datX)$d #singular values
-    kapp_val = sum( (sing_val^2)/(sing_val^2 + lambda[id_min_gcv]),
-                    na.rm = TRUE) + identical(const_type,'mean') #Effective DOF
-    mySigma = (t(myResid) %*% myResid)/max(1, N - kapp_val)
-
-    # Convert Psi matrix into a list of $A and $c
-    myCoef = convPsi2Coefs(myPsi)
-    if (const_type == 'mean') {
-      myCoef$c = convMean2Const(ybar, myCoef)
-    }
-
-    # Return the minimum GCV estimates
-    estim$varparam = VARparam(Coef = myCoef, Sigma = mySigma, dof = Inf)
+    # Update the return value
+    estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
+                                         lambda = lambda[id_min_gcv], scale_lambda = 1,
+                                         type = type, ybar = ybar,
+                                         callstr = cl
+    )
     estim$lambda = resu_ridge$lambda
-    estim$lambda.estimated = (length(resu_ridge$lambda)>1)
-    estim$df.residual = max(1, N - kapp_val)
+    estim$lambda.estimated = as.logical(length(resu_ridge$lambda) > 1)
     estim$GCV = resu_ridge$GCV
 
   }
   ##--------- (2) Nonparametric Shrinkage ----------
   if (method == 'ns') {
-    require('corpcor') #Use cov.shrink() by Strimmer lab
 
-    # Since NS method centers datX and datY,
-    # We have to be careful to the case of const_type = 'const'.
-    # Eventually, 'const' and 'mean' are identical:
-    # If 'const'  -->  remove 1's from datX  -->  estimate c later by c(dybar, dxbar)
-    # If 'mean'   -->         (no deletion)  -->  estimate c later by ybar
-    # If 'none'   -->         (no deletion)  -->  (no estimation of c)
+    # In 'ns', datX and datY are centered separately, by dxbar and dybar.
+    # If 'const': Remove 1's from datX -->  estimate c later by c(dybar, dxbar)
+    # If 'mean': (no removal) --> estimate c later by ybar
+    # If 'none': (no removal) --> (no estimation of c)
 
-    if (const_type == 'const') {
-      # Remove 1's from datX
-      datX = datX[,-1]
+    if (identical(tolower(type), 'const')) {
+      datX = datX[,-M]  # Remove 1's from datX
 
       dybar = colMeans(datY)
       dxbar = colMeans(datX)
 
-      datY = datY - rep(dybar, each=N)
-      datX = datX - rep(dxbar, each=N)
+      datY = datY - rep(dybar, each = N)
+      datX = datX - rep(dxbar, each = N)
     }
 
     # Estimate covariance matrix S_Z
@@ -145,116 +135,107 @@ VARshrink  <- function(Y, p = 1, const_type = c('const', 'none', 'mean'),
     }
 
     # Compute the coefficient matrix Psi by solving linear system
-    #if (attr(SZ,"lambda") > 1e-15) {
-    #  myPsi = solve(SZ[1:(colY*p), 1:(colY*p)],
-    #                  SZ[1:(colY*p), (colY*p+1):(colY*p+colY)])
-    #} else {
-    #  #S_X can be singular; Use eigen(S_X)
-      eigSZ = eigen( SZ[1:(colY*p), 1:(colY*p)] )
-      idr = eigSZ$values > 0
-      myPsi = eigSZ$vectors[,idr] %*%
-                ( 1/eigSZ$values[idr] * t(eigSZ$vectors[,idr]) ) %*%
-                SZ[1:(colY*p), (colY*p+1):(colY*p+colY)]
-    #}
+    eigSZ = eigen(SZ[1:(K*p), 1:(K*p)]) #Use EVD to avoid singular matrix problem
+    idr = eigSZ$values > 0
+    myPsi = eigSZ$vectors[,idr] %*%
+            ( 1/eigSZ$values[idr] * t(eigSZ$vectors[,idr]) ) %*%
+            SZ[1:(K*p), (K*p+1):(K*p+K)]
 
-    # Convert Psi matrix into a list of $A and $c
-    myCoef = convPsi2Coefs(myPsi) #into list of A and c
-    if (const_type == 'mean') {
-      myCoef$c = convMean2Const(ybar, myCoef)
-    }
-    if (const_type == 'const') {
-      # The colume of 1's has been removed from datX,
-      # so the const_vector has to be estimated separately,
-      # similarly to the case of const_type=='mean'.
-      myCoef$c = matrix(dybar - t(myPsi) %*% dxbar,
-                         nrow = colY, ncol = 1)
-    }
-
-    # Residuals and covariance matrix for noise
-    myResid = datY - datX %*% myPsi
-    sing_val = svd(datX)$d #singular values
-    kapp_val = sum( (sing_val^2)/(sing_val^2 + attr(SZ,"lambda")*(N-1)/N),
-                    na.rm = TRUE) + (const_type%in%c('mean','const')) #Effective DOF
-    mySigma = (t(myResid) %*% myResid)/max(1, N - kapp_val)
-
-    # Return the NS estimates
-    estim$varparam = VARparam(Coef = myCoef, Sigma = mySigma, dof = Inf)
+    # Update the return value
+    estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
+                                         lambda = attr(SZ,"lambda"), scale_lambda = (N-1)/N,
+                                         type = type, ybar = dybar, xbar = dxbar,
+                                         callstr = cl
+    )
     estim$lambda = attr(SZ,"lambda")
     estim$lambda.estimated = attr(SZ,"lambda.estimated")
     estim$lambda_var = attr(SZ,"lambda.var")
     estim$lambda_var.estimated = attr(SZ,"lambda.var.estimated")
-    estim$df.residual = max(1, N - kapp_val)
+
   }
   ##--------- (3) Full Bayesian with Noninformative Priors ----------
   if (method == 'fbayes') {
 
-    # Estimate Psi coefficient matrix.
+    # Compute the coefficient matrix: myPsi
     # Arguments 'burnincycle' and 'mcmccycle' are included in '...'
     resu_fbayes = lm_full_Bayes_SR(datY, datX, dof = dof, ...)
 
-    # Convert Psi matrix into a list of $A and $c
+    # Update the return value
     myPsi = resu_fbayes$Psi
-    myCoef = convPsi2Coefs(myPsi) #into list of A and c
-    if (const_type == 'mean') {
-      myCoef$c = convMean2Const(ybar, myCoef)
-    }
-
-    # Convert SE.Psi matrix into a list of $A and $c
-    mySE.Psi = resu_fbayes$se.param$Psi
-    mySE.Coef = convPsi2Coefs(mySE.Psi)
-    if (const_type == 'mean') {
-      tmpC01 =  convMean2Const( t(Y)%*%Y/(rowY-1), myCoef) #A*S
-      mySE.Coef$c = diag( convMean2Const( t(tmpC01), myCoef) )#A*S'*A'=A*S*A'
-      mySE.Coef$c = sqrt( mySE.Coef$c / (rowY) ) #sqrt( ASA'/n )
-    }
-
-    # Repeat for the LINEX estimator: Psi (optional)
-    myPsi02 = resu_fbayes$LINEXparam$Psi
-    myCoef02 = convPsi2Coefs(myPsi02)
-    if (const_type == 'mean') {
-      myCoef02$c = convMean2Const(ybar, myCoef02)
-    }
-
-    # Repeat for the LINEX estimator: SE.Psi (optional)
-    mySE.Psi02 = resu_fbayes$se.LINEXparam$Psi
-    mySE.Coefs02 = convPsi2Coefs(mySE.Psi02)
-    if (const_type == 'mean') {
-      tmpC02 =  convMean2Const( t(Y)%*%Y/(rowY-1), myCoef02) #A*S
-      mySE.Coefs02$c = diag( convMean2Const( t(tmpC02), myCoef02) )#A*S'*A'=A*S*A'
-      mySE.Coefs02$c = sqrt( mySE.Coefs02$c / (rowY) ) #sqrt( ASA'/n )
-    }
-
-    ## Return the fbayes estimates ##
-    estim$varparam = VARparam(Coef = myCoef,
-                              Sigma = resu_fbayes$Sigma,
-                              dof = resu_fbayes$dof)
-    estim$delta = resu_fbayes$delta
+    estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
+                                         lambda = resu_fbayes$lambda, scale_lambda = 1,
+                                         type = type, ybar = ybar,
+                                         callstr = cl
+    )
     estim$lambda = resu_fbayes$lambda
     estim$lambda.estimated = resu_fbayes$lambda.estimated
+    estim$delta = resu_fbayes$delta
+
+    estim$Sigma = resu_fbayes$Sigma
+    estim$dof = resu_fbayes$dof
     estim$dof.estimated = resu_fbayes$dof.estimated
 
-    estim$se.varparam = VARparam(Coef = mySE.Coef,
-                                 Sigma = resu_fbayes$se.param$Sigma,
-                                 dof = resu_fbayes$se.param$dof)
-    estim$se.delta = resu_fbayes$se.param$delta
-    estim$se.lambda = resu_fbayes$se.param$lambda
-
-    estim$LINEXvarparam = VARparam(Coef = myCoef02) #An estimated coefficient minimizing LINEX loss
-    estim$se.LINEXvarparam = VARparam(Coef = mySE.Coefs02) #The SE of the LINEX coefficient
-
-    # df.residual
-    # How to get kappa: From Eq. (11) for phi_hat(lambda), and defn. of hat matrix:
-    #    Y = H*Y == X*Psi,
-    #    ==> vec(Y) = y = (IxH)y == (IxX)psi
-    #        and psi = (IxX'QX+lambda*SigxI)^{-1}(IxX'Q)y
-    #    ==> Approximately, H == X(X'QX+lambda*s^2*I)^{-1}X'Q
-    #        where  s^2 = tr(Sig)/D
+    ## overwrite df.residual ##
     Q_values = resu_fbayes$q
     sing_val = svd(sqrt(Q_values)*datX)$d #singular values
-    s2_val = ifelse(colY>=2, mean(diag(resu_fbayes$Sigma), na.rm = TRUE), resu_fbayes$Sigma)
-    kapp_val = sum( (sing_val^2)/(sing_val^2 + estim$lambda*s2_val/N),
-                    na.rm = TRUE) + identical(const_type,'mean') #Effective DOF
-    estim$df.residual = max(1, N - kapp_val)
+    sigbar = ifelse(K>=2, mean(diag(resu_fbayes$Sigma), na.rm = TRUE), resu_fbayes$Sigma)
+    mykapp = sum((sing_val^2)/(sing_val^2 + resu_fbayes$lambda*sigbar),
+                 na.rm = TRUE) + as.vector(identical(type,'mean'))
+    for (i in 1:K) {
+      estim$varresult[[i]]$df.residual = max(1, N - mykapp)
+    }
+
+    # # Convert SE.Psi matrix into a list of $A and $c
+    # mySE.Psi = resu_fbayes$se.param$Psi
+    # mySE.Coef = convPsi2Coefs(mySE.Psi)
+    # if (type == 'mean') {
+    #   tmpC01 =  convMean2const( t(y)%*%y/(totobs-1), myCoef) #A*S
+    #   mySE.Coef$c = diag( convMean2const( t(tmpC01), myCoef) )#A*S'*A'=A*S*A'
+    #   mySE.Coef$c = sqrt( mySE.Coef$c / (totobs) ) #sqrt( ASA'/n )
+    # }
+    #
+    # # Repeat for the LINEX estimator: Psi (optional)
+    # myPsi02 = resu_fbayes$LINEXparam$Psi
+    # myCoef02 = convPsi2Coefs(myPsi02)
+    # if (type == 'mean') {
+    #   myCoef02$c = convMean2const(ybar, myCoef02)
+    # }
+    #
+    # # Repeat for the LINEX estimator: SE.Psi (optional)
+    # mySE.Psi02 = resu_fbayes$se.LINEXparam$Psi
+    # mySE.Coefs02 = convPsi2Coefs(mySE.Psi02)
+    # if (type == 'mean') {
+    #   tmpC02 =  convMean2const( t(y)%*%y/(totobs-1), myCoef02) #A*S
+    #   mySE.Coefs02$c = diag( convMean2const( t(tmpC02), myCoef02) )#A*S'*A'=A*S*A'
+    #   mySE.Coefs02$c = sqrt( mySE.Coefs02$c / (totobs) ) #sqrt( ASA'/n )
+    # }
+    #
+    # estim$se.varparam = VARparam(Coef = mySE.Coef,
+    #                              Sigma = resu_fbayes$se.param$Sigma,
+    #                              dof = resu_fbayes$se.param$dof)
+    # estim$se.lambda = resu_fbayes$se.param$lambda
+    # estim$se.delta = resu_fbayes$se.param$delta
+    #
+    # estim$LINEXvarparam = VARparam(Coef = myCoef02) #An estimated coefficient minimizing LINEX loss
+    # estim$se.LINEXvarparam = VARparam(Coef = mySE.Coefs02) #The SE of the LINEX coefficient
+
+    #### How to get kappa ####
+    # From Eq. (11) for psi_hat(lambda), Y can be separated as:
+    #    psi := psi_hat(lambda)
+    #        = (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q) %*% y
+    # From defn. of hat matrix:
+    #    Y_hat = H %*% Y == X %*% Psi
+    # After vectorizing:
+    #    vec(Y_hat) = (I(x)H) %*% y == (I(x)X) %*% psi
+    # Combining above two equations:
+    #    (I(x)H) %*% y == (I(x)X) %*% (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q) %*% y
+    #    ...
+    #    (I(x)H) == (I(x)X) %*% (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q)
+    # Approximate Sig by a scalar:
+    #    Sig == sigbar := Tr(Sig)/K
+    # then,
+    #    H == X %*% (X'QX + lambda * Sigbar * I)^{-1} %*% X'Q
+    #    where  sigbar := Tr(Sig)/K
 
   }
   ##--------- (4) Semi-parametric Bayesian with lambda by P-CV ----------
@@ -263,30 +244,31 @@ VARshrink  <- function(Y, p = 1, const_type = c('const', 'none', 'mean'),
     resu_sbayes = lm_semi_Bayes_PCV(datY, datX, dof = dof,
                               lambda = lambda, lambda_var = lambda_var, ...)
 
-    # Convert Psi matrix into a list of $A and $c
+    # Update the return value
     myPsi = resu_sbayes$Psi
-    myCoef = convPsi2Coefs(myPsi)
-    if (const_type == 'mean') {
-      myCoef$c = convMean2Const(ybar, myCoef)
-    }
-
-    ## Return the sbayes estimates
-    estim$varparam = VARparam(Coef = myCoef,
-                              Sigma = resu_sbayes$Sigma,
-                              dof = resu_sbayes$dof)
+    estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
+                                         lambda = resu_sbayes$lambda, scale_lambda = 1,
+                                         type = type, ybar = ybar,
+                                         callstr = cl
+    )
     estim$lambda = resu_sbayes$lambda
     estim$lambda.estimated = resu_sbayes$lambda.estimated
     estim$lambda_var = resu_sbayes$lambda_var
     estim$lambda_var.estimated = resu_sbayes$lambda_var.estimated
+
+    estim$Sigma = resu_sbayes$Sigma
+    estim$dof = resu_sbayes$dof
     estim$dof.estimated = resu_sbayes$dof.estimated
 
-    # df.residual
+    ## overwrite df.residual ##
     Q_values = resu_sbayes$q
     sing_val = svd(sqrt(Q_values)*datX)$d #singular values
-    s2_val = ifelse(colY>=2, mean(diag(resu_sbayes$Sigma), na.rm = TRUE), resu_sbayes$Sigma)
-    kapp_val = sum( (sing_val^2)/(sing_val^2 + estim$lambda/(1-estim$lambda)*s2_val*(N-1)/N),
-                    na.rm = TRUE) + identical(const_type,'mean') #Effective DOF
-    estim$df.residual = max(1, N - kapp_val)
+    sigbar = ifelse(K>=2, mean(diag(resu_sbayes$Sigma), na.rm = TRUE), resu_sbayes$Sigma)
+    mykapp = sum((sing_val^2)/(sing_val^2 + resu_sbayes$lambda/(1-resu_sbayes$lambda)*sigbar*(N-1)/N),
+                 na.rm = TRUE) + as.vector(identical(type,'mean'))
+    for (i in 1:K) {
+      estim$varresult[[i]]$df.residual = max(1, N - mykapp)
+    }
 
   }
   ##--------- (5) Semi-parametric Bayesian with lambda by K-CV ----------
@@ -295,57 +277,65 @@ VARshrink  <- function(Y, p = 1, const_type = c('const', 'none', 'mean'),
     resu_kcv = lm_ShVAR_KCV(datY, datX, dof = dof,
                          lambda = lambda, lambda_var = lambda_var, ...)
 
-    # Convert Psi matrix into a list of $A and $c
+    # Update the return value
     myPsi = resu_kcv$Psi
-    myCoef = convPsi2Coefs(myPsi) #into list of A's and c
-    if (const_type == 'mean') {
-      myCoef$c = convMean2Const(ybar, myCoef)
-    }
-
-    ## Return the kcv estimates
-    estim$varparam = VARparam(Coef = myCoef,
-                              Sigma = resu_kcv$Sigma,
-                              dof = resu_kcv$dof)
+    estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
+                                         lambda = resu_kcv$lambda, scale_lambda = 1,
+                                         type = type, ybar = ybar,
+                                         callstr = cl
+    )
     estim$lambda = resu_kcv$lambda
     estim$lambda.estimated = resu_kcv$lambda.estimated
     estim$lambda_var = resu_kcv$lambda_var
     estim$lambda_var.estimated = resu_kcv$lambda_var.estimated
+
+    estim$Sigma = resu_kcv$Sigma
+    estim$dof = resu_kcv$dof
     estim$dof.estimated = resu_kcv$dof.estimated
 
-    # df.residual
+    ## overwrite df.residual ##
     Q_values = resu_kcv$q
     sing_val = svd(sqrt(Q_values)*datX)$d #singular values
-    s2_val = ifelse(colY>=2, mean(diag(resu_kcv$Sigma), na.rm = TRUE), resu_kcv$Sigma)
-    kapp_val = sum( (sing_val^2)/(sing_val^2 + estim$lambda/(1-estim$lambda)*s2_val*(N-1)/N),
-                    na.rm = TRUE) + identical(const_type,'mean') #Effective DOF
-    estim$df.residual = max(1, N - kapp_val)
+    sigbar = ifelse(K>=2, mean(diag(resu_kcv$Sigma), na.rm = TRUE), resu_kcv$Sigma)
+    mykapp = sum((sing_val^2)/(sing_val^2 + resu_kcv$lambda/(1-resu_kcv$lambda)*sigbar*(N-1)/N),
+                 na.rm = TRUE) + as.vector(identical(type,'mean'))
+    for (i in 1:K) {
+      estim$varresult[[i]]$df.residual = max(1, N - mykapp)
+    }
 
   }
   ##---------------------------------------------------
 
   ## Check return value ##
-  if (!with(estim, exists('varparam'))) {
+  ## components for 'varest'
+  if (!with(estim, exists('varresult'))) {
     warning('VAR parameters were not estimated. Check the method.')
   }
-
-  estim$residual = computeVARResidual(Y = Y, varparam = estim$varparam)
-  #estim$datamat = cbind(datY, datX)
-  #estim$y
-  estim$type     = const_type
+  estim$datamat  = cbind(datY, datX)
+  estim$y        = y
+  estim$type     = type
   estim$p        = p
-  estim$K        = colY #p*colY + 1 - identical(const_type,'none')  #ncol(datX) + identical(const_type,'mean')
-  estim$obs      = N #rowY - p == nrow(datY) == N
-  estim$totobs   = rowY
-  estim$method   = method
+  estim$K        = K
+  estim$obs      = N
+  estim$totobs   = totobs
+  estim$restrictions = NULL
   estim$call     = cl
-  estim$tsnames  = colnames(Y)
 
-  #--------------------------------------------
-  #estim$varparam <- convCoef2varresult(estim$varparam$Coef)
-  #names(estim)[which(names(estim)=="varparam")] <- "varresult"
-  #--------------------------------------------
+  ## components for 'varshrinkest':
+  estim$method   = method
+  #estim$lambda
+  #estim$lambda.estimated
 
-  class(estim) <- c('varshrinkest')
+  ## Optional components for 'varshrinkest':
+  #$lambda_var
+  #$lambda_var.estimated
+  #$Sigma
+  #$dof
+  #$dof.estimated
+  #...
+
+
+  class(estim) <- c('varshrinkest', 'varest')
 
   return(estim)
 }
