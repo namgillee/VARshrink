@@ -6,7 +6,7 @@
 \usage{
 convPsi2varresult(Psi, Y, X, lambda, scale_lambda = 1,
   type = c("const", "mean", "none"), ybar = NULL, xbar = NULL,
-  callstr = "")
+  Q_values = NULL, callstr = "")
 }
 \arguments{
 \item{Psi}{M-by-K matrix Psi}

@@ -3,9 +3,8 @@
 # install.packages('corpcor') #for method 'ns'
 # install.packages('ars') #for method 'fbayes'
 # install.packages('vars')  #for Canada data
-library('MASS') #for method 'ridge'
-library('corpcor')
-library('ars')
+# library('corpcor')
+# library('ars')
 
 #--- Section 3. Shrinkage Estimation Methods (Example_01.R) ---#
 # Simulate VAR processes with multivariate normal distribution,

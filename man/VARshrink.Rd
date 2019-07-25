@@ -12,6 +12,28 @@ VARshrink(y, p = 1, type = c("const", "mean", "none"),
 \item{y}{T-by-K time series data}
 
 \item{p}{lag order}
+
+\item{type}{1) const - Estimate the const.}
+
+\item{method}{1) ridge - multivariate ridge regression
+2) ns    - nonparametric shrinkage
+3) fbayes- full Bayes MCMC shrinkage
+4) sbayes- semi-parametric Bayes shrinkage
+5) kcv   - k-fold cross validation}
+
+\item{lambda, lambda_var}{shrinkage parameter value(s).
+Use of this parameter is slightly different
+for each method, that is, the same value does not
+imply the same estimates.}
+
+\item{dof}{degree of freedom of multivariate t distribution for noise.
+ Valid only for fbayes and sbayes.
+If dof=Inf, it means multivariate normal distribution.}
+}
+\value{
+an object of class c('varshrinkest','varest') including the following fields:
+varresult, datamat, y, type, p, K, obs, totobs, restrictions, method,
+lambda, lambda_var, call
 }
 \description{
 Shrinkage estimation of VAR parameters

@@ -2,12 +2,8 @@
 
 export(VARparam)
 export(VARshrink)
-export(calcSSE_VARcoef)
-export(computeVARResidual)
-export(convPsi2Coefs)
 export(createVARCoefs_ltriangular)
 export(simVARmodel)
-export(testStationarityVARmodel)
 import(vars)
 importFrom(ars,ars)
 importFrom(corpcor,cov.shrink)
