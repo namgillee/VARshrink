@@ -14,10 +14,10 @@
 #
 
 # # Source all files from directories
-file.sources = list.files(c("./R"),
-                          pattern="*.R$", full.names=TRUE,
-                          ignore.case=TRUE)
-sapply(file.sources,source,.GlobalEnv)
+# file.sources = list.files(c("./R"),
+#                           pattern="*.R$", full.names=TRUE,
+#                           ignore.case=TRUE)
+# sapply(file.sources,source,.GlobalEnv)
 
 # Random number generator
 set.seed(100)
@@ -34,33 +34,39 @@ Y = simVARmodel(numT = 100, model = myModel, burnin = 10)
 EstimRidge = VARshrink(Y, p = 1, type = 'const', method = 'ridge',
                        lambda = NULL)
 EstimRidge
+summary(EstimRidge)
 
 # 2) A Nonparametric Shrinkage Method by Opgen-Rein & Strimmer (2007)
 EstimNS = VARshrink(Y, p = 1, type = 'const', method = 'ns',
                     lambda = NULL, lambda_var = NULL)
 EstimNS
+summary(EstimNS)
 
 # 3-1) A Full Bayesian Method Using Gibbs MCMC (known fixed dof) by Ni & Sun (2005)
 EstimFB1 = VARshrink(Y, p = 1, type = 'const', method = 'fbayes', dof = 6,
                      burnincycle = 1000, mcmccycle = 2000)
 EstimFB1
+summary(EstimFB1)
 
 # 3-2) (unknown dof)
 EstimFB2 = VARshrink(Y, p = 1, type = 'const', method = 'fbayes', dof = NULL,
                      burnincycle = 1000, mcmccycle = 2000)
 EstimFB2
+summary(EstimFB2)
 
 # 4-1) A semiparametric Shrinkage method using PCV (known fixed dof) by Lee, Choi & Kim (2016)
 EstimSB1 = VARshrink(Y, p = 1, type = 'const', method = 'sbayes', dof = 6,
                      lambda = NULL, lambda_var = NULL, prior_type = 'NCJ',
                      num_folds = 5, m0 = ncol(Y))
 EstimSB1
+summary(EstimSB1)
 
 # 4-2) (unknown dof)
 EstimSB2 = VARshrink(Y, p = 1, type = 'const', method = 'sbayes', dof = NULL,
                     lambda = NULL, lambda_var = NULL, prior_type = 'NCJ',
                     num_folds = 5, m0 = ncol(Y))
 EstimSB2
+summary(EstimSB2)
 
 # 5) A semiparametric shrinkage method using K-fold Cross Validation
 # 5-1) (known fixed dof)
@@ -68,13 +74,14 @@ EstimKCV1 = VARshrink(Y, p = 1, type = 'const', method = 'kcv', dof = 6,
                       lambda = NULL, lambda_var = NULL, prior_type = 'NCJ',
                       num_folds = 5, m0 = ncol(Y))
 EstimKCV1
+summary(EstimKCV1)
 
 # 5-2) (unknown dof)
 EstimKCV2 = VARshrink(Y, p = 1, type = 'const', method = 'kcv', dof = NULL,
                  lambda = NULL, lambda_var = NULL, prior_type = 'NCJ',
                  num_folds = 5, m0 = ncol(Y))
 EstimKCV2
-
+summary(EstimKCV2)
 
 print('---- VARshrink: Shrinkage Estimation for VAR models ----')
 print('  Results of sum of squared errors of estimators     ')

@@ -33,18 +33,21 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
                    lambda = NULL, lambda_var = NULL, dof = Inf, ...)
 
 {
-  cl <- match.call()
+  y <- as.matrix(y)
   totobs = nrow(y)   #total number of observations
   K = ncol(y)        #dimension of output response
   N = totobs - p     #sample size
   M = K * p + ifelse(identical(tolower(type), "const"), 1, 0) #dimension of input covariates
-  if (is.null(tsnames <- colnames(y))) {
-    tsnames <- paste("y", 1:K, sep = "")
-  }
 
-  if (totobs <= (p+1) ){
-    error('In:VARshrink:', 'Number of total observations must be > p+1')
-  }
+  if (any(is.na(y)))
+    stop("\nNAs in y.\n")
+  if (K < 2)
+    stop("The matrix 'y' should contain at least two variables.\n")
+  if (is.null(tsnames <- colnames(y)))
+    tsnames <- paste("y", 1:K, sep = "")
+
+  if (totobs <= (p+1) )
+    stop("Number of total observations must be > p+1\n")
 
   ######## Build Data Matrices: datX, datY ########
 
@@ -341,7 +344,6 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
   #$dof
   #$dof.estimated
   #...
-
 
   class(estim) <- c('varshrinkest', 'varest')
 

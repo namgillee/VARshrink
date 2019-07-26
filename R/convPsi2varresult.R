@@ -41,28 +41,31 @@ convPsi2varresult <- function(Psi, Y, X, lambda, scale_lambda = 1,
   dof_to_adjust = 0 #number of parameters to adjust
   if (identical(tolower(type), 'mean')) {
     #-------------------------------------------------------
-    # If type=='mean', then assume that:
+    # If type=='mean', then
+    #  1) Compute and append the const vector to Psi, and
+    #  2) Add ybar to the fitted values.
+    # Assume that:
     #     ybar == colMeans(y),
     #     X == {x_t' - ybar'},
     #     Y == {y_t' - ybar'}.
-    # Fitted value for the VAR equation: const' = ybar' - ybar' %*% Psi
-    #  yhat_t' = const' + x_t' %*% Psi
-    #          = ybar' + (x_t' - ybar') %*% Psi
-    #          = ybar' + X %*% Psi .
-    #     (NEED TO MODIFY myFitted BY ADDING ybar)
-    # Residual is:
+    # Compute:
+    #   const' = ybar' - ybar' %*% Psi
+    # MODIFY myFitted:
+    #   yhat_t' = const' + x_t' %*% Psi
+    #           = ybar' + (x_t' - ybar') %*% Psi
+    #           = ybar' + X %*% Psi .
+    # DO NOT NEED TO MODIFY myResid:
     #  r_t' = y_t' - yhat_t'
     #       = y_t' - ybar' - X %*% Psi
     #       = Y - X %*% Psi
-    #     (DO NOT NEED TO MODIFY myResid)
     #-------------------------------------------------------
     if (!is.null(ybar)) {
       if (length(ybar) == K) {
-        const = as.vector(ybar) - t(rep(ybar, p)) %*% Psi
-        Psi = rbind(Psi, const) #2) Append the const vector to Psi
+        const = as.vector(ybar) - as.vector(t(rep(ybar, p)) %*% Psi)
+        Psi = rbind(Psi, const = const) #1) Append the const vector to Psi
         dof_to_adjust = 1
 
-        myFitted = myFitted + rep(ybar, each = N)  #1) Add ybar to the fitted values
+        myFitted = myFitted + rep(ybar, each = N)  #2) Add ybar to the fitted values
 
       } else {
         warning("Length of ybar is incorrect")
@@ -70,39 +73,38 @@ convPsi2varresult <- function(Psi, Y, X, lambda, scale_lambda = 1,
 
     } else {
       # Assume that ybar is a zero vector
-      Psi = rbind(Psi, const = rep(0, K)) #2) Append the const vector to Psi
+      Psi = rbind(Psi, const = rep(0, K)) #1) Append the const vector to Psi
       dof_to_adjust = 1
 
-      #1) Add ybar to the fitted values: skip
+      #2) Add ybar to the fitted values: skip
     }
   }
   if (identical(tolower(type), 'const') &&
       (nrow(Psi) %% K == 0) &&
       !is.null(ybar) && !is.null(xbar)) {
     #-------------------------------------------------------
-    # In the case that type=='const' but Psi does not include
-    # the const vector in one of its rows, assume that
+    # If type=='const' but Psi does not include the const
+    # vector in its last row, then suppose that method=='ns' and
+    #  1) Compute and append the const vector to Psi, and
+    #  2) Add ybar to the fitted values.
+    # Assume that
     #      ybar == colMeans(datY),
-    #      xbar == colMeans(datX),
-    # we consider that the case is for method=='ns', so
-    #   1) Compute
-    #           const = ybar - xbar %*% Psi;
-    #      because the VAR equantion is
-    #           yhat_t' = const' + x_t' %*% Psi
-    #      and the 'ns' estimation equatin is Y = X %*% Psi
-    #      with Y=={yhat_t'-ybar'}, X=={x_t'-xbar'}
-    #   2) Psi = rbind(Psi, const)
-    #   3) Add ybar to the fitted values because
+    #      xbar == colMeans(datX).
+    # Compute    const = ybar - xbar %*% Psi;
+    # because    yhat_t' = const' + x_t' %*% Psi
+    # and the 'ns'  equation    Y = X %*% Psi
+    # with Y=={yhat_t'-ybar'}, X=={x_t'-xbar'}.
+    # Add ybar to the fitted values because
     #           yhat_t' = const' + x_t' %*% Psi
     #                   = const' + X %*% Psi + xbar' %*% Psi
     #                   = ybar + X %*% Psi
     #-------------------------------------------------------
 
-    const = as.vector(ybar) - t(xbar) %*% myPsi
-    Psi = rbind(Psi, const) #2) Append the const vector to Psi
+    const = as.vector(ybar) - as.vector(t(xbar) %*% myPsi)
+    Psi = rbind(Psi, const = const) #1) Append the const vector to Psi
     dof_to_adjust = 1
 
-    myFitted = myFitted + rep(ybar, each = N) #1) Add ybar to the fitted values
+    myFitted = myFitted + rep(ybar, each = N) #2) Add ybar to the fitted values
   }
 
   #=========================================================================#
@@ -125,7 +127,8 @@ convPsi2varresult <- function(Psi, Y, X, lambda, scale_lambda = 1,
              fitted.values = myFitted[,1],
              rank = sum(abs(sing_val) > 1e-14),
              df.residual = max(1, N - mykapp),
-             call = callstr
+             call = callstr,
+             terms = terms(y ~ ., data = X)
   )
   class(obj) <- 'lm'
 
