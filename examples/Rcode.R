@@ -14,10 +14,10 @@
 #
 
 # # Source all files from directories
-# file.sources = list.files(c("../ShrinkageMethods", "../Functions"),
-#                           pattern="*.R$", full.names=TRUE,
-#                           ignore.case=TRUE)
-# sapply(file.sources,source,.GlobalEnv)
+file.sources = list.files(c("./R"),
+                          pattern="*.R$", full.names=TRUE,
+                          ignore.case=TRUE)
+sapply(file.sources,source,.GlobalEnv)
 
 # Random number generator
 set.seed(100)
@@ -31,46 +31,46 @@ Y = simVARmodel(numT = 100, model = myModel, burnin = 10)
 
 # Run shrinkage estimation methods
 # 1) Multivariate Ridge Regression
-EstimRidge = VARshrink(Y, p = 1, const = 'const', method = 'ridge',
+EstimRidge = VARshrink(Y, p = 1, type = 'const', method = 'ridge',
                        lambda = NULL)
 EstimRidge
 
 # 2) A Nonparametric Shrinkage Method by Opgen-Rein & Strimmer (2007)
-EstimNS = VARshrink(Y, p = 1, const = 'const', method = 'ns',
+EstimNS = VARshrink(Y, p = 1, type = 'const', method = 'ns',
                     lambda = NULL, lambda_var = NULL)
 EstimNS
 
 # 3-1) A Full Bayesian Method Using Gibbs MCMC (known fixed dof) by Ni & Sun (2005)
-EstimFB1 = VARshrink(Y, p = 1, const = 'const', method = 'fbayes', dof = 6,
+EstimFB1 = VARshrink(Y, p = 1, type = 'const', method = 'fbayes', dof = 6,
                      burnincycle = 1000, mcmccycle = 2000)
 EstimFB1
 
 # 3-2) (unknown dof)
-EstimFB2 = VARshrink(Y, p = 1, const = 'const', method = 'fbayes', dof = NULL,
+EstimFB2 = VARshrink(Y, p = 1, type = 'const', method = 'fbayes', dof = NULL,
                      burnincycle = 1000, mcmccycle = 2000)
 EstimFB2
 
 # 4-1) A semiparametric Shrinkage method using PCV (known fixed dof) by Lee, Choi & Kim (2016)
-EstimSB1 = VARshrink(Y, p = 1, const = 'const', method = 'sbayes', dof = 6,
+EstimSB1 = VARshrink(Y, p = 1, type = 'const', method = 'sbayes', dof = 6,
                      lambda = NULL, lambda_var = NULL, prior_type = 'NCJ',
                      num_folds = 5, m0 = ncol(Y))
 EstimSB1
 
 # 4-2) (unknown dof)
-EstimSB2 = VARshrink(Y, p = 1, const = 'const', method = 'sbayes', dof = NULL,
+EstimSB2 = VARshrink(Y, p = 1, type = 'const', method = 'sbayes', dof = NULL,
                     lambda = NULL, lambda_var = NULL, prior_type = 'NCJ',
                     num_folds = 5, m0 = ncol(Y))
 EstimSB2
 
 # 5) A semiparametric shrinkage method using K-fold Cross Validation
 # 5-1) (known fixed dof)
-EstimKCV1 = VARshrink(Y, p = 1, const = 'const', method = 'kcv', dof = 6,
+EstimKCV1 = VARshrink(Y, p = 1, type = 'const', method = 'kcv', dof = 6,
                       lambda = NULL, lambda_var = NULL, prior_type = 'NCJ',
                       num_folds = 5, m0 = ncol(Y))
 EstimKCV1
 
 # 5-2) (unknown dof)
-EstimKCV2 = VARshrink(Y, p = 1, const = 'const', method = 'kcv', dof = NULL,
+EstimKCV2 = VARshrink(Y, p = 1, type = 'const', method = 'kcv', dof = NULL,
                  lambda = NULL, lambda_var = NULL, prior_type = 'NCJ',
                  num_folds = 5, m0 = ncol(Y))
 EstimKCV2
@@ -97,34 +97,34 @@ Y = diff(Canada)
 plot(Y, cex.lab = 1.3)
 set.seed(100)
 
-#const = 'const', method = 'ridge'
-EstimRidge10 = VARshrink(Y, p = 1, const = 'const', method = 'ridge')
-EstimRidge20 = VARshrink(Y, p = 2, const = 'const', method = 'ridge')
-EstimRidge30 = VARshrink(Y, p = 3, const = 'const', method = 'ridge')
-#const = 'const', method = 'ns'
-EstimNS10 = VARshrink(Y, p = 1, const = 'const', method = 'ns')
-EstimNS20 = VARshrink(Y, p = 2, const = 'const', method = 'ns')
-EstimNS30 = VARshrink(Y, p = 3, const = 'const', method = 'ns')
-#const = 'const', method = 'fbayes', dof = NULL
-EstimFB10 = VARshrink(Y, p = 1, const = 'const', method = 'fbayes',
+#type = 'const', method = 'ridge'
+EstimRidge10 = VARshrink(Y, p = 1, type = 'const', method = 'ridge')
+EstimRidge20 = VARshrink(Y, p = 2, type = 'const', method = 'ridge')
+EstimRidge30 = VARshrink(Y, p = 3, type = 'const', method = 'ridge')
+#type = 'const', method = 'ns'
+EstimNS10 = VARshrink(Y, p = 1, type = 'const', method = 'ns')
+EstimNS20 = VARshrink(Y, p = 2, type = 'const', method = 'ns')
+EstimNS30 = VARshrink(Y, p = 3, type = 'const', method = 'ns')
+#type = 'const', method = 'fbayes', dof = NULL
+EstimFB10 = VARshrink(Y, p = 1, type = 'const', method = 'fbayes',
                       dof = NULL, burnincycle = 1000, mcmccycle = 2000)
-EstimFB20 = VARshrink(Y, p = 2, const = 'const', method = 'fbayes',
+EstimFB20 = VARshrink(Y, p = 2, type = 'const', method = 'fbayes',
                       dof = NULL, burnincycle = 1000, mcmccycle = 2000)
-EstimFB30 = VARshrink(Y, p = 3, const = 'const', method = 'fbayes',
+EstimFB30 = VARshrink(Y, p = 3, type = 'const', method = 'fbayes',
                       dof = NULL, burnincycle = 1000, mcmccycle = 2000)
-#const = 'const', method = 'sbayes', dof = c(2,5,Inf)
-EstimSB10 = VARshrink(Y, p = 1, const = 'const', method = 'sbayes',
+#type = 'const', method = 'sbayes', dof = c(2,5,Inf)
+EstimSB10 = VARshrink(Y, p = 1, type = 'const', method = 'sbayes',
                       dof = c(2,5,Inf), lambda = NULL, lambda_var = NULL,
                       prior_type = 'NCJ', num_folds = 5, m0 = ncol(Y))
-EstimSB20 = VARshrink(Y, p = 2, const = 'const', method = 'sbayes',
+EstimSB20 = VARshrink(Y, p = 2, type = 'const', method = 'sbayes',
                       dof = c(2,5,Inf), lambda = NULL, lambda_var = NULL,
                       prior_type = 'NCJ', num_folds = 5, m0 = ncol(Y))
-EstimSB30 = VARshrink(Y, p = 3, const = 'const', method = 'sbayes',
+EstimSB30 = VARshrink(Y, p = 3, type = 'const', method = 'sbayes',
                       dof = c(2,5,Inf), lambda = NULL, lambda_var = NULL,
                       prior_type = 'NCJ', num_folds = 5, m0 = ncol(Y))
 
 #Additionally, the semiparametric Bayes method using K-fold CV
-EstimKCV20 = VARshrink(Y, p = 2, const = 'const', method = 'kcv', dof = c(2,5,Inf),
+EstimKCV20 = VARshrink(Y, p = 2, type = 'const', method = 'kcv', dof = c(2,5,Inf),
                       lambda = NULL, lambda_var = NULL, prior_type = 'NCJ',
                       num_folds = 5, m0 = ncol(Y))
 

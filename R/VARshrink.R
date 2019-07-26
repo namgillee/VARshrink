@@ -48,25 +48,30 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
 
   ######## Build Data Matrices: datX, datY ########
 
+  #  i) ybar is computed when datY, datX are centered by colMeans(y)
+  # ii) dybar,dxbar are computed when datY, datX are centered by colMeans(datY), colMeans(datX)
   ybar = NULL
   dybar = dxbar = NULL
   if (identical(tolower(type), 'mean')) {
-    # Subtract the mean from y: use the sample mean vector of y
+    #********** Subtract the mean from y **********
     ybar = colMeans(y)
     y = y - rep(ybar, each = totobs)
   }
 
   datY = y[(p+1):totobs, ] #N-by-K
+  colnames(datY) <- tsnames
   datX = matrix(1, N, M) #N-by-M
   for (h in 1:p) {
     # Note that, if type=='const', then 1's are at the last column, since M>(K*p)
     datX[, (1+(h-1)*K):(h*K)] = y[(p+1-h):(totobs-h), ]
   }
-
-  colnames(datX) <- ifelse(identical(tolower(type), "const"),
-    c(paste(rep(tsnames, times = p) , ".l", rep(1:p, each = K), sep = ""), "const"),
-    paste(rep(tsnames, times = p) , ".l", rep(1:p, each = K), sep = "")
-  )
+  if(identical(tolower(type), "const")) {
+    #datX has M=K*p+1 columns
+    colnames(datX) <- c(paste(rep(tsnames, times = p) , ".l", rep(1:p, each = K), sep = ""), "const")
+  } else {
+    #datX has M=K*p columns
+    colnames(datX) <- paste(rep(tsnames, times = p) , ".l", rep(1:p, each = K), sep = "")
+  }
 
   #### Run a Shrinkage Estimation Method: estim ####
 
@@ -96,9 +101,9 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
   if (method == 'ns') {
 
     # In 'ns', datX and datY are centered separately, by dxbar and dybar.
-    # If 'const': Remove 1's from datX -->  estimate c later by c(dybar, dxbar)
-    # If 'mean': (no removal) --> estimate c later by ybar
-    # If 'none': (no removal) --> (no estimation of c)
+    # If type=='const', remove 1's from datX, and estimate Psi, and
+    #  estimate const later by const' = dybar' - dxbar' %*% Psi.
+    # If type=='mean' or 'none', no need to remove 1's from datX.
 
     if (identical(tolower(type), 'const')) {
       datX = datX[,-M]  # Remove 1's from datX
@@ -132,6 +137,7 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
     myPsi = eigSZ$vectors[,idr] %*%
             ( 1/eigSZ$values[idr] * t(eigSZ$vectors[,idr]) ) %*%
             SZ[1:(K*p), (K*p+1):(K*p+K)]
+    rownames(myPsi) <- colnames(datX); colnames(myPsi) <- colnames(datY)
 
     # Update the return value
     estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
@@ -161,9 +167,8 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
     estim$dof = resu_fbayes$dof
     estim$dof.estimated = resu_fbayes$dof.estimated
 
-
-
     myPsi = resu_fbayes$Psi
+    rownames(myPsi) <- colnames(datX); colnames(myPsi) <- colnames(datY)
     sigbar = ifelse(K>=2, mean(diag(resu_fbayes$Sigma), na.rm = TRUE), resu_fbayes$Sigma)
     estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
                                          lambda = resu_fbayes$lambda, scale_lambda = sigbar,
@@ -251,8 +256,9 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
     estim$dof = resu_sbayes$dof
     estim$dof.estimated = resu_sbayes$dof.estimated
 
-    sigbar = ifelse(K>=2, mean(diag(resu_sbayes$Sigma), na.rm = TRUE), resu_sbayes$Sigma)
     myPsi = resu_sbayes$Psi
+    rownames(myPsi) <- colnames(datX); colnames(myPsi) <- colnames(datY)
+    sigbar = ifelse(K>=2, mean(diag(resu_sbayes$Sigma), na.rm = TRUE), resu_sbayes$Sigma)
     estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
                                          lambda = resu_sbayes$lambda, scale_lambda = sigbar,
                                          type = type, ybar = ybar,
@@ -287,8 +293,9 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
     estim$dof = resu_kcv$dof
     estim$dof.estimated = resu_kcv$dof.estimated
 
-    sigbar = ifelse(K>=2, mean(diag(resu_kcv$Sigma), na.rm = TRUE), resu_kcv$Sigma)
     myPsi = resu_kcv$Psi
+    myPsi = resu_sbayes$Psi
+    sigbar = ifelse(K>=2, mean(diag(resu_kcv$Sigma), na.rm = TRUE), resu_kcv$Sigma)
     estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
                                          lambda = resu_kcv$lambda, scale_lambda = sigbar,
                                          type = type, ybar = ybar,
