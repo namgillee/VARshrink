@@ -57,5 +57,6 @@ simVARmodel <- function (numT, model, burnin=0)
 	    }
 	}
 
-	return( retTS[(p+burnin+1):(p+burnin+numT),] )
+  colnames(retTS) <- paste("y", 1:d, sep = "")
+	return( retTS[(p+burnin+1):(p+burnin+numT), , drop = FALSE] )
 }

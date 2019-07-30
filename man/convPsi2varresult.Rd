@@ -4,9 +4,8 @@
 \alias{convPsi2varresult}
 \title{Convert Psi to varresult}
 \usage{
-convPsi2varresult(Psi, Y, X, lambda, scale_lambda = 1,
-  type = c("const", "mean", "none"), ybar = NULL, xbar = NULL,
-  Q_values = NULL, callstr = "")
+convPsi2varresult(Psi, Y, X, lambda0, type = c("const", "none"),
+  ybar = NULL, xbar = NULL, Q_values = NULL, callstr = "")
 }
 \arguments{
 \item{Psi}{M-by-K matrix Psi}
@@ -15,27 +14,32 @@ convPsi2varresult(Psi, Y, X, lambda, scale_lambda = 1,
 
 \item{X}{N-by-M matrix}
 
-\item{lambda}{a shrinkage intensity parameter, which will be used
-for computing the effective number of parameters}
+\item{lambda0}{a rescaled shrinkage intensity parameter
+to be used for computing the effective number of parameters}
 
-\item{scale_lambda}{a factor to be multiplied to lambda}
+\item{type}{the type of the constant vector in the VAR shrinkage problem,
+which is either 'const', or 'none'.}
 
-\item{type}{Either 'const', 'mean', or 'none', indicating the
-constant type in the VAR shrinkage problem.}
-
-\item{ybar}{global mean vector if type=='mean'; local mean if type=='const'}
-
-\item{xbar}{local mean vector for datX if type=='const'}
+\item{ybar, xbar}{mean vectors of Y and X which had been subtracted.}
 
 \item{callstr}{The call to VARshrink()}
+
+\item{Q-values}{either NULL or a nonnegative weights of length N,
+used for X'QX and X'QY in the hat matrix}
 }
 \value{
-a list of 'lm' objects with components: coefficients,
-residuals, fitted.values, rank, df.residual, call
+a list of c('shrinklm', 'lm') objects with components:
+coefficients, residuals, fitted.values, rank, df.residual, lambda0,
+call, terms, svd
 }
 \description{
 Consider the VAR process, Y = X %*% Psi + E, in the matrix form.
-This function returns a list of lm objects for the multiple
+This function returns a list of 'shrinklm' objects, which is
+a slight modification to the 'lm', for the multiple
 regression problems corresponding to each column of Y:
 y_j = X %*% psi_j + e_j.
+}
+\details{
+Depending on the 'type', the fitted values (y_j) and the estimated
+coefficients (psi_j) are adjusted automatically.
 }

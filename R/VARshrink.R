@@ -2,37 +2,33 @@
 #'
 #' @param y T-by-K time series data
 #' @param p lag order
-#' @param type   1) const - Estimate the const.
-#                2) mean  - Use the sample mean, bar{y}, to center
-#                     the time series data, and estimate the const.
-#                3) none  - Estimate without the const., i.e., c=0.
-#
+#' @param type   1) const - estimate the constant vector, c.
+#'               2) none  - estimate without the constant vector, i.e., c=0.
 #' @param method 1) ridge - multivariate ridge regression
-#'                2) ns    - nonparametric shrinkage
-#'                3) fbayes- full Bayes MCMC shrinkage
-#'                4) sbayes- semi-parametric Bayes shrinkage
-#'                5) kcv   - k-fold cross validation
-#'
+#'               2) ns    - nonparametric shrinkage
+#'               3) fbayes- full Bayes MCMC shrinkage
+#'               4) sbayes- semi-parametric Bayes shrinkage
+#'               5) kcv   - k-fold cross validation
 #' @param lambda,lambda_var  shrinkage parameter value(s).
 #'                Use of this parameter is slightly different
 #'                for each method, that is, the same value does not
 #'                imply the same estimates.
-#'
 #' @param dof  degree of freedom of multivariate t distribution for noise.
 #'              Valid only for fbayes and sbayes.
 #'             If dof=Inf, it means multivariate normal distribution.
-#' @return an object of class c('varshrinkest','varest') including the following fields:
-#' varresult, datamat, y, type, p, K, obs, totobs, restrictions, method,
-#' lambda, lambda_var, call
+#' @return an object of class c('varshrinkest','varest') including the
+#' components: varresult, datamat, y, type, p, K, obs, totobs, restrictions,
+#' method, lambda, lambda_var, call
 #'
 #' @importFrom corpcor cov.shrink
 #' @import vars
 #' @export
-VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
+VARshrink  <- function(y, p = 1, type = c('const', 'none'),
                    method = c('ridge', 'ns', 'fbayes', 'sbayes','kcv'),
                    lambda = NULL, lambda_var = NULL, dof = Inf, ...)
 
 {
+  cl <- match.call()
   y <- as.matrix(y)
   totobs = nrow(y)   #total number of observations
   K = ncol(y)        #dimension of output response
@@ -43,36 +39,38 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
     stop("\nNAs in y.\n")
   if (K < 2)
     stop("The matrix 'y' should contain at least two variables.\n")
-  if (is.null(tsnames <- colnames(y)))
+  if (is.null(tsnames <- colnames(y))) {
     tsnames <- paste("y", 1:K, sep = "")
-
-  if (totobs <= (p+1) )
+    colnames(y) <- tsnames
+    warning(paste("No column names supplied in y, using:",
+                  paste(tsnames, collapse = ", "), ", instead.\n"))
+  }
+  if (totobs <= (p+1))
     stop("Number of total observations must be > p+1\n")
 
   ######## Build Data Matrices: datX, datY ########
 
-  #  i) ybar is computed when datY, datX are centered by colMeans(y)
-  # ii) dybar,dxbar are computed when datY, datX are centered by colMeans(datY), colMeans(datX)
-  ybar = NULL
-  dybar = dxbar = NULL
-  if (identical(tolower(type), 'mean')) {
-    #********** Subtract the mean from y **********
-    ybar = colMeans(y)
-    y = y - rep(ybar, each = totobs)
-  }
+  ybar = NULL           #ybar=colMeans(y); used for type=='mean' (unused)
+  dybar = dxbar = NULL  #dybar=colMeans(datY); dxbar=colMeans(datX); used for method=='ns'
+  ##-------- REMOVE THE OPTION type=='mean' --------##
+  # if (identical(tolower(type), 'mean')) {
+  #   #********** Subtract the mean from y **********
+  #   ybar = colMeans(y)
+  #   y = y - rep(ybar, each = totobs)
+  # }
+  ##------------------------------------------------##
 
   datY = y[(p+1):totobs, ] #N-by-K
   colnames(datY) <- tsnames
+
   datX = matrix(1, N, M) #N-by-M
   for (h in 1:p) {
-    # Note that, if type=='const', then 1's are at the last column, since M>(K*p)
     datX[, (1+(h-1)*K):(h*K)] = y[(p+1-h):(totobs-h), ]
+    #if type=='const', datX has M=K*p+1 columns, and 1's are at the last column
   }
   if(identical(tolower(type), "const")) {
-    #datX has M=K*p+1 columns
     colnames(datX) <- c(paste(rep(tsnames, times = p) , ".l", rep(1:p, each = K), sep = ""), "const")
   } else {
-    #datX has M=K*p columns
     colnames(datX) <- paste(rep(tsnames, times = p) , ".l", rep(1:p, each = K), sep = "")
   }
 
@@ -91,7 +89,7 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
 
     # Update the return value
     estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                                         lambda = lambda[id_min_gcv], scale_lambda = 1,
+                                         lambda0 = resu_ridge$lambda[id_min_gcv],
                                          type = type, ybar = ybar,
                                          callstr = cl
     )
@@ -144,7 +142,7 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
 
     # Update the return value
     estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                                         lambda = attr(SZ,"lambda"), scale_lambda = (N-1)/N,
+                                         lambda0 = attr(SZ,"lambda") * (N-1)/N,
                                          type = type, ybar = dybar, xbar = dxbar,
                                          callstr = cl
     )
@@ -174,21 +172,11 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
     rownames(myPsi) <- colnames(datX); colnames(myPsi) <- colnames(datY)
     sigbar = ifelse(K>=2, mean(diag(resu_fbayes$Sigma), na.rm = TRUE), resu_fbayes$Sigma)
     estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                                         lambda = resu_fbayes$lambda, scale_lambda = sigbar,
+                                         lambda0 = resu_fbayes$lambda * sigbar,
                                          type = type, ybar = ybar,
                                          Q_values = resu_fbayes$q,
                                          callstr = cl
     )
-
-    # ## overwrite df.residual ##
-    # Q_values = resu_fbayes$q
-    # sing_val = svd(sqrt(Q_values)*datX)$d #singular values
-    # sigbar = ifelse(K>=2, mean(diag(resu_fbayes$Sigma), na.rm = TRUE), resu_fbayes$Sigma)
-    # mykapp = sum((sing_val^2)/(sing_val^2 + resu_fbayes$lambda*sigbar),
-    #              na.rm = TRUE) + as.vector(identical(type,'mean'))
-    # for (i in 1:K) {
-    #   estim$varresult[[i]]$df.residual = max(1, N - mykapp)
-    # }
 
     # # Convert SE.Psi matrix into a list of $A and $c
     # mySE.Psi = resu_fbayes$se.param$Psi
@@ -263,21 +251,11 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
     rownames(myPsi) <- colnames(datX); colnames(myPsi) <- colnames(datY)
     sigbar = ifelse(K>=2, mean(diag(resu_sbayes$Sigma), na.rm = TRUE), resu_sbayes$Sigma)
     estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                                         lambda = resu_sbayes$lambda, scale_lambda = sigbar,
+                                         lambda0 = resu_sbayes$lambda * sigbar,
                                          type = type, ybar = ybar,
                                          Q_values = resu_sbayes$q,
                                          callstr = cl
     )
-
-    ## overwrite df.residual ##
-    # Q_values = resu_sbayes$q
-    # sing_val = svd(sqrt(Q_values)*datX)$d #singular values
-    # sigbar = ifelse(K>=2, mean(diag(resu_sbayes$Sigma), na.rm = TRUE), resu_sbayes$Sigma)
-    # mykapp = sum((sing_val^2)/(sing_val^2 + resu_sbayes$lambda/(1-resu_sbayes$lambda)*sigbar*(N-1)/N),
-    #              na.rm = TRUE) + as.vector(identical(type,'mean'))
-    # for (i in 1:K) {
-    #   estim$varresult[[i]]$df.residual = max(1, N - mykapp)
-    # }
 
   }
   ##--------- (5) Semi-parametric Bayesian with lambda by K-CV ----------
@@ -300,21 +278,11 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
     myPsi = resu_sbayes$Psi
     sigbar = ifelse(K>=2, mean(diag(resu_kcv$Sigma), na.rm = TRUE), resu_kcv$Sigma)
     estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                                         lambda = resu_kcv$lambda, scale_lambda = sigbar,
+                                         lambda0 = resu_kcv$lambda * sigbar,
                                          type = type, ybar = ybar,
                                          Q_values = resu_kcv$q,
                                          callstr = cl
     )
-
-    ## overwrite df.residual ##
-    # Q_values = resu_kcv$q
-    # sing_val = svd(sqrt(Q_values)*datX)$d #singular values
-    # sigbar = ifelse(K>=2, mean(diag(resu_kcv$Sigma), na.rm = TRUE), resu_kcv$Sigma)
-    # mykapp = sum((sing_val^2)/(sing_val^2 + resu_kcv$lambda/(1-resu_kcv$lambda)*sigbar*(N-1)/N),
-    #              na.rm = TRUE) + as.vector(identical(type,'mean'))
-    # for (i in 1:K) {
-    #   estim$varresult[[i]]$df.residual = max(1, N - mykapp)
-    # }
 
   }
   ##---------------------------------------------------
@@ -324,8 +292,8 @@ VARshrink  <- function(y, p = 1, type = c('const', 'mean', 'none'),
   if (!with(estim, exists('varresult'))) {
     warning('VAR parameters were not estimated. Check the method.')
   }
-  estim$datamat  = cbind(datY, datX)
-  estim$y        = y
+  #estim$datamat  = cbind(datY, datX)  ###POSSIBLE INEFFICIENCY###
+  #estim$y        = y  ###POSSIBLE INEFFICIENCY###
   estim$type     = type
   estim$p        = p
   estim$K        = K

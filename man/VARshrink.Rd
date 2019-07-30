@@ -4,16 +4,17 @@
 \alias{VARshrink}
 \title{Shrinkage estimation of VAR parameters}
 \usage{
-VARshrink(y, p = 1, type = c("const", "mean", "none"),
-  method = c("ridge", "ns", "fbayes", "sbayes", "kcv"), lambda = NULL,
-  lambda_var = NULL, dof = Inf, ...)
+VARshrink(y, p = 1, type = c("const", "none"), method = c("ridge",
+  "ns", "fbayes", "sbayes", "kcv"), lambda = NULL, lambda_var = NULL,
+  dof = Inf, ...)
 }
 \arguments{
 \item{y}{T-by-K time series data}
 
 \item{p}{lag order}
 
-\item{type}{1) const - Estimate the const.}
+\item{type}{1) const - estimate the constant vector, c.
+2) none  - estimate without the constant vector, i.e., c=0.}
 
 \item{method}{1) ridge - multivariate ridge regression
 2) ns    - nonparametric shrinkage
@@ -31,9 +32,9 @@ imply the same estimates.}
 If dof=Inf, it means multivariate normal distribution.}
 }
 \value{
-an object of class c('varshrinkest','varest') including the following fields:
-varresult, datamat, y, type, p, K, obs, totobs, restrictions, method,
-lambda, lambda_var, call
+an object of class c('varshrinkest','varest') including the
+components: varresult, datamat, y, type, p, K, obs, totobs, restrictions,
+method, lambda, lambda_var, call
 }
 \description{
 Shrinkage estimation of VAR parameters
