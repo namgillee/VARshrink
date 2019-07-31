@@ -10,9 +10,11 @@
 #                           ignore.case=TRUE)
 # sapply(file.sources,source,.GlobalEnv)
 
-#library(devtools)
+
 #install("../VARshrink")
-library(VARshrink)
+#library(VARshrink)
+library(devtools)
+devtools::load_all(".") #Ctrl + Shift + L
 
 # Random number generator
 set.seed(100)

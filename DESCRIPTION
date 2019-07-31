@@ -19,6 +19,7 @@ Imports:
     corpcor (>= 1.6.9),
     stats
 Suggests:
+    devtools,
     MASS
 BugReports: https://github.com/namgillee/VARshrink/issues
 Encoding: UTF-8
