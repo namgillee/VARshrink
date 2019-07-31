@@ -1,5 +1,5 @@
-print.varshrinkest <- function(x, digits = max(3, getOption("digits") - 3), ...)
-{
+print.varshrinkest <- function(x, digits = max(3, getOption("digits") - 3),
+                               ...) {
   K <- length(x$varresult)
   tsnames <- names(x$varresult)
   text1 <- "VAR Shrinkage Estimation Results:"

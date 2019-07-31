@@ -25,25 +25,21 @@
 #' call, terms, svd
 
 convPsi2varresult <- function(Psi, Y, X, lambda0,
-                              type = c('const', 'none'),
+                              type = c("const", "none"),
                               ybar = NULL, xbar = NULL,
                               Q_values = NULL,
-                              callstr = "")
-{
-  N = nrow(Y)
-  K = ncol(Y)
-  p = nrow(Psi) %/% K
+                              callstr = "") {
+
+  N <- nrow(Y)
+  K <- ncol(Y)
 
   #=========================================================================#
-  # Compute the fitted values and the residuals: myFitted, myResid (N-by-K)
-  #
-  # myFitted = X %*% Psi
-  # myResid = Y - myFitted
+  # Compute the fitted values and the residuals: my_fitted, my_resid (N-by-K)
   #=========================================================================#
-  myFitted = X %*% Psi
-  myResid = Y - myFitted
+  my_fitted <- X %*% Psi
+  my_resid <- Y - my_fitted
 
-  dof_to_adjust = 0 #number of parameters to adjust
+  dof_to_adjust <- 0 #number of parameters to adjust
   ##-------- REMOVE THE OPTION type=='mean' --------##
   # if (identical(tolower(type), 'mean')) {
   #   #----------------------------------------------
@@ -56,22 +52,23 @@ convPsi2varresult <- function(Psi, Y, X, lambda0,
   #   #     Y == {y_t' - ybar'}.
   #   # Compute:
   #   #   const' = ybar' - ybar' %*% Psi
-  #   # MODIFY myFitted:
+  #   # MODIFY my_fitted:
   #   #   yhat_t' = const' + x_t' %*% Psi
   #   #           = ybar' + (x_t' - ybar') %*% Psi
   #   #           = ybar' + X %*% Psi .
-  #   # DO NOT NEED TO MODIFY myResid:
+  #   # DO NOT NEED TO MODIFY my_resid:
   #   #  r_t' = y_t' - yhat_t'
   #   #       = y_t' - ybar' - X %*% Psi
   #   #       = Y - X %*% Psi
   #   #-------------------------------------------
+  #   p <- nrow(Psi) %/% K
   #   if (!is.null(ybar)) {
   #     if (length(ybar) == K) {
   #       const = as.vector(ybar) - as.vector(t(rep(ybar, p)) %*% Psi)
   #       Psi = rbind(Psi, const = const) #1) Append the const vector to Psi
   #       dof_to_adjust = 1
   #
-  #       myFitted = myFitted + rep(ybar, each = N)  #2) Add ybar to the fitted values
+  #       my_fitted = my_fitted + rep(ybar, each = N)  #2) Add ybar to the ...
   #
   #     } else {
   #       warning("Length of ybar is incorrect")
@@ -86,7 +83,7 @@ convPsi2varresult <- function(Psi, Y, X, lambda0,
   #   }
   # }
   ##------------------------------------------------##
-  if (identical(tolower(type), 'const') &&
+  if (identical(tolower(type), "const") &&
       (nrow(Psi) %% K == 0) &&
       !is.null(ybar) && !is.null(xbar)) {
     #---------------------------------------------
@@ -108,11 +105,11 @@ convPsi2varresult <- function(Psi, Y, X, lambda0,
     #                   = ybar + X %*% Psi
     #---------------------------------------------
 
-    const = as.vector(ybar) - as.vector(t(xbar) %*% myPsi)
-    Psi = rbind(Psi, const = const) #1) Append the const vector to Psi
-    dof_to_adjust = 1
+    const <- as.vector(ybar) - as.vector(t(xbar) %*% Psi)
+    Psi <- rbind(Psi, const = const) #1) Append the const vector to Psi
+    dof_to_adjust <- 1
 
-    myFitted = myFitted + rep(ybar, each = N) #2) Add ybar to the fitted values
+    my_fitted <- my_fitted + rep(ybar, each = N) #2) Add ybar to the ...
   }
 
   #=========================================================================#
@@ -120,36 +117,37 @@ convPsi2varresult <- function(Psi, Y, X, lambda0,
   #   based on Trace(X(X'X+lambda0*I)^{-1}X')
   #=========================================================================#
   if (is.null(Q_values)) {
-    s = svd(X)
-    sing_val = s$d
+    s <- svd(X)
+    sing_val <- s$d
   } else {
-    s = svd(sqrt(Q_values)*X)
-    sing_val = s$d
+    s <- svd(sqrt(Q_values) * X)
+    sing_val <- s$d
   }
   idnonzero <- (abs(sing_val) >= 1e-14)
-  mykapp = sum((sing_val[idnonzero]^2)/(sing_val[idnonzero]^2 + lambda0), na.rm = TRUE) +
-    dof_to_adjust
+  mykapp <- sum( (sing_val[idnonzero] ^ 2) /
+                   (sing_val[idnonzero] ^ 2 + lambda0),
+                 na.rm = TRUE) + dof_to_adjust
   #=========================================================================#
   # Return value
   #=========================================================================#
-  varresult = vector('list', K)
-  names(varresult) = colnames(Y)
-  obj = list(coefficients = Psi[,1],
-             residuals = myResid[,1],
-             fitted.values = myFitted[,1],
-             rank = sum(idnonzero) + dof_to_adjust,
-             df.residual = max(1, N - mykapp),
-             lambda0 = lambda0,
-             call = callstr,
-             terms = terms(y ~ ., data = X),
-             svd = s # for class 'shrinklm', we replace qr=qr(X) with svd=svd(X)
+  varresult <- vector("list", K)
+  names(varresult) <- colnames(Y)
+  obj <- list(coefficients = Psi[, 1],
+              residuals = my_resid[, 1],
+              fitted.values = my_fitted[, 1],
+              rank = sum(idnonzero) + dof_to_adjust,
+              df.residual = max(1, N - mykapp),
+              lambda0 = lambda0,
+              call = callstr,
+              terms = terms(y ~ ., data = X),
+              svd = s # for class 'shrinklm', replace qr=qr(X) with svd=svd(X)
   )
-  class(obj) <- c('shrinklm', 'lm')
+  class(obj) <- c("shrinklm", "lm")
 
-  for(i in 1:K){
-    obj$coefficients = Psi[,i]
-    obj$residuals = myResid[,i]
-    obj$fitted.values = myFitted[,i]
+  for (i in 1:K){
+    obj$coefficients <- Psi[, i]
+    obj$residuals <- my_resid[, i]
+    obj$fitted.values <- my_fitted[, i]
     varresult[[i]] <- obj
   }
 

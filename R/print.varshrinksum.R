@@ -8,15 +8,15 @@
 
 print.varshrinksum <- function (x, digits = max(3, getOption("digits") - 3),
                                 signif.stars = getOption("show.signif.stars"),
-                                ...)
-{
+                                ...) {
   dim <- length(x$names)
   text1 <- "\nVAR Shrinkage Estimation Results:\n"
   cat(text1)
   row <- paste(rep("=", nchar(text1)), collapse = "")
   cat(row, "\n")
-  cat(paste("Endogenous variables:", paste(colnames(x$covres),
-                                           collapse = ", "), "\n", collapse = " "))
+  cat(paste("Endogenous variables:",
+            paste(colnames(x$covres),
+                  collapse = ", "), "\n", collapse = " "))
   cat(paste("Deterministic variables:", paste(x$type, collapse = ", "),
             "\n", collapse = " "))
   cat(paste("Sample size:", x$obs, "\n"))
@@ -39,14 +39,16 @@ print.varshrinksum <- function (x, digits = max(3, getOption("digits") - 3),
     printCoefmat(result$coef, digits = digits, signif.stars = signif.stars,
                  na.print = "NA", ...)
     cat("\n")
-    cat("\nResidual standard error:", format(signif(result$sigma,
-                                                    digits)), "on", result$df[2L], "degrees of freedom\n")
+    cat("\nResidual standard error:",
+        format(signif(result$sigma, digits)), "on", result$df[2L],
+        "degrees of freedom\n")
     if (!is.null(result$fstatistic)) {
       cat("Multiple R-Squared:", formatC(result$r.squared,
                                          digits = digits))
       cat(",\tAdjusted R-squared:", formatC(result$adj.r.squared,
-                                            digits = digits), "\nF-statistic:", formatC(result$fstatistic[1],
-                                                                                        digits = digits), "on", result$fstatistic[2],
+                                            digits = digits),
+          "\nF-statistic:", formatC(result$fstatistic[1], digits = digits),
+          "on", result$fstatistic[2],
           "and", result$fstatistic[3], "DF,  p-value:",
           format.pval(pf(result$fstatistic[1L], result$fstatistic[2L],
                          result$fstatistic[3L], lower.tail = FALSE),
@@ -58,12 +60,8 @@ print.varshrinksum <- function (x, digits = max(3, getOption("digits") - 3),
   print(x$Sigma, digits = digits, ...)
   cat("\nDegrees of freedom of multivariate t distribution for residuals:\n")
   print(x$dof, digits = digits, ...)
-  #cat("\nCovariance matrix of residuals:\n")
-  #print(x$covres, digits = digits, ...)
   cat("\nCorrelation matrix of Sigma:\n")
   print(cov2cor(x$Sigma), digits = digits, ...)
-  #cat("\nCorrelation matrix of residuals:\n")
-  #print(x$corres, digits = digits, ...)
   cat("\n\n")
   invisible(x)
 }

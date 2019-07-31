@@ -6,7 +6,7 @@ VARparam      <- function(Coef, Sigma = NULL, dof = Inf) {
   # with e having a multivarate t distribution with
   # the covariance matrix 'Sigma' and degree-of-freedom 'dof'
 
-  resu = list(Coef = Coef, Sigma = Sigma, dof = dof)
-  attr(resu, 'class') <- 'VARparam'
+  resu <- list(Coef = Coef, Sigma = Sigma, dof = dof)
+  attr(resu, "class") <- "VARparam"
   resu
 }

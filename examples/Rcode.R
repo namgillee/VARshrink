@@ -1,23 +1,18 @@
 #### R code for whole examples in the paper ####
 
-# install.packages('corpcor') #for method 'ns'
-# install.packages('ars') #for method 'fbayes'
-# install.packages('vars')  #for Canada data
-# library('corpcor')
-# library('ars')
-
-#--- Section 3. Shrinkage Estimation Methods (Example_01.R) ---#
+#--- Section 3. Shrinkage Estimation Methods ---#
 # Simulate VAR processes with multivariate normal distribution,
 # and run Shrinkage Estimation methods.
 #
-# Required packages: MASS, corpcor, ars
-#
-
 # # Source all files from directories
 # file.sources = list.files(c("./R"),
 #                           pattern="*.R$", full.names=TRUE,
 #                           ignore.case=TRUE)
 # sapply(file.sources,source,.GlobalEnv)
+
+#library(devtools)
+#install("../VARshrink")
+library(VARshrink)
 
 # Random number generator
 set.seed(100)

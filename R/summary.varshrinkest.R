@@ -13,12 +13,9 @@
 #'
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
 
-summary.varshrinkest <- function (object, equations = NULL, ...)
-{
+summary.varshrinkest <- function (object, equations = NULL, ...) {
   ynames <- names(object$varresult)
-  #ynames <- colnames(object$y)
   obs <- object$obs
-  #obs <- nrow(object$datamat)
   if (is.null(equations)) {
     ysubnames <- ynames
   }
@@ -31,19 +28,16 @@ summary.varshrinkest <- function (object, equations = NULL, ...)
   }
   eqest <- lapply(object$varresult[ysubnames], summary)
   resids <- resid(object)
-  Sigma <- if(is.null(object$Sigma)) {
-    crossprod(resids)/obs
+  Sigma <- if (is.null(object$Sigma)) {
+    crossprod(resids) / obs
   } else {
     object$Sigma
   }
   dof <- ifelse(is.null(object$dof), Inf, object$dof)
-  covres <- cov(resids) * (obs - 1)/ min(sapply(object$varresult, df.residual))
-  # covres <- cov(resids) * (obs - 1)/(obs - (ncol(object$datamat) -
-  #                                             object$K))
+  covres <- cov(resids) * (obs - 1) / min(sapply(object$varresult, df.residual))
   corres <- cor(resids)
   logLik <- as.numeric(logLik(object))
   roots <- roots.varshrinkest(object)
-  # roots <- roots(object)
   result <- list(names = ysubnames, varresult = eqest, covres = covres,
                  corres = corres, logLik = logLik, obs = obs, roots = roots,
                  type = object$type, call = object$call,

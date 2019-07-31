@@ -15,11 +15,10 @@ logLik.varshrinkest <- function(object, ...) {
 
   obs <- object$obs
   df <- sum( obs - unlist(lapply(object$varresult, df.residual )) )
-  #df <- min(unlist(lapply(object$varresult, function(x) summary(x)$df[2])))
   K <- object$K
   resids <- resid(object) #
-  Sigma <- if(is.null(object$Sigma)) {
-    crossprod(resids)/obs
+  Sigma <- if (is.null(object$Sigma)) {
+    crossprod(resids) / obs
   } else {
     object$Sigma
   }
@@ -30,12 +29,11 @@ logLik.varshrinkest <- function(object, ...) {
   } else {
     obs * lgamma((dof + K)/2) - obs * lgamma(dof / 2) -
       (obs * K/2) * log(dof * pi) - (obs/2) * log(det(Sigma)) -
-      (dof + K)/2 * sum( log(1 + diag(resids %*% solve(Sigma, t(resids))) / dof) )
+      (dof + K)/2 * sum(log(1 +
+                              diag(resids %*% solve(Sigma, t(resids))) / dof))
   }
   class(r) <- "logLik"
-  #params <- sum(unlist(lapply(object$varresult, function(x) length(coef(x)))))
   attr(r, "df") <- df
-  # attr(r, "df") <- params
   attr(r, "nobs") <- object$obs
   return(r)
 }
