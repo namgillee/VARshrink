@@ -10,7 +10,7 @@
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
 # Acknowledgement: this code was contributed by Sung-Hoon Han & Dong-Han Lee
 # @ Kangwon National University (2018.11.29.)
-
+#' @export
 logLik.varshrinkest <- function(object, ...) {
 
   obs <- object$obs

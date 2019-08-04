@@ -5,7 +5,7 @@
 #' for multivariate t-distribution for residuals.
 #'
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
-
+#' @export
 print.varshrinksum <- function (x, digits = max(3, getOption("digits") - 3),
                                 signif.stars = getOption("show.signif.stars"),
                                 ...) {

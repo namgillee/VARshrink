@@ -1,7 +1,8 @@
-#' A variant of vars::Bcoef() for an object of class 'varshrinkest'
+#' Coefficient matrices (B coefficient) for an object of class 'varshrinkest'
 #'
-#' Code is modified to avoid call to data matrices ($y, $datamat)
-#' and to use effective numbers of parameters of shrinkage estimates.
+#' A variant of vars::Bcoef(). Code is modified to avoid call to data matrices
+#' ($y, $datamat) and to use effective numbers of parameters of shrinkage
+#' estimates.
 
 Bcoef.varshrinkest <- function (x) {
 

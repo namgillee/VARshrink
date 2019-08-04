@@ -4,37 +4,39 @@
 \alias{VARshrink}
 \title{Shrinkage estimation of VAR parameters}
 \usage{
-VARshrink(y, p = 1, type = c("const", "none"), method = c("ridge",
-  "ns", "fbayes", "sbayes", "kcv"), lambda = NULL, lambda_var = NULL,
-  dof = Inf, ...)
+VARshrink(y, p = 1, type = c("const", "trend", "both", "none"),
+  method = c("ridge", "ns", "fbayes", "sbayes", "kcv"), lambda = NULL,
+  lambda_var = NULL, dof = Inf, ...)
 }
 \arguments{
 \item{y}{T-by-K time series data}
 
 \item{p}{lag order}
 
-\item{type}{1) const - estimate the constant vector, c.
-2) none  - estimate without the constant vector, i.e., c=0.}
+\item{type}{Type of deterministic regressors to include.
+1) "const" - the constant vector. 2) "trend" - the trend.
+3) "both" - both the constant and the trend.
+4) "none"  - no deterministic regressors.}
 
-\item{method}{1) ridge - multivariate ridge regression
-2) ns    - nonparametric shrinkage
-3) fbayes- full Bayes MCMC shrinkage
-4) sbayes- semi-parametric Bayes shrinkage
-5) kcv   - k-fold cross validation}
+\item{method}{1) "ridge" - multivariate ridge regression
+2) "ns"    - nonparametric shrinkage
+3) "fbayes" - full Bayes MCMC shrinkage
+4) "sbayes" - semi-parametric Bayes shrinkage
+5) "kcv"   - k-fold cross validation}
 
-\item{lambda, lambda_var}{shrinkage parameter value(s).
+\item{lambda, lambda_var}{Shrinkage parameter value(s).
 Use of this parameter is slightly different
 for each method, that is, the same value does not
-imply the same estimates.}
+imply the same shrinkage estimates.}
 
-\item{dof}{degree of freedom of multivariate t distribution for noise.
- Valid only for fbayes and sbayes.
-If dof=Inf, it means multivariate normal distribution.}
+\item{dof}{Degree of freedom of multivariate t distribution for noise.
+Valid only for fbayes and sbayes.
+dof=Inf means multivariate normal distribution.}
 }
 \value{
-an object of class c('varshrinkest','varest') including the
+An object of class c('varshrinkest','varest') including the
 components: varresult, datamat, y, type, p, K, obs, totobs, restrictions,
-method, lambda, lambda_var, call
+method, lambda, call
 }
 \description{
 Shrinkage estimation of VAR parameters

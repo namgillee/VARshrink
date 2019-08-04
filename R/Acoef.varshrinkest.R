@@ -1,8 +1,9 @@
-#' A variant of vars::Acoef() for an object of class 'varshrinkest'
+#' Coefficient matrices (A coefficients) for an object of class 'varshrinkest'
 #'
-#' Code is modified to avoid call to data matrices ($y, $datamat)
-#' and to use effective numbers of parameters of shrinkage estimates.
-
+#' A variant of vars::Acoef(). Code is modified to avoid call to data matrices
+#' ($y, $datamat) and to use effective numbers of parameters of shrinkage
+#' estimates.
+#' @export
 Acoef.varshrinkest <- function (x) {
 
   if (!inherits(x, "varest")) {

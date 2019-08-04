@@ -1,3 +1,4 @@
+#' @export
 print.varshrinkest <- function(x, digits = max(3, getOption("digits") - 3),
                                ...) {
   K <- length(x$varresult)

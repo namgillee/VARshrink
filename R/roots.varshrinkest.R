@@ -11,7 +11,7 @@
 #' and to use effective numbers of parameters of shrinkage estimates.
 #'
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
-
+#' @export
 roots.varshrinkest <- function(x, modulus = TRUE) {
   if (!inherits(x, "varest")) {
     stop("\nPlease provide an object inheriting class 'varest'.\n")

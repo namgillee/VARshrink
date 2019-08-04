@@ -4,8 +4,8 @@
 \alias{convPsi2varresult}
 \title{Convert Psi to varresult}
 \usage{
-convPsi2varresult(Psi, Y, X, lambda0, type = c("const", "none"),
-  ybar = NULL, xbar = NULL, Q_values = NULL, callstr = "")
+convPsi2varresult(Psi, Y, X, lambda0, type = c("const", "trend", "both",
+  "none"), ybar = NULL, xbar = NULL, Q_values = NULL, callstr = "")
 }
 \arguments{
 \item{Psi}{M-by-K matrix Psi}
@@ -18,7 +18,7 @@ convPsi2varresult(Psi, Y, X, lambda0, type = c("const", "none"),
 to be used for computing the effective number of parameters}
 
 \item{type}{the type of the constant vector in the VAR shrinkage problem,
-which is either 'const', or 'none'.}
+which is one of "const", "trend", "both", or "none".}
 
 \item{ybar, xbar}{mean vectors of Y and X which had been subtracted.}
 

@@ -1,4 +1,3 @@
-#' @importFrom ars ars
 lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000) {
   #lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000)
   # Gibbs MCMC algorithm for sampling and estimating VAR parameters from
@@ -70,7 +69,6 @@ lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000) {
   estimate_dof <- FALSE
   if (is.null(dof)) {
     estimate_dof <- TRUE
-    require(ars)
     w <- Inf
   } else if (dof <= 0) {
     estimate_dof <- TRUE
@@ -212,10 +210,10 @@ lm_full_Bayes_SR <- function(Y, X, dof=Inf, burnincycle=1000, mcmccycle=2000) {
         #(N*x + N + log(prod(Q)) - N*digamma(exp(x)) - (1+sum(Q))) * exp(x) + 1
       }
       tmp <- capture.output( {
-        w <- ars(n = 1, f = f_log, fprima = f_dif, x = 10, m = 1,
+        w <- ars::ars(n = 1, f = f_log, fprima = f_dif, x = 10, m = 1,
                 lb = TRUE, xlb = 1e-15, N = N, Q = Q)
       })
-      #w = ars(n=1, f=f_log, fprima=f_dif, x=2, m=1, N=N, Q=Q)
+      #w = ars::ars(n=1, f=f_log, fprima=f_dif, x=2, m=1, N=N, Q=Q)
       #w = exp(w)
       #ub=TRUE, xub=1e15
     }

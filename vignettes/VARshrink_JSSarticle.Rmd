@@ -1,0 +1,366 @@
+---
+documentclass: jss
+author:
+  - name: Namgil Lee
+    affiliation: Kangwon National University
+    address: >
+      Department of Information Statistics, 
+      Kangwon National University, 
+      Chuncheon, Gangwon 24341, South Korea
+    email: \email{namgil.lee@kangwon.ac.kr}
+    url: https://sites.google.com/site/namgil
+  - name: Heon-Young Yang
+    affiliation: Kangwon National University
+  - name: Sung-Ho Kim
+    affiliation: KAIST
+    address: > 
+      Department of Mathematical Sciences, 
+      KAIST,
+      Daejeon 305-701, South Korea
+    email: \email{sung-ho.kim@kaist.edu}
+title:
+  formatted: "\\pkg{VARshrink}: Shrinkage Estimation for Vector Autoregressive Models"
+  # If you use tex in the formatted title, also supply version without
+  plain:     "VARshrink: Shrinkage Estimation for Vector Autoregressive Models"
+  # For running headers, if needed
+  short:     "\\pkg{VARshrink}"
+abstract: >
+  We introduce an \proglang{R} software package, \pkg{VARshrink}, for shrinkage estimation of vector autoregressive (VAR) models. We note that other \proglang{R} packages for VAR models are mostly for Bayesian shrinkage using informative priors, which are parametric methods. On the other hand, the \pkg{VARshrink} is an integrative \proglang{R} package delivering nonparametric, parametric, and semiparametric methods in a unified and consistent manner. The \pkg{VARshrink} currently contains four VAR shrinkage estimation methods, which are the multivarate ridge regression, a nonparametric shrinkage method, a full Bayesian approach using a noninformative prior, and a semiparametric Bayesian approach using an informative prior. We provide a common formulation for VAR models so that all the shrinkage methods can be run by one interface function named \code{VARshrink()}. We explained basic principles of the shrinkage methods with a focus on the parameters involved for estimation and control. Especially, we clearly presented a mathematical expression for shrinkage estimators of the VAR parameters inferred by each shrinkage method, where shrinkage intensity parameters were denoted by $\lambda$ and $\lambda_v$. We provided sample \proglang{R} codes for demonstration and numerical experiments to compare performances of the shrinkage methods.
+keywords:
+  formatted: [Bayes estimation, vector autoregression (VAR), high-dimensionality, shrinkage, multivariate time series]
+  plain:     [Bayes estimation, vector autoregression (VAR), high-dimensionality, shrinkage, multivariate time series]
+preamble: >
+  \usepackage{amsmath}
+  \usepackage{amsfonts}
+bibliography: bibVARshrink.bib
+output: rticles::jss_article
+vignette: >
+  %\VignetteIndexEntry{VARshrink_JSSarticle}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction {#sec:intro}
+
+Let $\mathbf{y}_t = (y_{t1},y_{t2},\ldots,y_{tD})^\top$ denote a $D\times 1$ vector of $D$ endogenous variables. A vector autoregressive (VAR) model of order $p$ can be expressed as
+	\begin{equation}    \label{VAReqnA}
+	\mathbf{y}_t 	= 	\sum_{i=1}^p \mathbf{A}_i \mathbf{y}_{t-i} + \mathbf{c} + \boldsymbol\epsilon_t,
+	\end{equation}
+where $\mathbf{A}_i$ is a $D\times D$ coefficient matrix ($i=1,2,\ldots,p$), $\mathbf{c}$ is a $D\times 1$ constant vector, $\boldsymbol\epsilon_t = (\epsilon_{t1}, \epsilon_{t2}, \ldots, \epsilon_{tD})^\top$ is a $D\times 1$ noise vector [@Hamilton94; @Tsay05].
+
+## Backgrounds
+
+Recently, several \proglang{R} packages have been developed for parameter estimation and forecasting using stochastic time series models.
+The \pkg{forecast} package provides various methods and tools for univariate time series models such as the ARIMA and ETS models [@Hyndman18].
+The \pkg{MTS} package has been developed for a wide variety of multivariate linear time series models and multivariate volatility models such as the VARMA, multivariate EWMA, and low-dimensional BEKK models [@Tsay18].
+The \pkg{vars} package provides methods for multivariate time series analysis using the VAR, SVAR, and SVEC models [@Pfaff18].
+
+In this study, we focus on the shrinkage estimation of VAR model parameters.
+Shrinkage estimation methods have been playing crucial roles in high-dimensional statistical modeling; see, e.g., @Beltra2013shrinkageEEG, @Bohm2009shrinkage, @Fiecas2011aoas and @LedoitWolf2004shrinkcov.
+For VAR models, several shrinkage estimation methods have been suggested such as a nonparametric shrinkage method [@Rhein07c], Bayesian VARs using informative priors [@Banbura10;@Doan84;@Koop10BayesianVAR;@Litterman86], Bayesian VARs using noninformative priors [@Ni05;@Sun04],
+a semiparametric Bayesian approach adopting a modified $K$-fold cross validation [@LeeChoiKim2016].
+
+Due to its popularity in macroeconomic time series analysis, several Bayesian VAR methods have been implemented in \proglang{R} packages.
+For example, the function \code{BVAR()} in \pkg{MTS} implements a Bayesian VAR method using an informative prior [@Tsay18];
+the package \pkg{bvarsv} implements Bayesian VAR models with stochastic volatility and time-varying parameters [@Krueger2015bvarsv;@Koop10BayesianVAR;@Primiceri2005timevarying].
+
+On the other hand, other types of VAR shrinkage methods including nonparametric approaches have been implemented for other purposes than multivariate time series analysis in \proglang{R}.
+For instance, the function \code{cov.shrink()} in the package \pkg{corpcor} was implemented to compute shrinkage estimates of covariances, and it was applied to estimate VAR coefficients in @Rhein07c [@Schafer17].
+In addition, VAR models can be reformulated into multivariate regression problems so that penalized least squares methods have been used for shrinkage estimation of VAR parameters, e.g., the functions \code{lm.gls()} for generalized least squares and \code{lm.ridge()} for ridge regression in the package \pkg{MASS} [@Ripley18];
+the function \code{glmnet()} for Lasso and Elastic-Net regularized generalized linear models in the package \code{glmnet()} [@Frideman18];
+the function \code{linearRidge()} for ridge regression in the package \pkg{ridge} [@Moritz18].
+
+
+## Main Purpose
+
+While Bayesian approaches have been widely used in the literature, we note that nonparametric and semiparametric approaches have advantages in the case of high-dimensional VARs with more than several hundreds of time series variables due to their relatively low computational costs [@Rhein07c].
+Despite of relatively high computational costs, Bayesian approaches can impose proper assumptions on the multivariate time series data flexibly, such as VAR roots near unity and correlations between noise processes [@LeeChoiKim2016]. In this sense, a semiparametric approach can be a trade-off between nonparametric and parametric approaches [@LeeChoiKim2016].
+
+In this study, we developed an integrative \proglang{R} package, \pkg{VARshrink}, for implementing nonparametric, parametric, and semiparametric approaches for shrinkage estimation of VAR models.
+By providing a simple interface function to the different types of approaches, the performance of the methods can be easily compared.
+We also provide model selection criteria such as AIC and BIC, which can be used to compare several VAR models and to select an optimal lag order.
+
+This paper is organized as follows.
+In Section 2, we explain the general distribution assumption for the noise term for Bayesian approaches.
+We also present the formulation of VAR models in a multivariate regression problem, which simplifies implementation of the package.
+In Section 3, we describe the common interface function and the four shrinkage estimation methods for VAR models included in the package, which are the multivariate ridge regression, a nonparametric shrinkage method, a full Bayesian approach using a noninformative prior, and a semiparametric Bayesian approach using an informative prior.
+We clearly present closed form expressions for the shrinkage estimators inferred by the shrinkage methods, so that we can indicate the role of the shrinkage intensity parameters in each method.
+In Section 4, we present numerical experiments using benchmark data and simulated data for comparing performances of the shrinkage methods.
+Discussion and conclusions are provided in Section 5.
+
+---
+
+# Models
+
+In the VAR model in \eqref{VAReqnA},
+we assume that the noise vectors are independent and identically distributed from a scale mixture of multivariate normal distributions, including multivariate normal distributions, multivariate Student t-distributions [@Ni05], and multivariate Laplace distributions (MLD) [@Eltoft06].
+By incorporating scale mixture distributions in the model assumption, we can handle outliers appropriately and produce robust estimates [@West84].
+In specific, we consider that a noise vector can be expressed as a product
+	\begin{equation}
+	\label{productZD}
+	\boldsymbol\epsilon_t = \mathbf{z}_t q_t^{-1/2},
+	\end{equation}
+where $\mathbf{z}_t \sim \text{N}_D(\mathbf{0}, \mathbf{\Sigma})$ is a $D\times 1$ vector having a multivariate normal distribution with the mean vector of zeros and the covariance matrix of $\boldsymbol\Sigma$, and $q_t \sim \text{Gamma}(\nu/2, \nu/2)$ is a random variable having a gamma distribution with shape $\alpha = \nu/2$ and rate $\beta = \nu/2$. The following statements describe characteristics of the distributions in more detail.
+
+- If $1<\nu<\infty$, then $\boldsymbol\epsilon_t$ has a multivariate Student t-distribution with the degree of freedom $\nu$. The probability density function (p.d.f.) for $\boldsymbol\epsilon_t$ can be expressed as
+		\begin{equation}
+		\label{pdf_multiv_t}
+		f\left( \boldsymbol\epsilon_t \right) = g\left( \left\| \mathbf{V}^{-1/2} \boldsymbol\epsilon_t \right\|^2 \right) \left| \mathbf{V} \right|^{-1/2},
+		\end{equation}
+		with
+		$$
+		g(x) \propto \left(1 + \frac{x}{\nu} \right)^{-(\nu+D)/2}.
+		$$
+		Define
+		\begin{equation}
+		\label{hfunction}
+		h(x) = -2 \frac{\text{d}}{\text{d}x}  \log g(x) = \frac{\nu + D}{\nu + x}.
+		\end{equation}
+
+- If $\nu \rightarrow \infty$, the distribution for $\boldsymbol\epsilon_t$ converges to the multivariate normal distribution, $\text{N}_D(\mathbf{0}, \mathbf{\Sigma})$. The p.d.f. for $\boldsymbol\epsilon_t$ can be expressed as \eqref{pdf_multiv_t} with $g(x) \propto \exp(-x/2)$ and $h(x) = 1$.
+	
+- If $\nu = 1$, the distribution for $\boldsymbol\epsilon_t$ converges to the multivariate Cauchy distribution. The p.d.f. for $\boldsymbol\epsilon_t$ can be expressed as \eqref{pdf_multiv_t} with $g(x) \propto (1+x)^{-(1+D)/2}$ and $h(x) = (1+D)/(1+x)$.
+
+- If $\nu \approx 0$, the distribution cannot be obtained in a simple closed form, but the p.d.f. for $\boldsymbol\epsilon_t$ can still be written with $g(x) \propto x^{-D/2}$ and $h(x) = D/x$.
+
+  In this case, the expression for $q_t$ during the iteration process in  semiparametric Bayesian approach [@LeeChoiKim2016] is equivalent to the IRLS procedure for L1 norm minimization [@Chartrand08]; see Section \ref{sec_sbayes} for more detail.
+
+  In addition, we note that the p.d.f. $f^{MLD} (\boldsymbol\epsilon_t)$ of the multivariate Laplace distribution (MLD) can be expressed as in \eqref{pdf_multiv_t} with
+		$$
+		g^{MLD}(x) \propto \frac{ K_{(D-2)/2} (\sqrt{2x/\beta}) }{ (\sqrt{ \beta x/2 })^{(D-2)/2} }
+		$$
+for some $\beta>0$ [@Eltoft06]. Since $K_\alpha (z)$, the modified Bessel function of the second kind, can be approximated by  $K_\alpha (z) \approx \Gamma(\alpha) 2^{\alpha-1} z^{-\alpha}$ for small values of $0<z\leq \sqrt{\alpha+1}$, the p.d.f. of MLD can be approximated by $g^{MLD} (x) \propto x^{-D/2+1}$ for small values of $0<x\leq \sqrt{D\beta/4}$.
+Therefore, we consider that the multivariate Student t-distribution is approximately close to the MLD when $\nu\rightarrow 0$.
+
+
+We can rewrite the model equation \eqref{VAReqnA} in a general form as
+	\begin{equation}    \label{VAReqnPsi}
+	\mathbf{y}_t 	= 	\mathbf{\Psi}^\top \mathbf{x}_t + \boldsymbol{\epsilon}_t,
+	\end{equation}
+which is available as follows:
+
+a) \label{Citema} 
+    In the case that the constant vector $\mathbf{c}$ should be estimated, $\mathbf{\Psi} = (\mathbf{c}, \mathbf{A}_1, \mathbf{A}_2, \ldots, \mathbf{A}_p)^\top$ is a $(Dp + 1)\times D$ matrix of coefficients and $\mathbf{x}_t = (1, \mathbf{y}_{t-1}^\top, \mathbf{y}_{t-2}^\top, \ldots, \mathbf{y}_{t-p}^\top)^\top$ is a $(Dp + 1)\times 1$ vector of lagged variables. 
+    
+b) \label{Citemb}
+    In the case that $\mathbf{c} = \mathbf{0}$, $\mathbf{\Psi} = (\mathbf{A}_1, \mathbf{A}_2, \ldots, \mathbf{A}_p)^\top$ is a $Dp \times D$ matrix of coefficients and $\mathbf{x}_t = (\mathbf{y}_{t-1}^\top , \mathbf{y}_{t-2}^\top, \ldots, \mathbf{y}_{t-p}^\top)^\top$ is a $Dp \times 1$ vector of lagged variables. 
+    
+c) \label{Citemc}
+    In the case that $\mathbf{c} =(\mathbf{I}_D - \sum_{i=1}^p \mathbf{A}_i ) \boldsymbol\mu_\mathbf{y}$, then the equation \eqref{VAReqnA} is rewritten as
+    $$
+		\mathbf{y}_t^\text{c} 	= 	\mathbf{\Psi}^\top \mathbf{x}_t^\text{c} + \boldsymbol{\epsilon}_t,
+		$$
+		where
+		$\mathbf{y}_t^\text{c} = \mathbf{y}_t - \boldsymbol\mu_\mathbf{y}$ and
+		$\mathbf{x}_t^\text{c}  = (\mathbf{y}_{t-1}^{\text{c} \top}  ,  \mathbf{y}_{t-2}^{\text{c} \top}, \ldots, \mathbf{y}_{t-p}^{\text{c} \top} )^\top$.
+		In this case, the sample mean vector $\bar{\mathbf{y}} = T^{-1}\sum_{t=1}^T \mathbf{y}_t$ is used for an estimate of the mean vector $\boldsymbol\mu_\mathbf{y}$.
+		For notational simplicity, we denote $\mathbf{y}_t^\text{c}$ by $\mathbf{y}_t$ and $\mathbf{x}_t^\text{c}$ by $\mathbf{x}_t$ in the following sections.
+		
+
+
+For estimation of VAR parameters from the observed time series data $\mathbf{y}_1, \mathbf{y}_2, \ldots, \mathbf{y}_T$, we define the data matrices as
+	\begin{equation}
+	\mathbf{Y} = \begin{pmatrix}
+	\mathbf{y}_{p+1}^\top \\
+	\mathbf{y}_{p+2}^\top \\
+	\vdots \\
+	\mathbf{y}_{T}^\top
+	\end{pmatrix}
+	\in
+	\mathbb{R}^{(T-p)\times D},
+	\quad
+	\mathbf{X} = \begin{pmatrix}
+	\mathbf{x}_{p+1}^\top \\
+	\mathbf{x}_{p+2}^\top \\
+	\vdots \\
+	\mathbf{x}_{T}^\top
+	\end{pmatrix}
+	.
+	\end{equation}
+Then, we have a matrix version of \eqref{VAReqnPsi} as
+	\begin{equation}
+	\label{VAReqnMat}
+	\mathbf{Y} = \mathbf{X} \mathbf{\Psi} + \mathbf{E},
+	\end{equation}
+with $\mathbf{E} = (\boldsymbol\epsilon_{p+1}, \ldots, \boldsymbol\epsilon_T)^\top$.
+
+
+---
+
+# Shrinkage Estimation Methods {#sec:methods}
+
+In this section, we will describe the shrinkage estimation methods implemented in this package. The methods are used for estimating the VAR coefficient matrix $\mathbf{\Psi}$ alone or both of the $\mathbf{\Psi}$ and $\mathbf{\Sigma}$ in \eqref{VAReqnMat}.
+
+We provide a common \proglang{R} function interface \code{VARshrink()} for running the estimation methods, which is defined by
+
+```{r, eval = FALSE}
+VARshrink(y, p = 1, type = c("const", "none"), method = c("ridge",
+  "ns", "fbayes", "sbayes", "kcv"), lambda = NULL, lambda_var = NULL,
+  dof = Inf, ...)
+```
+
+The input arguments are described as follows.
+
+- \code{y}: T-by-K time series data
+- \code{p}: lag order
+- \code{type}: Type of deterministic regressors to include. 1) "const" - include the constant vector. 2) "none" - include no deterministic regressors.
+- \code{method}: 1) "ridge" - multivariate ridge regression 2) "ns" - nonparametric shrinkage 3) "fbayes" - full Bayes MCMC shrinkage using a noninformative prior 4) "sbayes" - semi-parametric Bayes shrinkage using an informative prior 5) "kcv" - k-fold cross validation
+- \code{lambda, lambda\_var}:  shrinkage parameter value(s). Use of this parameter is slightly different for each method. See descriptions in the following subsections for the use of shrinkage parameters in each method.
+- \code{dof}: Degree of freedom of multivariate t distribution for noise. Valid only for fbayes and sbayes. \code{dof=Inf} means multivariate normal distribution.
+	          
+The output value is an object of class "varshrinkest", which inherits the class "varest" in the package \pkg{vars}. As a result, almost all the methods and functions included in the package \pkg{vars} are available for the package \pkg{VARshrink}, such as \code{print(), summary(), logLik(), roots()}. The output object contains the components of the class "varest" such as \code{varresult, datamat, y, type, p, K, obs, totobs, restrictions, method, call}, as well as the components for the class "varshrinkest" such as  \code{lambda, lambda_var, Sigma, dof}. 
+
+Moreover, the degrees of freedom of residuals should be re-calculated  considering the effective number of parameters, $\kappa_{eff}$. 
+
+See Table ?. 
+
+
+## Multivariate Ridge Regression
+
+The ridge regression method is a kind of penalized least squares (PLS) method, which produces a biased estimate of the VAR coefficient [@Hoerl70].
+Formally speaking, the ridge regression estimator of $\mathbf{\Psi}$ can be obtained by minimizing the penalized sum of squared prediction errors (SSPE) as
+	\begin{equation}
+	\widehat{ \mathbf{\Psi} }^{\text{R}} (\lambda) =
+	\arg\min_{\mathbf{\Psi}}
+	\
+	\frac{1}{T-p}
+	\left\|\mathbf{Y}  -  \mathbf{X} \mathbf{\Psi} \right\|_F^2  +
+	\lambda \left\| \mathbf{\Psi} \right\|_F^2,
+	\end{equation}
+where $\|\mathbf{A}\|_F = \sqrt{ \sum_{i} \sum_{j} a_{ij}^2 }$ is the Frobenius norm of a matrix $\mathbf{A}$, and $\lambda \geq 0$ is called the regularization parameter or the shrinkage parameter.
+The ridge regression estimator $\widehat{ \mathbf{\Psi} }^\text{R} (\lambda)$ can be expressed in the closed form
+	\begin{equation}
+	\widehat{ \mathbf{\Psi} }^\text{R} (\lambda) =
+	\left( \mathbf{X}^\top \mathbf{X} + (T-p)\lambda \mathbf{I} \right)^{-1} \mathbf{X}^\top \mathbf{Y},
+	\qquad
+	\lambda \geq 0.
+	\end{equation}
+	
+The shrinkage parameter $\lambda$ for the ridge regression can be automatically determined by using the generalized cross-validation (GCV) [@Golub79]. The GCV selects the value of $\lambda$ where the GCV score given below is minimized:
+	\begin{equation}
+	GCV(\lambda) = \frac{1}{T-p} \left\| (\mathbf{I} - \mathbf{H}(\lambda) \mathbf{Y} )  \right\|^2_\text{F}
+	\left/
+	\left[ \frac{1}{T-p} Trace(\mathbf{I} - \mathbf{H}(\lambda) ) \right]^2
+	\right. ,
+	\end{equation}
+	where $\mathbf{H}(\lambda) = \mathbf{X}^\top \left(\mathbf{X}^\top \mathbf{X} + (T-p)\lambda \mathbf{I} \right)^{-1}  \mathbf{X}^\top$.
+
+
+In this package, the interface to the shrinkage estimation methods is provided by the function \code{VARshrink(method = "ridge", \ldots)} or the internal function \code{lm_multiv_ridge()}.
+If the input argument \code{lambda} is set at a value or a vector of values, then corresponding GCV score is computed automatically for each $\lambda$ value, and the VAR coefficients with the smallest GCV score is selected. If \code{lambda = NULL}, then the default value of \code{c(0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100)} is used.
+
+For example, simulated time series data of length $T=100$ were generated based on a multivariate normal distribution for noise and a VAR model with $p=1$, $D=2$, $\mathbf{A}_1 = 0.5\mathbf{I}_2$, $\mathbf{c}=\mathbf{0}$, and $\mathbf{\Sigma} = 0.1^2\mathbf{I}_2$ as follows:
+
+```{r setup, include = FALSE}
+library(VARshrink)
+```
+
+```{r}
+set.seed(100)
+myCoef <- list(A = list(matrix(c(0.5, 0, 0, 0.5), 2, 2)), c = c(0.2, 0.7))
+myModel <- list(Coef = myCoef, Sigma = diag(0.1^2, 2), dof = Inf)
+Y <- simVARmodel(numT = 100, model = myModel, burnin = 10)
+```
+
+Then, the multivariate ridge regression is carried out for VAR models as follows:
+
+```{r}
+EstimRidge <- VARshrink(Y, p = 1, type = "const", method = "ridge",
+                        lambda = NULL)
+EstimRidge
+```
+
+Note that, the result printed on the screen shows \code{lambda} value(s) and the corresponding GCV values. 
+The method \code{summary()} is available for objects of class "varshrinkest" as follows:
+
+```{r}
+summary(EstimRidge)
+```
+
+## Nonparametric Shrinkage (NS)
+
+The nonparametric shrinkage (NS) estimation method for VAR models, proposed by @Rhein07c, produces an estimate of $\mathbf{\Psi}$ based on a James-Stein type shrinkage of sample covariance matrices [@Rhein07a;@Schafer05b].
+
+We will briefly describe the NS method.
+In the NS method, the data matrices $\mathbf{X}$ and $\mathbf{Y}$ are mean-corrected so that each column has the mean of zero.
+Let $\mathbf{Z} = [\mathbf{X}, \mathbf{Y}]$ be a combined data matrix.
+The sample covariance matrix of $\mathbf{Z}$ is partitioned as
+	\begin{equation}
+	\mathbf{S}_\text{ZZ} = \frac{1}{T-p-1} \mathbf{Z}^\top \mathbf{Z} =
+	\begin{bmatrix} \mathbf{S}_\text{XX} & \mathbf{S}_\text{XY} \\
+	\mathbf{S}_\text{XY}^\top & \mathbf{S}_\text{YY}
+	\end{bmatrix},
+	\end{equation}
+where $\mathbf{S}_\text{XX} = (T-p-1)^{-1} \mathbf{X}^\top \mathbf{X}$, $\mathbf{S}_\text{XY} = (T-p-1)^{-1} \mathbf{X}^\top \mathbf{Y}$, and $\mathbf{S}_\text{YY} = (T-p-1)^{-1} \mathbf{Y}^\top \mathbf{Y}$. The matrix $\mathbf{S}_\text{ZZ}$ can be decomposed as
+	\begin{equation}
+	\mathbf{S}_\text{ZZ} = \mathbf{D}_\text{Z}^{1/2} \mathbf{R}_\text{ZZ} \mathbf{D}_\text{Z}^{1/2},
+	\end{equation}
+where $\mathbf{R}_\text{ZZ}$ is the sample correlation matrix and
+$\mathbf{D}_\text{Z} = \text{diag}(s_{11}, s_{22}, \ldots, s_{Dp+D,Dp+D})$
+is a diagonal matrix with diagonal elements of sample variances.
+Shrinkage estimates of the correlation matrix and the variances can be written as
+	\begin{equation}
+	\widehat{\mathbf{R}}_\text{ZZ} =
+	(1-\lambda) \mathbf{R}_\text{ZZ} + \lambda \mathbf{I}
+	\quad
+	\text{and}
+	\quad
+	\widehat{\mathbf{D}}_\text{Z} =
+	\text{diag}(\hat{s}_{11}, \hat{s}_{22}, \ldots, \hat{s}_{Dp+D,Dp+D})
+	\end{equation}
+with
+	\begin{equation}
+	\hat{s}_{ii} = (1-\lambda_v) s_{ii} + \lambda_v s_\text{med},
+	\quad i=1,2,\ldots,Dp+Dp,
+	\end{equation}
+where $s_\text{med}$ is a median of all the sample variances $s_{ii}$,
+and $0\leq \lambda, \lambda_v \leq 1$ are shrinkage parameters.
+The estimated covariance matrix can be computed by
+	\begin{equation}
+	\widehat{\mathbf{S}}_\text{ZZ}(\lambda, \lambda_v)
+	=  \widehat{\mathbf{D}}_\text{Z}^{1/2}
+	\widehat{\mathbf{R}}_\text{ZZ}
+	\widehat{\mathbf{D}}_\text{Z}^{1/2}.
+	\end{equation}
+The values of the shrinkage parameters $\lambda$ and $\lambda_v$ are determined by the James-Stein type shrinkage method, which we call the NS method described in [@Rhein07a;@Schafer05b].
+
+The ordinary least squares estimate $\widehat{\mathbf{\Psi}}^{\text{OLS}}$ of $\mathbf{\Psi}$ is given by $\widehat{\mathbf{\Psi}}^{\text{OLS}} = \mathbf{S}_\text{XX}^{-1} \mathbf{S}_\text{XY}$.
+We define the NS estimate of $\mathbf{\Psi}$ as
+	\begin{equation}
+	\widehat{ \mathbf{\Psi} }^\text{N} (\lambda, \lambda_v) =
+	\widehat{\mathbf{S}}_\text{XX}^{-1}
+	\widehat{\mathbf{S}}_\text{XY},
+	\qquad
+	0\leq \lambda, \lambda_v \leq 1.
+	\end{equation}
+where $\widehat{\mathbf{S}}_\text{XX}$ and
+$\widehat{\mathbf{S}}_\text{XY}$ are
+parts of the estimated covariance matrix,
+	\begin{equation}
+	\widehat{\mathbf{S}}_\text{ZZ} (\lambda, \lambda_v) =
+	\begin{bmatrix} \widehat{\mathbf{S}}_\text{XX} & \widehat{\mathbf{S}}_\text{XY} \\
+	\widehat{\mathbf{S}}_\text{XY}^\top & \widehat{\mathbf{S}}_\text{YY}
+	\end{bmatrix}.
+	\end{equation}
+
+In the package \pkg{VARshrink}, the function \code{VARshrink(method = 'ns', \ldots)} provides an interface with the NS method.
+In specific, the package \pkg{corpcor} [@Schafer17] includes the \proglang{R} function \code{cov.shrink()}, which can determine $\lambda$ and $\lambda_v$ and estimate the covariance matrix $\widehat{\mathbf{S}}_\text{ZZ}(\lambda, \lambda_v)$.
+The function \code{VARshrink()} in the \pkg{VARshrink} package infers the NS estimates of VAR coefficients, $\widehat{\mathbf{\Psi}}^\text{N} (\lambda, \lambda_v)$, by using the covariance matrix $\widehat{\mathbf{S}}_\text{ZZ}(\lambda, \lambda_v)$.
+If the input arguments \code{lambda} and \code{lambda\_var} are set as \code{lambda = NULL} and \code{lambda\_var = NULL}, then $\lambda$ and $\lambda_v$ are determined automatically. For example,
+
+```{r}
+EstimNS <- VARshrink(Y, p = 1, type = "const", method = "ns",
+                     lambda = NULL, lambda_var = NULL)
+EstimNS
+```
+
+The result printed on the screen shows the estimated \code{lambda} and \code{lambda_var} values. The \code{summary()} shows statistical inference based on the estimated VAR parameters and sharinkage parameters as follows:
+
+
+
+
+
+
+# References {-}
+
+# Appendix {-} 

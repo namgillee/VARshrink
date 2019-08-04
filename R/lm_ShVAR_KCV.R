@@ -30,7 +30,7 @@ lm_ShVAR_KCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = 0,
                     1)
 
   if (is.null(dof))
-    dof <- c(0.2, 0.5, 1, seq(2, 10, by = 2), Inf)
+    dof <- c(1, seq(2, 10, by = 2), Inf)
 
   lenLV <- length(lambda_var)
   lenL <- length(lambda)

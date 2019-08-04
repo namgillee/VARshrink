@@ -1,3 +1,4 @@
+#' @export
 summary.shrinklm <- function (object, correlation = FALSE,
                               symbolic.cor = FALSE, ...) {
   z <- object
@@ -31,7 +32,6 @@ summary.shrinklm <- function (object, correlation = FALSE,
     stop("invalid 'lm' object:  no 'terms' component")
   if (!inherits(z, "lm"))
     warning("calling summary.lm(<fake-lm-object>) ...")
-  ##-------- CLASS 'shrinklm': Replace QR with SVD --------##
   if (is.na(z$df.residual))
     warning(paste("residual degrees of freedom in object",
                   "suggest this is not an \"lm\" fit"))
@@ -58,15 +58,22 @@ summary.shrinklm <- function (object, correlation = FALSE,
   if (is.finite(resvar) && resvar < (mean(f)^2 + var(f)) *
       1e-30)
     warning("essentially perfect fit: summary may be unreliable")
-  p1 <- 1L:p
-  ##-------- CLASS 'shrinklm': Replace QR with SVD --------##
+  p1 <- (abs(z$svd$d) >= 1e-14)
   R <- z$svd$v[, p1, drop = FALSE] %*% (
     (z$svd$d[p1]^2 / (z$svd$d[p1]^2 + z$lambda0)^2) *
       t(z$svd$v[, p1, drop = FALSE])
-  )
-  p2 <- 1L:min(nrow(R), length(z$coefficients))  ##columns in datX v.s. coefficients
-  se <- sqrt(diag(R) * resvar)[p2]
-  est <- z$coefficients[p2]
+  )  ## class 'shrinklm' replaces QR with SVD to compute R ~ (X'X)^{-1} ##
+  se <- if (nrow(R) < length(z$coefficients)) {
+    # Assume ncol(X) + 1 = length(coef). SE for const is sqrt of
+    # var(m_yi + p_i' * m_x) = resvar * (1 + m_x' R m_x)
+    m_u <- colMeans(z$svd$u[, p1, drop = FALSE])
+    se_const <- sqrt(resvar * (1 + sum(m_u^2 * z$svd$d[p1]^4 /
+                                         (z$svd$d[p1]^2 + z$lambda0)^2)))
+    c(sqrt(diag(R) * resvar), se_const)
+  } else {
+    sqrt(diag(R) * resvar)
+  }
+  est <- z$coefficients
   tval <- est/se
   ans <- z[c("call", "terms", if (!is.null(z$weights)) "weights")]
   ans$residuals <- r
@@ -87,7 +94,9 @@ summary.shrinklm <- function (object, correlation = FALSE,
   }
   else ans$r.squared <- ans$adj.r.squared <- 0
   ans$cov.unscaled <- R
-  dimnames(ans$cov.unscaled) <- dimnames(ans$coefficients)[c(1, 1)]
+  dimnames(ans$cov.unscaled) <-
+    list(dimnames(ans$coefficients)[[1]][1:nrow(R)],
+         dimnames(ans$coefficients)[[1]][1:nrow(R)])
   if (correlation) {
     ans$correlation <- (R * resvar)/outer(se, se)
     dimnames(ans$correlation) <- dimnames(ans$cov.unscaled)

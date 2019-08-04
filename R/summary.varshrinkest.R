@@ -12,7 +12,7 @@
 #' for multivariate t-distribution for residuals.
 #'
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
-
+#' @export
 summary.varshrinkest <- function (object, equations = NULL, ...) {
   ynames <- names(object$varresult)
   obs <- object$obs

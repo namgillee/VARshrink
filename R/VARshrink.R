@@ -2,28 +2,29 @@
 #'
 #' @param y T-by-K time series data
 #' @param p lag order
-#' @param type   1) const - estimate the constant vector, c.
-#'               2) none  - estimate without the constant vector, i.e., c=0.
-#' @param method 1) ridge - multivariate ridge regression
-#'               2) ns    - nonparametric shrinkage
-#'               3) fbayes- full Bayes MCMC shrinkage
-#'               4) sbayes- semi-parametric Bayes shrinkage
-#'               5) kcv   - k-fold cross validation
-#' @param lambda,lambda_var  shrinkage parameter value(s).
+#' @param type   Type of deterministic regressors to include.
+#' 1) "const" - the constant vector. 2) "trend" - the trend.
+#' 3) "both" - both the constant and the trend.
+#' 4) "none"  - no deterministic regressors.
+#' @param method 1) "ridge" - multivariate ridge regression
+#'               2) "ns"    - nonparametric shrinkage
+#'               3) "fbayes" - full Bayes MCMC shrinkage
+#'               4) "sbayes" - semi-parametric Bayes shrinkage
+#'               5) "kcv"   - k-fold cross validation
+#' @param lambda,lambda_var  Shrinkage parameter value(s).
 #'                Use of this parameter is slightly different
 #'                for each method, that is, the same value does not
-#'                imply the same estimates.
-#' @param dof  degree of freedom of multivariate t distribution for noise.
-#'              Valid only for fbayes and sbayes.
-#'             If dof=Inf, it means multivariate normal distribution.
-#' @return an object of class c('varshrinkest','varest') including the
+#'                imply the same shrinkage estimates.
+#' @param dof  Degree of freedom of multivariate t distribution for noise.
+#'             Valid only for fbayes and sbayes.
+#'             dof=Inf means multivariate normal distribution.
+#' @return An object of class c('varshrinkest','varest') including the
 #' components: varresult, datamat, y, type, p, K, obs, totobs, restrictions,
-#' method, lambda, lambda_var, call
+#' method, lambda, call
 #'
-#' @importFrom corpcor cov.shrink
 #' @import vars
 #' @export
-VARshrink  <- function(y, p = 1, type = c("const", "none"),
+VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
                    method = c("ridge", "ns", "fbayes", "sbayes", "kcv"),
                    lambda = NULL, lambda_var = NULL, dof = Inf, ...) {
   cl <- match.call()
@@ -31,7 +32,6 @@ VARshrink  <- function(y, p = 1, type = c("const", "none"),
   totobs <- nrow(y)   #total number of observations
   K <- ncol(y)        #dimension of output response
   N <- totobs - p     #sample size
-  M <- K * p + ifelse(identical(tolower(type), "const"), 1, 0) #dimension of ..
 
   if (any(is.na(y)))
     stop("\nNAs in y.\n")
@@ -48,31 +48,43 @@ VARshrink  <- function(y, p = 1, type = c("const", "none"),
 
   ######## Build Data Matrices: datX, datY ########
 
-  ybar <- NULL           #ybar=colMeans(y); used for type=='mean' (unused)
-  dybar <- dxbar <- NULL  #dybar, dxbar are for datY, datX; used for "ns"
-  ##-------- REMOVE THE OPTION type=='mean' --------##
-  # if (identical(tolower(type), 'mean')) {
-  #   #********** Subtract the mean from y **********
-  #   ybar <- colMeans(y)
-  #   y <- y - rep(ybar, each = totobs)
-  # }
-  ##------------------------------------------------##
-
   datY <- y[(p + 1):totobs, ] #N-by-K
   colnames(datY) <- tsnames
 
-  datX <- matrix(1, N, M) #N-by-M
-  for (h in 1:p) {
-    datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
-    #if type=="const", datX has M=K*p+1 columns, and 1's are at the last column
-  }
-  if (identical(tolower(type), "const")) {
+  if (identical(type, "const")) {
+    M <- K * p + 1
+    datX <- matrix(1, N, M) #N-by-M
+    for (h in 1:p)
+      datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
     colnames(datX) <- c(paste(rep(tsnames, times = p), ".l",
                               rep(1:p, each = K), sep = ""), "const")
-  } else {
+  } else if (identical(type, "trend")) {
+    M <- K * p + 1
+    datX <- matrix(1, N, M) #N-by-M
+    for (h in 1:p)
+      datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    datX[, M] <- seq(p + 1, length.out = N)
+    colnames(datX) <- c(paste(rep(tsnames, times = p), ".l",
+                              rep(1:p, each = K), sep = ""), "trend")
+  } else if (identical(type, "both")) {
+    M <- K * p + 2
+    datX <- matrix(1, N, M) #N-by-M
+    for (h in 1:p)
+      datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    datX[, M - 1] <- seq(p + 1, length.out = N)
+    colnames(datX) <- c(paste(rep(tsnames, times = p), ".l",
+                              rep(1:p, each = K), sep = ""), "trend", "const")
+  } else if (identical(type, "none")) {
+    M <- K * p
+    datX <- matrix(1, N, M) #N-by-M
+    for (h in 1:p)
+      datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
     colnames(datX) <- paste(rep(tsnames, times = p), ".l",
                             rep(1:p, each = K), sep = "")
+  } else {
+    stop(paste("Unknown type:", type, "\n"))
   }
+
 
   #### Run a Shrinkage Estimation Method: estim ####
 
@@ -91,7 +103,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "none"),
     estim$varresult <-
       convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
                         lambda0 = resu_ridge$lambda[id_min_gcv],
-                        type = type, ybar = ybar, callstr = cl
+                        type = type, callstr = cl
     )
     estim$lambda <- resu_ridge$lambda
     estim$lambda.estimated <- as.logical(length(resu_ridge$lambda) > 1)
@@ -101,52 +113,51 @@ VARshrink  <- function(y, p = 1, type = c("const", "none"),
   ##--------- (2) Nonparametric Shrinkage ----------
   if (method == "ns") {
 
-    # In "ns", datX and datY are centered separately, by dxbar and dybar.
-    # If type=="const", remove 1's from datX, and estimate Psi, and
-    #  estimate const later by const' = dybar' - dxbar' %*% Psi.
-    # If type=='mean' or "none", no need to remove 1's from datX.
-
-    if (identical(tolower(type), "const")) {
-      datX <- datX[, -M]  # Remove 1's from datX
-
-      dybar <- colMeans(datY)
-      dxbar <- colMeans(datX)
-
-      datY <- datY - rep(dybar, each = N)
-      datX <- datX - rep(dxbar, each = N)
+    # datY and datX are centered separately by dybar and dxbar.
+    dybar <- dxbar <- NULL
+    if (identical(type, "const") || identical(type, "both")) {
+      datX <- datX[, -ncol(datX)]  # Remove 1's from datX
     }
+    dybar <- colMeans(datY)
+    dxbar <- colMeans(datX)
+    datY <- datY - rep(dybar, each = N)
+    datX <- datX - rep(dxbar, each = N)
 
     # Estimate covariance matrix S_Z
     Z <- cbind(datX, datY)
     if (is.null(lambda)) {
       if (is.null(lambda_var)){
-        SZ <- cov.shrink(Z, verbose = FALSE, ...)
+        SZ <- corpcor::cov.shrink(Z, verbose = FALSE, ...)
       } else {
-        SZ <- cov.shrink(Z, lambda.var = lambda_var, verbose = FALSE, ...)
+        SZ <- corpcor::cov.shrink(Z, lambda.var = lambda_var, verbose = FALSE, ...)
       }
     } else {
       if (is.null(lambda_var)){
-        SZ <- cov.shrink(Z, lambda = lambda, verbose = FALSE, ...)
+        SZ <- corpcor::cov.shrink(Z, lambda = lambda, verbose = FALSE, ...)
       } else {
-        SZ <- cov.shrink(Z, lambda = lambda, lambda.var = lambda_var,
+        SZ <- corpcor::cov.shrink(Z, lambda = lambda, lambda.var = lambda_var,
                          verbose = FALSE, ...)
       }
     }
 
     # Compute the coefficient matrix Psi by solving linear system
-    # Use EVD to avoid singular matrix problem
-    eigSZ <- eigen(SZ[1:(K * p), 1:(K * p)])
+    eigSZ <- eigen(SZ[1:(K * p), 1:(K * p)])  # Use EVD to avoid singularity
     idr <- eigSZ$values > 0
     myPsi <- eigSZ$vectors[, idr] %*%
             ( 1/eigSZ$values[idr] * t(eigSZ$vectors[,idr]) ) %*%
             SZ[1:(K*p), (K*p+1):(K*p+K)]
-    rownames(myPsi) <- colnames(datX); colnames(myPsi) <- colnames(datY)
+    rownames(myPsi) <- colnames(datX)
+    colnames(myPsi) <- colnames(datY)
 
     # Update the return value
-    estim$varresult <- convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                                         lambda0 = attr(SZ,"lambda") * (N-1)/N,
-                                         type = type, ybar = dybar, xbar = dxbar,
-                                         callstr = cl
+    # If type=="const" or "both", then the constant vector will be computed
+    # by const' = dybar' - dxbar' %*% Psi and appended to the coefficients.
+    estim$varresult <-
+      convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
+                        lambda0 = attr(SZ, "lambda") /
+                          (1 - attr(SZ, "lambda")) * (N - 1),
+                        type = type, ybar = dybar, xbar = dxbar,
+                        callstr = cl
     )
     estim$lambda <- attr(SZ, "lambda")
     estim$lambda.estimated <- attr(SZ, "lambda.estimated")
@@ -171,52 +182,16 @@ VARshrink  <- function(y, p = 1, type = c("const", "none"),
     estim$dof.estimated <- resu_fbayes$dof.estimated
 
     myPsi <- resu_fbayes$Psi
-    rownames(myPsi) <- colnames(datX); colnames(myPsi) <- colnames(datY)
+    rownames(myPsi) <- colnames(datX)
+    colnames(myPsi) <- colnames(datY)
     sigbar <- ifelse(K >= 2, mean(diag(resu_fbayes$Sigma), na.rm = TRUE),
                      resu_fbayes$Sigma)
     estim$varresult <-
       convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
                         lambda0 = resu_fbayes$lambda * sigbar,
-                        type = type, ybar = ybar,
+                        type = type,
                         Q_values = resu_fbayes$q, callstr = cl
     )
-
-    # # Convert SE.Psi matrix into a list of $A and $c
-    # mySE.Psi = resu_fbayes$se.param$Psi
-    # mySE.Coef = convPsi2Coefs(mySE.Psi)
-    # if (type == 'mean') {
-    #   tmpC01 =  convMean2const( t(y)%*%y/(totobs-1), myCoef) #A*S
-    #   mySE.Coef$c = diag( convMean2const( t(tmpC01), myCoef) )#A*S'*A'=A*S*A'
-    #   mySE.Coef$c = sqrt( mySE.Coef$c / (totobs) ) #sqrt( ASA'/n )
-    # }
-    #
-    # # Repeat for the LINEX estimator: Psi (optional)
-    # myPsi02 = resu_fbayes$LINEXparam$Psi
-    # myCoef02 = convPsi2Coefs(myPsi02)
-    # if (type == 'mean') {
-    #   myCoef02$c = convMean2const(ybar, myCoef02)
-    # }
-    #
-    # # Repeat for the LINEX estimator: SE.Psi (optional)
-    # mySE.Psi02 = resu_fbayes$se.LINEXparam$Psi
-    # mySE.Coefs02 = convPsi2Coefs(mySE.Psi02)
-    # if (type == 'mean') {
-    #   tmpC02 =  convMean2const( t(y)%*%y/(totobs-1), myCoef02) #A*S
-    #   mySE.Coefs02$c = diag( convMean2const( t(tmpC02), myCoef02) )
-    #       #A*S'*A'=A*S*A'
-    #   mySE.Coefs02$c = sqrt( mySE.Coefs02$c / (totobs) ) #sqrt( ASA'/n )
-    # }
-    #
-    # estim$se.varparam = VARparam(Coef = mySE.Coef,
-    #                              Sigma = resu_fbayes$se.param$Sigma,
-    #                              dof = resu_fbayes$se.param$dof)
-    # estim$se.lambda = resu_fbayes$se.param$lambda
-    # estim$se.delta = resu_fbayes$se.param$delta
-    #
-    # estim$LINEXvarparam = VARparam(Coef = myCoef02)
-    #       #An estimated coefficient minimizing LINEX loss
-    # estim$se.LINEXvarparam = VARparam(Coef = mySE.Coefs02)
-    #       #The SE of the LINEX coefficient
 
     #### How to get kappa ####
     # From Eq. (11) for psi_hat(lambda), Y can be separated as:
@@ -254,13 +229,15 @@ VARshrink  <- function(y, p = 1, type = c("const", "none"),
     estim$dof.estimated <- resu_sbayes$dof.estimated
 
     myPsi <- resu_sbayes$Psi
-    rownames(myPsi) <- colnames(datX); colnames(myPsi) <- colnames(datY)
+    rownames(myPsi) <- colnames(datX)
+    colnames(myPsi) <- colnames(datY)
     sigbar <- ifelse(K >= 2, mean(diag(resu_sbayes$Sigma), na.rm = TRUE),
                      resu_sbayes$Sigma)
     estim$varresult <-
       convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = resu_sbayes$lambda * sigbar,
-                        type = type, ybar = ybar,
+                        lambda0 = resu_sbayes$lambda * sigbar /
+                          (1 - resu_sbayes$lambda) * (N - 1),
+                        type = type,
                         Q_values = resu_sbayes$q, callstr = cl
     )
 
@@ -282,17 +259,18 @@ VARshrink  <- function(y, p = 1, type = c("const", "none"),
     estim$dof.estimated <- resu_kcv$dof.estimated
 
     myPsi <- resu_kcv$Psi
-    myPsi <- resu_sbayes$Psi
+    rownames(myPsi) <- colnames(datX)
+    colnames(myPsi) <- colnames(datY)
     sigbar <- ifelse(K >= 2, mean(diag(resu_kcv$Sigma), na.rm = TRUE),
                      resu_kcv$Sigma)
     estim$varresult <-
       convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = resu_kcv$lambda * sigbar,
-                        type = type, ybar = ybar,
+                        lambda0 = resu_kcv$lambda * sigbar /
+                          (1 - resu_kcv$lambda) * (N - 1),
+                        type = type,
                         Q_values = resu_kcv$q,
                         callstr = cl
     )
-
   }
   ##---------------------------------------------------
 
