@@ -24,7 +24,7 @@ print.varshrinkest <- function(x, digits = max(3, getOption("digits") - 3),
   }
 	## print other parameters ##
 	if (!is.null(x$Sigma)) {
-		cat("Covariance matrix for noise:\n")
+		cat("Sigma for noise:\n")
 		print(x$Sigma, ...)
 	}
 	if (!is.null(x$dof)) {

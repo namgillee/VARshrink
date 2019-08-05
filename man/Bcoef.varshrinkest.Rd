@@ -2,11 +2,12 @@
 % Please edit documentation in R/Bcoef.varshrinkest.R
 \name{Bcoef.varshrinkest}
 \alias{Bcoef.varshrinkest}
-\title{A variant of vars::Bcoef() for an object of class 'varshrinkest'}
+\title{Coefficient matrices (B coefficient) for an object of class 'varshrinkest'}
 \usage{
 Bcoef.varshrinkest(x)
 }
 \description{
-Code is modified to avoid call to data matrices ($y, $datamat)
-and to use effective numbers of parameters of shrinkage estimates.
+A variant of vars::Bcoef(). Code is modified to avoid call to data matrices
+($y, $datamat) and to use effective numbers of parameters of shrinkage
+estimates.
 }

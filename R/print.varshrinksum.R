@@ -56,9 +56,9 @@ print.varshrinksum <- function (x, digits = max(3, getOption("digits") - 3),
     }
     cat("\n\n")
   }
-  cat("\nScale matrix, Sigma, of multivariate t distribution for residuals:\n")
+  cat("\nScale matrix, Sigma, of multivariate t distribution for noise:\n")
   print(x$Sigma, digits = digits, ...)
-  cat("\nDegrees of freedom of multivariate t distribution for residuals:\n")
+  cat("\nDegrees of freedom of multivariate t distribution for noise:\n")
   print(x$dof, digits = digits, ...)
   cat("\nCorrelation matrix of Sigma:\n")
   print(cov2cor(x$Sigma), digits = digits, ...)

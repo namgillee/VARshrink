@@ -22,13 +22,13 @@ lm_semi_Bayes_PCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var=NULL,
                               m0 = ncol(Y)) {
 
   if (num_folds <= 1)
-    error("In:lm_semi_Bayes_PCV:", "Number of folds must be >= 2")
+    stop("Number of folds must be >= 2")
 
   if (is.null(lambda))
     lambda <- c(1e-3,  seq(1e-2, 1-1e-2, by = 0.01), 1-1e-3, 1-1e-5, 1)
 
   if (is.null(dof))
-    dof <- c(1, seq(2, 10, by = 2), Inf)
+    dof <- c(0.2, 0.5, 1, seq(2, 10, by = 2), Inf)
 
   lenD <- length(dof)
   lenL <- length(lambda)

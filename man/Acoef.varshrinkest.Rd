@@ -2,11 +2,12 @@
 % Please edit documentation in R/Acoef.varshrinkest.R
 \name{Acoef.varshrinkest}
 \alias{Acoef.varshrinkest}
-\title{A variant of vars::Acoef() for an object of class 'varshrinkest'}
+\title{Coefficient matrices (A coefficients) for an object of class 'varshrinkest'}
 \usage{
 Acoef.varshrinkest(x)
 }
 \description{
-Code is modified to avoid call to data matrices ($y, $datamat)
-and to use effective numbers of parameters of shrinkage estimates.
+A variant of vars::Acoef(). Code is modified to avoid call to data matrices
+($y, $datamat) and to use effective numbers of parameters of shrinkage
+estimates.
 }
