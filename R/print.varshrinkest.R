@@ -1,3 +1,7 @@
+#' Print method for class "varshrinkest"
+#'
+#' Print method for an object of class "varshrinkest" estimated by
+#' VARshrink()
 #' @export
 print.varshrinkest <- function(x, digits = max(3, getOption("digits") - 3),
                                ...) {

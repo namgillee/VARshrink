@@ -1,28 +1,41 @@
-#' Convert Psi to varresult
+#' Convert format for VAR coefficients from Psi to varresult
 #'
-#' Consider the VAR process, Y = X %*% Psi + E, in the matrix form.
-#' This function returns a list of 'shrinklm' objects, which is
-#' a slight modification to the 'lm', for the multiple
-#' regression problems corresponding to each column of Y:
-#' y_j = X %*% psi_j + e_j.
+#' Convert a matrix of VAR coefficients estimated by a shrinkage method
+#' into a list of "shrinklm" object. The class "shrinklm" inherits the class
+#' "lm".
 #'
-#' Depending on the 'type', the fitted values (y_j) and the estimated
-#' coefficients (psi_j) are adjusted automatically.
+#' Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t.
+#' It can be written in the matrix form: Y = X %*% Psi + E,
+#' where Psi is a concatenated M-by-K matrix, Psi = (A_1, ..., A_p, C)^T.
 #'
-#' @param Psi M-by-K matrix Psi
-#' @param Y N-by-K matrix
-#' @param X N-by-M matrix
-#' @param lambda0 a rescaled shrinkage intensity parameter
-#' to be used for computing the effective number of parameters
-#' @param type the type of the constant vector in the VAR shrinkage problem,
-#' which is one of "const", "trend", "both", or "none".
-#' @param ybar,xbar mean vectors of Y and X which had been subtracted.
-#' @param Q-values either NULL or a nonnegative weights of length N,
-#' used for X'QX and X'QY in the hat matrix
-#' @param callstr The call to VARshrink()
-#' @return a list of c('shrinklm', 'lm') objects with components:
-#' coefficients, residuals, fitted.values, rank, df.residual, lambda0,
-#' call, terms, svd
+#' The function converts Psi into a list of "shrinklm" objects which
+#' inherited the class "lm". Consider the multiple linear regression form
+#' of a VAR(p) model: y_j = X %*% psi_j + e_j, j=1,...,K.
+#' Each "shrinklm" object contains the length-M vector psi_j as coefficients.
+#'
+#' Considering that each coefficient vector psi_j is estimated by a
+#' shrinkage method, the effective number of parameters, k_eff, is
+#' computed as: k_eff = Trace(X %*% (X^T %*% X + lambda0 * I)^{-1} %*% X').
+#' Then, the degree of freedom of residuals is computed as: df.residual =
+#' N - k_eff, where N is the number of rows of data matrices Y and X.
+#'
+#' @param Psi An M-by-K matrix of VAR coefficients
+#' @param Y An N-by-K data matrix of dependent variables
+#' @param X An N-by-M data matrix of regressors
+#' @param lambda0 A rescaled shrinkage intensity parameter, based on which the
+#' effective number of parameters is computed by Trace(X(X'X+lambda0*I)^{-1}X')
+#' @param type Type of deterministic variables in the VAR estimation problem.
+#' Either of "const", "trend", "both", or "none".
+#' @param ybar,xbar NULL if Y and X are not centered. Mean vectors if Y and X
+#' had been centered. If Y and X had been centered (ybar and xbar are not NULL)
+#' and type is "const" or "both", then the coefficients for the constant term
+#' is computed and concatenated to the coefficients.
+#' @param Q-values Nonnegative weight vector of length N. Defaut is NULL.
+#' Consider to replace data Y and X with weighted data sqrt(Q)Y and sqrt(Q)X.
+#' @param callstr The call to VARshrink().
+#' @return A list object with objects of class c("shrinklm", "lm").
+#' Each "shrinklm" object has components: coefficients, residuals, fitted.values,
+#' rank, df.residual, lambda0, call, terms, svd
 
 convPsi2varresult <- function(Psi, Y, X, lambda0,
                               type = c("const", "trend", "both", "none"),
@@ -96,5 +109,4 @@ convPsi2varresult <- function(Psi, Y, X, lambda0,
   }
 
   return(varresult)
-
 }

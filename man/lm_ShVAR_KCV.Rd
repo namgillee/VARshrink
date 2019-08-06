@@ -2,11 +2,46 @@
 % Please edit documentation in R/lm_ShVAR_KCV.R
 \name{lm_ShVAR_KCV}
 \alias{lm_ShVAR_KCV}
-\title{Shrinkage estimation method for VAR models using K-fold cross validation}
+\title{K-fold Cross Validation for Selection of Shrinkage Parameters of
+Semiparametric Bayesian Shrinkage Estimator for Multivariate Regression}
 \usage{
-lm_ShVAR_KCV(Y, X, dof = Inf, lambda = NULL, lambda_var = 0,
+lm_ShVAR_KCV(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
   prior_type = c("NCJ", "CJ"), num_folds = 5, m0 = ncol(Y))
 }
+\arguments{
+\item{Y}{An N x K matrix of dependent variables.}
+
+\item{X}{An N x M matrix of regressors.}
+
+\item{dof}{Degree of freedom for multivariate t-distribution.
+If dof = Inf (default), then multivarate normal distribution is applied and
+weight vector q is not estimated. If dof = NULL or a numeric vector,
+then dof is selected by K-fold CV automatically and q is estimated.}
+
+\item{lambda}{If NULL or a vector of length >=2, it is selected by KCV.}
+
+\item{lambda_var}{If NULL or a vector of length >=2, it is selected by KCV.}
+
+\item{prior_type}{"NCJ" for non-conjugate prior and "CJ" for conjugate
+prior for scale matrix Sigma.}
+
+\item{num_folds}{Number of folds for KCV.}
+
+\item{m0}{A hyperparameter for inverse Wishart distribution for Sigma}
+}
 \description{
-Shrinkage estimation method for VAR models using K-fold cross validation
+Estimate regression coefficients and scale matrix for noise by using
+semiparametric Bayesian shrinkage estimator, whose shrinkage parameters
+are selected by K-fold cross validation (KCV).
+}
+\details{
+The shrinkage parameters, lambda and lambda_var, for the semiparametric
+Bayesian shrinkage estimator are selected by KCV. See help(lm_semi_Bayes_PCV)
+for details about semiparametric Bayesian estimator.
+}
+\references{
+N. Lee, H. Choi, and S.-H. Kim (2016). Bayes shrinkage
+estimation for high-dimensional VAR models with scale mixture of normal
+distributions for noise. Computational Statistics & Data Analysis 101,
+250-276. doi: 10.1016/j.csda.2016.03.007
 }

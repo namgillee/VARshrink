@@ -1,15 +1,19 @@
-#' Multivariate ridge regression
-#
-# Inputs:
-#   Y        : Output data matrix Y having size N x K, or,
-#              a vector of length ND.
-#   X        : Input data matrix X having size N x M.
-#   do_scale : If true, center&scale X, and center Y.
-# Outputs:
-#   a list with the following attributes
-#      1) Psi - a list with as many Psi matrices as length(lambda)
-#      2) lambda - vector of lambda values
-#      3) GCV - vector of GCV values
+#' Multivariate Ridge Regression
+#'
+#' Estimate regression coefficients by using ridge regression.
+#'
+#' Consider the multivariate regression:
+#' Y = X * Psi + e. Psi is a M-by-K matrix of regression coefficients.
+#' The ridge regression estimate for the coefficients is
+#' Psi = (X'X + lambda*I)^{-1}X'Y.
+#'
+#' @param Y An N x K matrix of dependent variables.
+#' @param X An N x M matrix of regressors.
+#' @param lambda Numeric vector of lambda values
+#' @do_scale If true, X is centered and scaleed, and Y is centered.
+#' @return A list object with the components: 1) Psi - A list of
+#' estimated Psi matrices, 2) lambda - A vector of
+#' lambda values, 3) GCV - A vector of GCV values
 
 lm_multiv_ridge <- function (Y, X, lambda = 0, do_scale = FALSE) {
 

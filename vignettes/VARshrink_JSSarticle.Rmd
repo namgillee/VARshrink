@@ -665,16 +665,14 @@ We repeated the experiments 50 times and drew boxplots to compare the SSEs of th
 
 ```{r}
 set.seed(1000)
-methods <- c("ridge", "ns", "fbayes", "sbayes")
 p <- 1; d <- 20; NumTimePTS <- c(20, 40, 80, 160)
 const_vector <- c(rep(0.2, 5), rep(0.7, 15))
 Sig <- diag(0.5, d) + matrix(0.5, d, d)
-nrep <- 50
-resu_SSE <- array(0, c(nrep, length(methods), length(NumTimePTS)),
-                  dimnames = list(1:nrep, methods, NumTimePTS))
-for (idnumT in 1:length(NumTimePTS)) {
-  numT = NumTimePTS[idnumT]
-  for (r in 1:nrep) {
+resu_SSE <- array(0, dim = c(50, 4, length(NumTimePTS)), dimnames = 
+  list(1:50, c("Ridge", "NS", "FBayes", "SBayes"), NumTimePTS))
+for (idT in 1:length(NumTimePTS)) {
+  numT = NumTimePTS[idT]
+  for (r in 1:50) {
     Ad <- createVARCoefs_ltriangular(p = p, d = d, diag_val = 0.6,
             num_nonzero = d, const_vector = const_vector, range_max = 1)
     Md <- list(Coef = Ad, Sigma = Sig, dof = Inf)
@@ -683,21 +681,20 @@ for (idnumT in 1:length(NumTimePTS)) {
     EstimNS <- VARshrink(Y, p, "const", method = "ns")
     EstimFB <- VARshrink(Y, p, "const", method = "fbayes", dof = NULL)
     EstimSB <- VARshrink(Y, p, "const", method = "sbayes", prior_type = "NCJ")
-    resu_SSE[r, 1, idnumT] <- calcSSE_Acoef(Acoef.varshrinkest(EstimRG), Ad)
-    resu_SSE[r, 2, idnumT] <- calcSSE_Acoef(Acoef.varshrinkest(EstimNS), Ad)
-    resu_SSE[r, 3, idnumT] <- calcSSE_Acoef(Acoef.varshrinkest(EstimFB), Ad)
-    resu_SSE[r, 4, idnumT] <- calcSSE_Acoef(Acoef.varshrinkest(EstimSB), Ad)
+    resu_SSE[r, 1, idT] <- calcSSE_Acoef(Acoef.varshrinkest(EstimRG), Ad$A)
+    resu_SSE[r, 2, idT] <- calcSSE_Acoef(Acoef.varshrinkest(EstimNS), Ad$A)
+    resu_SSE[r, 3, idT] <- calcSSE_Acoef(Acoef.varshrinkest(EstimFB), Ad$A)
+    resu_SSE[r, 4, idT] <- calcSSE_Acoef(Acoef.varshrinkest(EstimSB), Ad$A)
   }
-  save(resu_SSE, file = paste0("comparisons_d", d, ".RData"))
 }
 ```
 
 ```{r comparisons_d20, fig.cap="Comparison of sum of squared errors (SSEs) of the VAR coefficients estimated by the four shrinkage methods. The multivariate time series data were randomly generated from VAR models of order $p = 1$ and dimensionality $D = 20$, and the noise term was randomly drawn from a multivariate normal distribution."}
 par(mfrow=c(2, 2), mar = c(2.2, 4.2, 2.5, 1))
-for (idnumT in 1:length(NumTimePTS)) {
-  boxplot(resu_SSE[, , idnumT], log = "y", cex.lab = 1.5, cex.main = 1.5,
+for (idT in 1:length(NumTimePTS)) {
+  boxplot(resu_SSE[, , idT], log = "y", cex.lab = 1.5, cex.main = 1.5,
         ylab = "SSE", xlab = "", ylim = c(min(resu_SSE), max(resu_SSE)),
-        main = paste("T =", NumTimePTS[idnumT]))
+        main = paste("T =", NumTimePTS[idT]))
   grid()
 }
 ```

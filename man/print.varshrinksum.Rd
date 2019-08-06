@@ -2,13 +2,16 @@
 % Please edit documentation in R/print.varshrinksum.R
 \name{print.varshrinksum}
 \alias{print.varshrinksum}
-\title{Print method for an object of class 'varshrinksum',}
+\title{Print method for class "varshrinksum"}
 \usage{
 \method{print}{varshrinksum}(x, digits = max(3, getOption("digits") - 3),
   signif.stars = getOption("show.signif.stars"), ...)
 }
 \description{
-Extend print.varsum() to output alternative results
-including the scale matrix, Sigma, and degree-of-freedom, dof,
+Print method for an object obtained by summary.varshrinkest().
+}
+\details{
+Extend print.varsum() for VAR models estimated by shrinkage methods.
+The output includes scale matrix Sigma and degree of freedom dof
 for multivariate t-distribution for residuals.
 }

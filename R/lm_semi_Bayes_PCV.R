@@ -1,23 +1,51 @@
-#' Semiparametric Bayesian shrinkage estimation method for VAR models
+#' Semiparametric Bayesian Shrinkage Estimation Method for Multivariate
+#' Regression
+#'
+#' Estimate regression coefficients and scale matrix for noise by using
+#' a parameterized cross validation (PCV). The function assumes
+#' 1) multivariate t-distribution for noise as a sampling distribution,
+#' and 2) informative priors for regression coefficients and scale matrix
+#' for noise.
+#'
+#' Consider the multivariate regression:
+#' Y = X * Psi + e, with e ~ mvt(0, dof, Sigma).
+#' Psi is a M-by-K matrix of regression coefficients and
+#' Sigma is a K-by-K scale matrix for multivariate t-distribution for noise.
+#'
+#' Sampling distribution for noise e is multivariate t-distribution with
+#' degree of freedom dof and scale matrix Sigma: e ~ mvt(0, dof, Sigma).
+#' The priors are informative priors: 1) a shrinkage prior for regression
+#' coefficients Psi, and 2) inverse Wishart prior for scale matrix Sigma,
+#' which can be either non-conjugate ("NCJ") or conjugate ("CJ") to the
+#' shrinkage prior for coefficients Psi.
+#'
+#' The function implements parameterized cross validation (PCV) for
+#' selecting a shrinkage parameter lambda for estimating regression
+#' coefficients (0 < lambda <= 1).
+#' In addition, the function uses a Stein-type shrinkage method for selecting
+#' a shrinkage parameter lambda_var for estimating variances of
+#' dependent variables and regressors.
+#'
+#' @param Y An N x K matrix of dependent variables.
+#' @param X An N x M matrix of regressors.
+#' @param dof Degree of freedom for multivariate t-distribution.
+#' If dof = Inf (default), then multivarate normal distribution is applied and
+#' weight vector q is not estimated. If dof = NULL or a numeric vector,
+#' then dof is selected by K-fold CV automatically and q is estimated.
+#' @param lambda If NULL or a vector of length >=2, it is selected by PCV.
+#' @param lambda_var If NULL, it is selected by a Stein-type shrinkage method.
+#' @param prior_type "NCJ" for non-conjugate prior and "CJ" for conjugate
+#' prior for scale matrix Sigma.
+#' @param num_folds Number of folds for PCV.
+#' @param m0 A hyperparameter for inverse Wishart distribution for Sigma
+#' @references N. Lee, H. Choi, and S.-H. Kim (2016). Bayes shrinkage
+#' estimation for high-dimensional VAR models with scale mixture of normal
+#' distributions for noise. Computational Statistics & Data Analysis 101,
+#' 250-276. doi: 10.1016/j.csda.2016.03.007
 #
-# lambda can be selected by parameterized cross validation (PCV), and
-# lambda_var can be selected by a nonparametric shrinkage type method.
-# Additive noise is modeled by multivariate t distribution.
-#
-#Inputs
-#   dof : degree of freedom for multivariate Student t distribution.
-#         If Inf, we use multivariate normal distribution.
-#         If NULL or a vector of length >=2, we select by K-fold CV.
-#   lambda : If NULL or a vector of length >=2,
-#         it is selected by PCV (using a default range)
-#   lambda_var : If NULL, we estimate it by shrinkage method.
-#
-# Reference:
-#   N. Lee, H. Choi, and S.-H. Kim (2016), CSDA.
-#
-# 19 Nov. 2017, Namgil Lee, Kangwon National University
+# Last modified: 19 Nov. 2017, Namgil Lee @ Kangwon National University
 
-lm_semi_Bayes_PCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var=NULL,
+lm_semi_Bayes_PCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
                               prior_type = c("NCJ", "CJ"), num_folds = 5,
                               m0 = ncol(Y)) {
 

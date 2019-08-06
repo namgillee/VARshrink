@@ -1,32 +1,50 @@
 #' Shrinkage estimation of VAR parameters
 #'
-#' @param y T-by-K time series data
-#' @param p lag order
-#' @param type   Type of deterministic regressors to include.
-#' 1) "const" - the constant vector. 2) "trend" - the trend.
+#' Shrinkage estimation methods for high-dimensional VAR models.
+#' Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t,
+#' where y_t is K-dimensional time series,
+#' d_t is deterministic regressors, e_t is a noise process, and
+#' A_1, ..., A_p, and C are coefficient matrices.
+#' Exogenous variables can be included additionally as regressors.
+#'
+#' Shrinkage estimation methods can estimate the coefficients
+#' even when the dimensionality K is larger than the
+#' number of observations.
+#'
+#' @param y A T-by-K matrix of endogenous variables
+#' @param p Integer for the lag order
+#' @param type  Type of deterministic regressors to include.
+#' 1) "const" - the constant vector.
+#' 2) "trend" - the trend.
 #' 3) "both" - both the constant and the trend.
 #' 4) "none"  - no deterministic regressors.
-#' @param method 1) "ridge" - multivariate ridge regression
-#'               2) "ns"    - nonparametric shrinkage
-#'               3) "fbayes" - full Bayes MCMC shrinkage
-#'               4) "sbayes" - semi-parametric Bayes shrinkage
-#'               5) "kcv"   - k-fold cross validation
+#' @param season An integer value of frequency for inclusion of
+#' centered seasonal dummy variables. abs(season) >= 3.
+#' @param exogen A T-by-L matrix of exogenous variables. Default is NULL.
+#' @param method 1) "ridge" - multivariate ridge regression.
+#' 2) "ns" - a Stein-type nonparametric shrinkage method.
+#' 3) "fbayes" - a full Bayesian shrinkage method using noninformative priors.
+#' 4) "sbayes" - a semiparametric Bayesian shrinkage method using parameterized
+#' cross validation.
+#' 5) "kcv" - a semiparametric Bayesian shrinkage method using
+#' K-fold cross validation
 #' @param lambda,lambda_var  Shrinkage parameter value(s).
-#'                Use of this parameter is slightly different
-#'                for each method, that is, the same value does not
-#'                imply the same shrinkage estimates.
-#' @param dof  Degree of freedom of multivariate t distribution for noise.
-#'             Valid only for fbayes and sbayes.
-#'             dof=Inf means multivariate normal distribution.
-#' @return An object of class c('varshrinkest','varest') including the
-#' components: varresult, datamat, y, type, p, K, obs, totobs, restrictions,
-#' method, lambda, call
-#'
+#' Use of this parameter is slightly different for each method:
+#' the same value does not imply the same shrinkage estimates.
+#' @param dof  Degree of freedom of multivariate t-distribution for noise.
+#' Valid only for method = "fbayes" and method = "sbayes".
+#' dof=Inf means multivariate normal distribution.
+#' @return An object of class "varshrinkest" with the components:
+#' varresult, datamat, y, type, p, K, obs,
+#' totobs, restrictions, method, lambda, call.
+#' The class "varshrinkest" inherits the class "varest"
+#' in the package vars.
 #' @import vars
 #' @export
 VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
-                   method = c("ridge", "ns", "fbayes", "sbayes", "kcv"),
-                   lambda = NULL, lambda_var = NULL, dof = Inf, ...) {
+                       exogen = NULL,
+                       method = c("ridge", "ns", "fbayes", "sbayes", "kcv"),
+                       lambda = NULL, lambda_var = NULL, dof = Inf, ...) {
   cl <- match.call()
   y <- as.matrix(y)
   totobs <- nrow(y)   #total number of observations
@@ -84,7 +102,32 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   } else {
     stop(paste("Unknown type:", type, "\n"))
   }
-
+  if (!(is.null(season)) && (length(season) == 1) && (abs(season) >= 3)) {
+    season <- abs(as.integer(season))
+    dum <- (diag(season) - 1/season)[, -season]
+    dums <- dum
+    while (nrow(dums) < totobs) {
+      dums <- rbind(dums, dum)
+    }
+    dums <- dums[1:totobs, ]
+    colnames(dums) <- paste("sd", 1:ncol(dums), sep = "")
+    rhs <- cbind(rhs, dums[-c(1:p), ])
+  }
+  if (!(is.null(exogen))) {
+    exogen <- as.matrix(exogen)
+    if (!identical(nrow(exogen), nrow(y))) {
+      stop("\nDifferent row size of y and exogen.\n")
+    }
+    if (is.null(colnames(exogen))) {
+      colnames(exogen) <- paste("exo", 1:ncol(exogen), sep = "")
+      warning(paste("No column names supplied in exogen, using:",
+                    paste(colnames(exogen), collapse = ", "), ", instead.\n"))
+    }
+    colnames(exogen) <- make.names(colnames(exogen))
+    tmp <- colnames(datX)
+    datX <- cbind(datX, exogen[-c(1:p), ])
+    colnames(datX) <- c(tmp, colnames(exogen))
+  }
 
   #### Run a Shrinkage Estimation Method: estim ####
 

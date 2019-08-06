@@ -2,10 +2,29 @@
 % Please edit documentation in R/simVARmodel.R
 \name{simVARmodel}
 \alias{simVARmodel}
-\title{Generate simulated multivariate time series data using the given VAR model}
+\title{Generate multivariate time series data using the given VAR model}
 \usage{
 simVARmodel(numT, model, burnin = 0)
 }
+\arguments{
+\item{numT}{Number of observed time points, T.}
+
+\item{model}{A list object with Coef, Sigma, dof;
+Coef is a list with A and c; A is a list object of K-by-K coefficient
+matrices and c is a length-K vector.
+Sigma is a K-by-K scale matrix and
+dof is a degree of freedom for multivariate t-distribution for noise.}
+
+\item{burnin}{Number of initial points which are not included in the final values.}
+}
+\value{
+A numT-by-K matrix
+}
 \description{
-Generate simulated multivariate time series data using the given VAR model
+Generate a multivariate time series data set using the given VAR model.
+}
+\details{
+First, it creates (p+burnin+numT x K) data, then
+it remove the first (p+burnin) vectors.
+Finally, it returns (numT x K) data.
 }

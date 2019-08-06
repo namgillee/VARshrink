@@ -1,17 +1,19 @@
-#' Generate simulated multivariate time series data using the given VAR model
-#
-# First, it creates (p+burnin+numT x D) data, then
-# it remove the first (p+burning) vectors.
-# Finally, it returns (numT x D) data.
-#
-# Inputs  :
-#   numT : number of observed time points, T.
-#   model : an object of VARparam
-#   burnin : number of initial points which are not included in the final values
-#
-# Outputs :
-#   A matrix of size (numT x D)
-
+#' Generate multivariate time series data using the given VAR model
+#'
+#' Generate a multivariate time series data set using the given VAR model.
+#'
+#' First, it creates (p+burnin+numT x K) data, then
+#' it remove the first (p+burnin) vectors.
+#' Finally, it returns (numT x K) data.
+#'
+#' @param numT Number of observed time points, T.
+#' @param model A list object with Coef, Sigma, dof;
+#' Coef is a list with A and c; A is a list object of K-by-K coefficient
+#' matrices and c is a length-K vector.
+#' Sigma is a K-by-K scale matrix and
+#' dof is a degree of freedom for multivariate t-distribution for noise.
+#' @param burnin Number of initial points which are not included in the final values.
+#' @return A numT-by-K matrix
 #' @export
 simVARmodel <- function (numT, model, burnin = 0) {
   varCoef <- model$Coef
@@ -19,23 +21,23 @@ simVARmodel <- function (numT, model, burnin = 0) {
   dof <- model$dof
 
   p <- length(varCoef$A)
-  d <- dim(varCoef$A[[1]])[1] #D
+  K <- dim(varCoef$A[[1]])[1] #K
 
   if (is.null(noiseCov)) {
-    noiseCov <- diag(1, d) # Identity matrix
+    noiseCov <- diag(1, K) # Identity matrix
   } else {
     if ( length(noiseCov) == 1 ) {
-      noiseCov <- diag(noiseCov, d) # diagonal matrix with equal diagonals
+      noiseCov <- diag(noiseCov, K) # diagonal matrix with equal diagonals
     }
   }
 
   #-- Generate All Noise Vectors --#
   if (is.infinite(dof)) {
     require(MASS)
-    retTS <- mvrnorm(p + burnin + numT, rep(0, d), noiseCov)
+    retTS <- mvrnorm(p + burnin + numT, rep(0, K), noiseCov)
   } else {
     require(mvtnorm)
-    retTS <- rmvt(p + burnin + numT, df = dof, delta = rep(0,d), sigma = noiseCov)
+    retTS <- rmvt(p + burnin + numT, df = dof, delta = rep(0, K), sigma = noiseCov)
   }
 
 	#-- Generate time series --#
@@ -51,6 +53,6 @@ simVARmodel <- function (numT, model, burnin = 0) {
 	    }
 	}
 
-  colnames(retTS) <- paste("y", 1:d, sep = "")
+  colnames(retTS) <- paste("y", 1:K, sep = "")
 	return( retTS[(p + burnin + 1):(p + burnin + numT), , drop = FALSE] )
 }

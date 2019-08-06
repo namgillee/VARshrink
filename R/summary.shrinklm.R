@@ -1,3 +1,9 @@
+#' Summary method for class "shrinklm"
+#'
+#' Class "shrinklm" inherits the class "lm", and it extends
+#' the "lm" class to incorporate shrinkage estimates with
+#' effective number of parameter.
+#'
 #' @export
 summary.shrinklm <- function (object, correlation = FALSE,
                               symbolic.cor = FALSE, ...) {

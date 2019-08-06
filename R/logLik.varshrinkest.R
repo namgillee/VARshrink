@@ -1,8 +1,7 @@
-#' Log-likelihood method for an object of class 'varshrinkest',
-#' VAR parameters estimated by VARshrink()
+#' Log-likelihood method for class "varshrinkest"
 #'
-#' Returns the log-likelihood of an estimated VAR model
-#' for class 'varshrinest'. Extend logLik.varest() to incorporate
+#' Returns the log-likelihood of a VAR model estimated by VARshrink().
+#' Extend vars::logLik.varest() to incorporate
 #' 1) multivariate t-dribution for residuals,
 #' 2) scale matrix Sigma provided by shrinkage methods, and
 #' 3) effective number of parameters provided by shrinkage methods.

@@ -1,21 +1,34 @@
-#' Shrinkage estimation method for VAR models using K-fold cross validation
+#' K-fold Cross Validation for Selection of Shrinkage Parameters of
+#' Semiparametric Bayesian Shrinkage Estimator for Multivariate Regression
+#'
+#' Estimate regression coefficients and scale matrix for noise by using
+#' semiparametric Bayesian shrinkage estimator, whose shrinkage parameters
+#' are selected by K-fold cross validation (KCV).
+#'
+#' The shrinkage parameters, lambda and lambda_var, for the semiparametric
+#' Bayesian shrinkage estimator are selected by KCV. See help(lm_semi_Bayes_PCV)
+#' for details about semiparametric Bayesian estimator.
+#'
+#' @param Y An N x K matrix of dependent variables.
+#' @param X An N x M matrix of regressors.
+#' @param dof Degree of freedom for multivariate t-distribution.
+#' If dof = Inf (default), then multivarate normal distribution is applied and
+#' weight vector q is not estimated. If dof = NULL or a numeric vector,
+#' then dof is selected by K-fold CV automatically and q is estimated.
+#' @param lambda If NULL or a vector of length >=2, it is selected by KCV.
+#' @param lambda_var If NULL or a vector of length >=2, it is selected by KCV.
+#' @param prior_type "NCJ" for non-conjugate prior and "CJ" for conjugate
+#' prior for scale matrix Sigma.
+#' @param num_folds Number of folds for KCV.
+#' @param m0 A hyperparameter for inverse Wishart distribution for Sigma
+#' @references N. Lee, H. Choi, and S.-H. Kim (2016). Bayes shrinkage
+#' estimation for high-dimensional VAR models with scale mixture of normal
+#' distributions for noise. Computational Statistics & Data Analysis 101,
+#' 250-276. doi: 10.1016/j.csda.2016.03.007
 #
-# Both the lambda and lambda_var are selected by KCV.
-# Additive noise is modeled by multivariate t distribution.
-#
-#Inputs
-#   dof : degree of freedom for multivariate Student t distribution.
-#         If Inf, we use multivariate normal distribution.
-#         If NULL or a vector of length >=2, we select by K-fold CV.
-#   lambda, lambda_var: If NULL or a vector of length >=2,
-#         they are selected by K-fold CV (using a default range for NULL)
-#
-# Reference:
-#   N. Lee, H. Choi, and S.-H. Kim (2016), CSDA.
-#
-# 01 Dec. 2017, Namgil Lee, Kangwon National University
+# Last modified: 01 Dec. 2017, Namgil Lee @ Kangwon National University
 
-lm_ShVAR_KCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = 0,
+lm_ShVAR_KCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
                          prior_type = c("NCJ", "CJ"), num_folds = 5,
                          m0 = ncol(Y)) {
 

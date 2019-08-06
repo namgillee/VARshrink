@@ -2,10 +2,28 @@
 % Please edit documentation in R/lm_multiv_ridge.R
 \name{lm_multiv_ridge}
 \alias{lm_multiv_ridge}
-\title{Multivariate ridge regression}
+\title{Multivariate Ridge Regression}
 \usage{
 lm_multiv_ridge(Y, X, lambda = 0, do_scale = FALSE)
 }
+\arguments{
+\item{Y}{An N x K matrix of dependent variables.}
+
+\item{X}{An N x M matrix of regressors.}
+
+\item{lambda}{Numeric vector of lambda values}
+}
+\value{
+A list object with the components: 1) Psi - A list of
+estimated Psi matrices, 2) lambda - A vector of
+lambda values, 3) GCV - A vector of GCV values
+}
 \description{
-Multivariate ridge regression
+Estimate regression coefficients by using ridge regression.
+}
+\details{
+Consider the multivariate regression:
+Y = X * Psi + e. Psi is a M-by-K matrix of regression coefficients.
+The ridge regression estimate for the coefficients is
+Psi = (X'X + lambda*I)^{-1}X'Y.
 }

@@ -2,16 +2,24 @@
 % Please edit documentation in R/calcSSE_Acoef.R
 \name{calcSSE_Acoef}
 \alias{calcSSE_Acoef}
-\title{Sum of squared error (SSE) between two VAR coefficients}
+\title{Sum of squared errors (SSE) between coefficients of two VARs}
 \usage{
 calcSSE_Acoef(Acoef1, Acoef2)
 }
 \arguments{
-\item{Acoef1, Acoef2}{list of coefficient matrices}
+\item{Acoef1, Acoef2}{Each one is a list object with K-by-K coefficient
+matrices of lagged endogenous variables. See help(Acoef.varshrinkest), or,
+help(Acoef).}
 }
 \value{
-SSE value
+SSE value.
 }
 \description{
-VAR coefficients in form of a list of A matrices.
+Compute sum of squared errors of coefficients of lagged endogenous
+variables (Acoef) of two VAR models.
+}
+\details{
+Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t.
+The SSE of two VAR(p) models is expressed as
+sum_{k=1}^p sum_{i=1}^K sum_{j=1}^K ( (A_k)_{ij} - (A_k')_{ij} )^2.
 }

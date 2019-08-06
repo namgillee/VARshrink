@@ -1,26 +1,26 @@
-#' Shrinkage Estimation of VAR coefficients based on Bayesian estimation
+#' Semiparametric Bayesian Shrinkage Estimator for
+#' Multivariate Regression
+#'
+#' Compute the semiparametric Bayesian shrinkage estimator of Psi and Sigma
+#' for a given shrinkage parameter lambda.
+#' The function is a private function for lm_semi_Bayes_PCV() and
+#' lm_ShVAR_KCV().
+#'
+#' @param Y An N x K matrix of dependent variables.
+#' @param X An N x M matrix of regressors.
+#' @param lambda A shrinkage intensity parameter value between 0~1.
+#' @param dof Degree of freedom for multivariate t-distribution.
+#' If NULL or Inf, then use multivariate normal distribution.
+#' @param prior_type "NCJ" for non-conjugate prior and "CJ" for conjugate
+#' prior for scale matrix Sigma.
+#' @param TolDRes Tolerance parameter for stopping criterion.
+#' @param m0 A hyperparameter for inverse Wishart distribution for Sigma
+#' @references N. Lee, H. Choi, and S.-H. Kim (2016). Bayes shrinkage
+#' estimation for high-dimensional VAR models with scale mixture of normal
+#' distributions for noise. Computational Statistics & Data Analysis 101,
+#' 250-276. doi: 10.1016/j.csda.2016.03.007
 #
-#Likelihood model = multivariate t-distribution likelihood
-#Prior for coefficients = either conjugate normal distribution or
-#  non-conjugate normal distribution
-#prior for noise covariance = inverse Wishart distribution(s)
-#
-#INPUTS
-#   X, Y : matrices
-#   lambda : a value between 0~1
-#   dof    : a value >= 1; If NULL or Inf, then use normal distribution
-#   prior_type : 'NCJ' for non-conjugate priors, 'CJ' for conjugate priors.
-#     Case insensitive.
-#   TolDRes
-#   m0     : a hyperparameter
-#
-# Reference:
-#   Lee, N., Choi, H., Kim, S.-H., 2016.
-#   Bayes shrinkage estimation for high-dimensional VAR
-#   models with scale mixture of normal distributions for noise.
-#   Comput. Statist. Data Anal. 101, 250--276.
-#
-# 20 Nov. 2017, Namgil Lee, KNU
+# Last modified: 20 Nov. 2017, Namgil Lee @ Kangwon National University
 
 shrinkVARcoef <- function (Y, X, lambda, dof = Inf, prior_type = "NCJ",
                            TolDRes = 1e-4, m0 = ncol(Y)) {
