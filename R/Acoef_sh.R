@@ -12,11 +12,19 @@
 #' @export
 Acoef_sh <- function (x) {
 
-  if (inherits(x, "varest")) {
-    class(x) <- "varest"
-  } else {
+  if (!inherits(x, "varest")) {
     stop("\nPlease provide an object inheriting class 'varest'.\n")
   }
-  As <- vars::Acoef(x)
+  K <- x$K
+  p <- x$p
+  A <- Bcoef_sh(x)[, 1:(K * p)]
+  As <- list()
+  start <- seq(1, p * K, K)
+  end <- seq(K, p * K, K)
+  for (i in 1:p) {
+    As[[i]] <- matrix(A[, start[i]:end[i]], nrow = K, ncol = K)
+    rownames(As[[i]]) <- rownames(A)
+    colnames(As[[i]]) <- colnames(A[, start[i]:end[i]])
+  }
   return(As)
 }

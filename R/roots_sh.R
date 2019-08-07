@@ -6,12 +6,25 @@
 #'
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
 #' @export
-roots_sh <- function(x, ...) {
-  if (inherits(x, "varest")) {
-    class(x) <- "varest"
-  } else {
+roots_sh <- function(x, modulus = TRUE) {
+
+  if (!inherits(x, "varest")) {
     stop("\nPlease provide an object inheriting class 'varest'.\n")
   }
-  result <- vars::roots(x, ...)
-  return(result)
+  K <- x$K
+  p <- x$p
+  A <- unlist(Acoef_sh(x))
+  companion <- matrix(0, nrow = K * p, ncol = K * p)
+  companion[1:K, 1:(K * p)] <- A
+  if (p > 1) {
+    j <- 0
+    for (i in (K + 1):(K * p)) {
+      j <- j + 1
+      companion[i, j] <- 1
+    }
+  }
+  roots <- eigen(companion)$values
+  if (modulus)
+    roots <- Mod(roots)
+  return(roots)
 }

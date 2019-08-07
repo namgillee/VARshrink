@@ -24,7 +24,7 @@ lm_multiv_ridge <- function (Y, X, lambda = 0, do_scale = FALSE) {
 
   # Set lambda by a sequence of candidate values
   if (is.null(lambda)) {
-    lambda <- as.vector(c(1, 5) %o% rep(10 ^ c(-2:2)))
+    lambda <- as.vector(c(1, 5) %o% rep(10 ^ c(-4:1)))
   }
 
 

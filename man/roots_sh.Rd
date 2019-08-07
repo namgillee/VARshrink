@@ -5,7 +5,7 @@
 \title{Eigenvalues of the companion coefficient matrix of
 a VAR(p)-process}
 \usage{
-roots_sh(x, ...)
+roots_sh(x, modulus = TRUE)
 }
 \description{
 This is a variant of vars::roots() for an object of class 'varshrinkest',
