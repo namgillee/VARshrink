@@ -145,7 +145,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     # Update the return value
     estim$varresult <-
       convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = resu_ridge$lambda[id_min_gcv],
+                        lambda0 = resu_ridge$lambda[id_min_gcv] * N,
                         type = type, callstr = cl
     )
     estim$lambda <- resu_ridge$lambda

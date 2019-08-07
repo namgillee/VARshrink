@@ -189,11 +189,44 @@ The input arguments are described as follows.
 - \code{lambda, lambda_var}:  Shrinkage parameter value(s). Use of this parameter is slightly different for each method: the same value does not imply the same shrinkage estimates. See description in the following subsections for the use of shrinkage parameters in each method.
 - \code{dof}: Degree of freedom of multivariate t-distribution for noise. Valid only for \code{method = "fbayes"} and \code{method = "sbayes"}. \code{dof = Inf} means multivariate normal distribution.
 
-The output value is an object of class "varshrinkest", which inherits the class "varest" in the package \pkg{vars}. An object of class "varest" can be obtained by the function \code{VAR()}. The input arguments and the output value indicate that \code{VARshrink()} is an extension of \code{VAR()} in the \pkg{vars} package. 
-As a result, almost all the methods and functions included in the package \pkg{vars} are available for the package \pkg{VARshrink}, such as \code{print(), summary(), logLik()}. 
-The methods and functions available in the \pkg{VARshrink} package are summarized in Table \ref{tab:methods}. 
+The output value is an object of class "varshrinkest", which inherits the class "varest" in the package \pkg{vars}, and an object of class "varest" can be obtained by the function \code{VAR()} in the package \pkg{vars}. The input arguments and the output value indicate that \code{VARshrink()} is an extension of \code{VAR()} in the \pkg{vars} package. 
+As a result, almost all the methods and functions included in the package \pkg{vars} are available for the package \pkg{VARshrink}, such as \code{fevd(), Phi(), plot()}. 
+The methods and functions available in the \pkg{VARshrink} package are summarized in Table \ref{tab:methods}. The names of the functions for class "varshrinkest" has suffix "_sh" in order to distinguish them from the functions for class "varest". We remark that the classes "varshrinkest", "varshirf", and "varshsum" inherit the classes "varest", "varirf", and "varsum" of the \pkg{vars} package, respectively. 
 
+------------------------------------------------------------------------------
+Function or method  Class         Methods for class      Functions for class
+------------------- ------------- ---------------------- ---------------------
+VAR                 varshrinkest, coef, fevd, fitted,    Acoef_sh,
+                    varest        irf, logLik, Phi,      arch.test_sh, 
+                                  plot, predict, print,  Bcoef_sh,
+                                  Psi, resid, summary    BQ_sh, 
+                                                         causality_sh,
+                                                         normality.test_sh,
+                                                         restrict_sh,
+                                                         roots_sh,
+                                                         serial.test_sh, 
+                                                         stability_sh
 
+fevd                varfevd        plot, print   
+
+irf                 varshirf,      plot, print
+                    varirf
+
+predict             varprd         plot, print           fanchart
+
+summary             varshsum,      print
+                    varsum
+
+arch.test_sh        varcheck       plot, print
+
+normality.test_sh   varcheck       plot, print
+
+serial.test_sh      varcheck       plot, print
+
+stability_sh        varstabil      plot, print
+-------------------------------------------------------------------------------
+
+Table:\label{tab:methods}Structure of the package VARshrink.
 
 
 
