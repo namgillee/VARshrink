@@ -37,11 +37,11 @@ summary.varshrinkest <- function (object, equations = NULL, ...) {
   covres <- cov(resids) * (obs - 1) / min(sapply(object$varresult, df.residual))
   corres <- cor(resids)
   logLik <- as.numeric(logLik(object))
-  roots <- roots.varshrinkest(object)
+  roots <- roots_sh(object)
   result <- list(names = ysubnames, varresult = eqest, covres = covres,
                  corres = corres, logLik = logLik, obs = obs, roots = roots,
                  type = object$type, call = object$call,
                  Sigma = Sigma, dof = dof)
-  class(result) <- c("varshrinksum", "varsum")
+  class(result) <- c("varshsum", "varsum")
   return(result)
 }

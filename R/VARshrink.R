@@ -14,7 +14,7 @@
 #' @param y A T-by-K matrix of endogenous variables
 #' @param p Integer for the lag order
 #' @param type  Type of deterministic regressors to include.
-#' 1) "const" - the constant vector.
+#' 1) "const" - the constant.
 #' 2) "trend" - the trend.
 #' 3) "both" - both the constant and the trend.
 #' 4) "none"  - no deterministic regressors.
@@ -42,7 +42,7 @@
 #' @import vars
 #' @export
 VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
-                       exogen = NULL,
+                       season = NULL, exogen = NULL,
                        method = c("ridge", "ns", "fbayes", "sbayes", "kcv"),
                        lambda = NULL, lambda_var = NULL, dof = Inf, ...) {
   cl <- match.call()
@@ -322,8 +322,8 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   if (!with(estim, exists("varresult"))) {
     warning("VAR parameters were not estimated. Check the method.")
   }
-  #estim$datamat  <- cbind(datY, datX)  ###POSSIBLE INEFFICIENCY###
-  #estim$y        <- y  ###POSSIBLE INEFFICIENCY###
+  estim$datamat  <- cbind(datY, datX) #.boot.varshrinkest();predict()#
+  estim$y        <- y  #..#
   estim$type     <- type
   estim$p        <- p
   estim$K        <- K

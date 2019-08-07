@@ -5,8 +5,8 @@
 \title{Shrinkage estimation of VAR parameters}
 \usage{
 VARshrink(y, p = 1, type = c("const", "trend", "both", "none"),
-  exogen = NULL, method = c("ridge", "ns", "fbayes", "sbayes", "kcv"),
-  lambda = NULL, lambda_var = NULL, dof = Inf, ...)
+  season = NULL, exogen = NULL, method = c("ridge", "ns", "fbayes",
+  "sbayes", "kcv"), lambda = NULL, lambda_var = NULL, dof = Inf, ...)
 }
 \arguments{
 \item{y}{A T-by-K matrix of endogenous variables}
@@ -14,10 +14,13 @@ VARshrink(y, p = 1, type = c("const", "trend", "both", "none"),
 \item{p}{Integer for the lag order}
 
 \item{type}{Type of deterministic regressors to include.
-1) "const" - the constant vector.
+1) "const" - the constant.
 2) "trend" - the trend.
 3) "both" - both the constant and the trend.
 4) "none"  - no deterministic regressors.}
+
+\item{season}{An integer value of frequency for inclusion of
+centered seasonal dummy variables. abs(season) >= 3.}
 
 \item{exogen}{A T-by-L matrix of exogenous variables. Default is NULL.}
 
@@ -36,9 +39,6 @@ the same value does not imply the same shrinkage estimates.}
 \item{dof}{Degree of freedom of multivariate t-distribution for noise.
 Valid only for method = "fbayes" and method = "sbayes".
 dof=Inf means multivariate normal distribution.}
-
-\item{season}{An integer value of frequency for inclusion of
-centered seasonal dummy variables. abs(season) >= 3.}
 }
 \value{
 An object of class "varshrinkest" with the components:

@@ -10,7 +10,7 @@
 #' @param Y An N x K matrix of dependent variables.
 #' @param X An N x M matrix of regressors.
 #' @param lambda Numeric vector of lambda values
-#' @do_scale If true, X is centered and scaleed, and Y is centered.
+#' @param do_scale If true, X is centered and scaleed, and Y is centered.
 #' @return A list object with the components: 1) Psi - A list of
 #' estimated Psi matrices, 2) lambda - A vector of
 #' lambda values, 3) GCV - A vector of GCV values
