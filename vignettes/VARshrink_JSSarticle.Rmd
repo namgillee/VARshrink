@@ -32,10 +32,9 @@ keywords:
 preamble: >
   \usepackage{amsmath}
   \usepackage{amsfonts}
-  \usepackage{longtable}
+  \usepackage{array}
 bibliography: bibVARshrink.bib
 output: rticles::jss_article
-longtable: true
 vignette: >
   %\VignetteIndexEntry{VARshrink_JSSarticle}
   %\VignetteEngine{knitr::rmarkdown}
@@ -171,11 +170,11 @@ In this section, we will describe the shrinkage estimation methods implemented i
 
 We provide a common \proglang{R} function interface \code{VARshrink()} for running the estimation methods, which is defined by
 
-```{r, eval = FALSE}
+\begin{verbatim}
 VARshrink(y, p = 1, type = c("const", "trend", "both", "none"),
   season = NULL, exogen = NULL, method = c("ridge", "ns", "fbayes",
   "sbayes", "kcv"), lambda = NULL, lambda_var = NULL, dof = Inf, ...)
-```
+\end{verbatim}
 
 The input arguments are described as follows.
 
@@ -203,65 +202,19 @@ As a result, almost all the methods and functions included in the package \pkg{v
 The methods and functions available in the \pkg{VARshrink} package are summarized in Table \ref{tab:methods}. The names of the functions for class "varshrinkest" has suffix "_sh" in order to distinguish them from the functions for class "varest". We remark that the classes "varshrinkest", "varshirf", and "varshsum" inherit the classes "varest", "varirf", and "varsum" of the \pkg{vars} package, respectively. 
 
 
-| Function or method  |  Class        | Methods for class   | Functions for class |
-----------------------|---------------|---------------------|---------------------|
-| VAR                 | varshrinkest, | coef, fevd, fitted, |   Acoef_sh,         |
-|                     | varest        |  irf, logLik, Phi,  |    arch.test_sh,    |
-|                     |               |  plot, predict, print,|  Bcoef_sh,        |
-|                     |               |   Psi, resid, summary|    BQ_sh,          |
-|                     |               |                     |  causality_sh,      |
-|                     |               |                     |   normality.test_sh,|
-|                     |               |                     | restrict_sh,|
-|                     |               |                     | roots_sh,|
-|                     |               |                     | serial.test_sh, |
-|                     |               |                     | stability_sh|
-| fevd                | varfevd       | plot, print         |             |
-| irf                 | varshirf,     | plot, print         |             |
-|                     | varirf        |                     |             |
-| predict             | varprd        | plot, print         |  fanchart             |
-| summary             | varshsum,     | print               |             |
-|                     | varsum        |                     |             |
-| arch.test_sh        |varcheck       |  plot, print        |             |
-| normality.test_sh   |varcheck       |plot, print          |             |
-| serial.test_sh      |varcheck       |plot, print          |             |
-| stability_sh        |varstabil      |plot, print          |             |
-
-
-------------------------------------------------------------------------------
-Function or method  Class         Methods for class      Functions for class
-------------------- ------------- ---------------------- ---------------------
-VAR                 varshrinkest, coef, fevd, fitted,    Acoef_sh,
-                    varest        irf, logLik, Phi,      arch.test_sh, 
-                                  plot, predict, print,  Bcoef_sh,
-                                  Psi, resid, summary    BQ_sh, 
-                                                         causality_sh,
-                                                         normality.test_sh,
-                                                         restrict_sh,
-                                                         roots_sh,
-                                                         serial.test_sh, 
-                                                         stability_sh
-
-fevd                varfevd        plot, print   
-
-irf                 varshirf,      plot, print
-                    varirf
-
-predict             varprd         plot, print           fanchart
-
-summary             varshsum,      print
-                    varsum
-
-arch.test_sh        varcheck       plot, print
-
-normality.test_sh   varcheck       plot, print
-
-serial.test_sh      varcheck       plot, print
-
-stability_sh        varstabil      plot, print
--------------------------------------------------------------------------------
-
-Table:\label{tab:methods}Structure of the package VARshrink.
-
+```{r, echo = FALSE, warning=FALSE}
+library(kableExtra)
+text_tbl <- data.frame(
+FM = c("VAR",                  "fevd",    "irf",              "predict", "summary",        "arch.test_sh", "normality.test_sh", "serial.test_sh", "stability_sh"), 
+CL = c("varshrinkest, varest", "varfevd", "varshirf, varirf", "varprd",  "varshsum, varsum",    "varcheck",      "varcheck",          "varcheck",       "varstabil"),
+MC = c("coef, fevd, fitted, irf, logLik, Phi, plot, predict, print, Psi, resid, summary",                              "plot, print", "plot, print",  "plot, print", "print",                "plot, print",   "plot, print",       "plot, print",    "plot, print"), 
+FC = c("Acoef_sh, arch.test_sh, Bcoef_sh, BQ_sh, causality_sh, normality.test_sh, restrict_sh, roots_sh, serial.test_sh, stability_sh", " ", " ", "fanchart", " ", " ", " ", " ", " ")
+)
+colnames(text_tbl) <- c("Function or method", "Class", "Methods for class", "Functions for class")
+knitr::kable(text_tbl,
+     caption = "\\label{tab:methods}Structure of the package VARshrink.") %>%
+     column_spec(1:4, width = "7em", border_left = FALSE, border_right = FALSE)
+```
 
 
 ## Multivariate Ridge Regression
@@ -289,7 +242,7 @@ The shrinkage parameter $\lambda$ for the ridge regression can be automatically 
 	\begin{equation}
 	GCV(\lambda) = \frac{1}{N} \left\| (\mathbf{I} - \mathbf{H}(\lambda) \mathbf{Y} )  \right\|^2_\text{F}
 	\left/
-	\left[ \frac{1}{T-p} Trace(\mathbf{I} - \mathbf{H}(\lambda) ) \right]^2
+	\left[ \frac{1}{N} Trace(\mathbf{I} - \mathbf{H}(\lambda) ) \right]^2
 	\right. ,
 	\end{equation}
 	where $\mathbf{H}(\lambda) = \mathbf{X}^\top \left(\mathbf{X}^\top \mathbf{X} + N \lambda \mathbf{I} \right)^{-1}  \mathbf{X}^\top$.
@@ -304,7 +257,7 @@ For example, simulated time series data of length $T=100$ were generated based o
 library(VARshrink)
 ```
 
-```{r, results = "hide"}
+```{r, results = "hide", message=FALSE}
 set.seed(1000)
 myCoef <- list(A = list(matrix(c(0.5, 0, 0, 0.5), 2, 2)), c = c(0.2, 0.7))
 myModel <- list(Coef = myCoef, Sigma = diag(0.1^2, 2), dof = Inf)
@@ -693,15 +646,17 @@ knitr::kable(round(resu_model, 1),
              caption = "\\label{tab:modelcomp}Information criteria (AIC, BIC) for model comparison.")
 ```
 
-The estimated parameters by the NS method with $p=2$ can be analyzed further by the \code{print()} and \code{summary()} methods. For example, 
+The estimated parameters by the NS method with $p=2$ can be analyzed further by using the methods and functions in Table \ref{tab:methods}. For example, we can perform time series forecasting as follows.
 
-```{r, results = "hide"}
-summary(EstimNS <- VARshrink(Y, p = 2, type = "const", method = "ns"))
+```{r}
+plot(predict(VARshrink(Y, p = 2, type = "const", method = "ns")), names = "U")
 ```
+
+
 
 ## Comparative Simulation
 
-For comparison of estimation accuracies by the shrinkage estimation methods, we generated multivariate time series data of length $T = 20, 40, 80, 160$ from $K = 20$ dimensional VAR models of order $p = 1$. We note that when $T = 20$, the sample size $T - p = 19$ becomes smaller than the dimensionality $K = 20$. We set the VAR coefficient matrix, $\mathbf{A}_1$, to have the diagonal entries of 0.6 and off-diagonal entries of zeros except for $K$ entries randomly selected on the lower triangular part of the matrix. The nonzero off-diagonal entries were uniformly randomly drawn from the interval $[-1, -0.2]\cup[0.2, 1]$. Since the coefficient matrix is lower triangular, the diagonal entries determine its eigenvalues, which lead to weak stationarity [@Hamilton94;@Tsay05]. The noise $\boldsymbol\epsilon_t$ was randomly sampled from the multivariate normal distribution whose covariance matrix has diagonal entries of 1 and off-diagonal entries of 0.5.
+For comparison of estimation accuracies by the shrinkage estimation methods, we generated multivariate time series data of length $T = 20, 40, 80, 160$ from $K = 20$ dimensional VAR models of order $p = 1$. We note that when $T = 20$, the sample size $N = T - p = 19$ becomes smaller than the dimensionality $K = 20$. We set the VAR coefficient matrix, $\mathbf{A}_1$, to have the diagonal entries of 0.6 and off-diagonal entries of zeros except for $K$ entries randomly selected on the lower triangular part of the matrix. The nonzero off-diagonal entries were uniformly randomly drawn from the interval $[-1, -0.2]\cup[0.2, 1]$. Since the coefficient matrix is lower triangular, the diagonal entries determine its eigenvalues, which lead to weak stationarity [@Hamilton94;@Tsay05]. The noise $\boldsymbol\epsilon_t$ was randomly sampled from the multivariate normal distribution whose covariance matrix has diagonal entries of 1 and off-diagonal entries of 0.5.
 The mean of sum of squared errors (MSSE) of estimated VAR coefficients, $\widehat{\mathbf{A}}_1$, was computed by
 	\begin{equation}
 	\sum_{i=1}^K \sum_{j=1}^K \left( \left(\widehat{\mathbf{A}}_1\right)_{ij} -
@@ -710,34 +665,32 @@ The mean of sum of squared errors (MSSE) of estimated VAR coefficients, $\wideha
 We repeated the experiments 50 times and drew boxplots to compare the SSEs of the shrinkage methods.
 
 ```{r}
-# set.seed(1000)
-# p <- 1; d <- 20; NumTimePTS <- c(20, 40, 80, 160)
-# const_vector <- c(rep(0.2, 5), rep(0.7, 15))
-# Sig <- diag(0.5, d) + matrix(0.5, d, d)
-# resu_SSE <- array(0, dim = c(50, 4, length(NumTimePTS)), dimnames = 
-#   list(1:50, c("Ridge", "NS", "FBayes", "SBayes"), NumTimePTS))
-# for (idT in 1:length(NumTimePTS)) {
-#   numT = NumTimePTS[idT]
-#   for (r in 1:50) {
-#     Ad <- createVARCoefs_ltriangular(p = p, d = d, diag_val = 0.6,
-#             num_nonzero = d, const_vector = const_vector, range_max = 1)
-#     Md <- list(Coef = Ad, Sigma = Sig, dof = Inf)
-#     Y <- simVARmodel(numT = numT, model = Md, burnin = 20)
-#     EstimRG <- VARshrink(Y, p, "const", method = "ridge")
-#     EstimNS <- VARshrink(Y, p, "const", method = "ns")
-#     EstimFB <- VARshrink(Y, p, "const", method = "fbayes", dof = NULL)
-#     EstimSB <- VARshrink(Y, p, "const", method = "sbayes", prior_type = "NCJ")
-#     resu_SSE[r, 1, idT] <- calcSSE_Acoef(Acoef_sh(EstimRG), Ad$A)
-#     resu_SSE[r, 2, idT] <- calcSSE_Acoef(Acoef_sh(EstimNS), Ad$A)
-#     resu_SSE[r, 3, idT] <- calcSSE_Acoef(Acoef_sh(EstimFB), Ad$A)
-#     resu_SSE[r, 4, idT] <- calcSSE_Acoef(Acoef_sh(EstimSB), Ad$A)
-#   }
-# }
-NumTimePTS <- c(20, 40, 80, 160)
-load("comparisons_K20.RData")
+set.seed(1000)
+p <- 1; K <- 20; NumTimePTS <- c(20, 40, 80, 160)
+const_vector <- c(rep(0.2, 5), rep(0.7, 15))
+Sig <- diag(0.5, K) + matrix(0.5, K, K)
+resu_SSE <- array(0, dim = c(50, 4, length(NumTimePTS)), dimnames =
+  list(1:50, c("Ridge", "NS", "FBayes", "SBayes"), NumTimePTS))
+for (idT in 1:length(NumTimePTS)) {
+  numT = NumTimePTS[idT]
+  for (r in 1:50) {
+    Ad <- createVARCoefs_ltriangular(p = p, K = K, diag_val = 0.6,
+            num_nonzero = K, const_vector = const_vector, range_max = 1)
+    Md <- list(Coef = Ad, Sigma = Sig, dof = Inf)
+    Y <- simVARmodel(numT = numT, model = Md, burnin = 20)
+    EstimRG <- VARshrink(Y, p, "const", method = "ridge")
+    EstimNS <- VARshrink(Y, p, "const", method = "ns")
+    EstimFB <- VARshrink(Y, p, "const", method = "fbayes", dof = NULL)
+    EstimSB <- VARshrink(Y, p, "const", method = "sbayes", prior_type = "NCJ")
+    resu_SSE[r, 1, idT] <- calcSSE_Acoef(Acoef_sh(EstimRG), Ad$A)
+    resu_SSE[r, 2, idT] <- calcSSE_Acoef(Acoef_sh(EstimNS), Ad$A)
+    resu_SSE[r, 3, idT] <- calcSSE_Acoef(Acoef_sh(EstimFB), Ad$A)
+    resu_SSE[r, 4, idT] <- calcSSE_Acoef(Acoef_sh(EstimSB), Ad$A)
+  }
+}
 ```
 
-```{r comparisons_d20, fig.cap="\\label{fig:comparisons_d20}Comparison of the mean of sum of squared errors (MSSE) of the VAR coefficients estimated by the four shrinkage methods. The multivariate time series data were randomly generated from VAR models of order $p = 1$ and dimensionality $K = 20$, and the noise term was randomly drawn from a multivariate normal distribution."}
+```{r comparisons_d20, echo=FALSE, fig.cap="\\label{fig:comparisons_d20}Comparison of the mean of sum of squared errors (MSSE) of the VAR coefficients estimated by the four shrinkage methods. The multivariate time series data were randomly generated from VAR models of order $p = 1$ and dimensionality $K = 20$, and the noise term was randomly drawn from a multivariate normal distribution."}
 par(mfrow=c(2, 2), mar = c(2.2, 4.2, 2.5, 1))
 for (idT in 1:length(NumTimePTS)) {
   boxplot(resu_SSE[, , idT], log = "y", cex.lab = 1.5, cex.main = 1.5,
