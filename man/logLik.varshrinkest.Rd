@@ -4,10 +4,12 @@
 \alias{logLik.varshrinkest}
 \title{Log-likelihood method for class "varshrinkest"}
 \usage{
-\method{logLik}{varshrinkest}(object)
+\method{logLik}{varshrinkest}(object, ...)
 }
 \arguments{
 \item{object}{An object of class "varshrinkest"}
+
+\item{...}{Currently not used.}
 }
 \description{
 Returns the log-likelihood of a VAR model estimated by VARshrink().

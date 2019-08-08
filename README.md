@@ -1,5 +1,22 @@
-# VARshrink
-Shrinkage Estimation Methods for Vector Autoregressive (VAR) Models 
+# VARshrink: Shrinkage Estimation Methods for Vector Autoregressive (VAR) Models. 
+
+VAR model is a fundamental and effective approach for multivariate time series analysis.
+Shrinkage estimation methods can be applied to high-dimensional VAR models with dimensionality greater than the number of observations, contrary to the standard ordinary least squares method. 
+
+The package **VARshrink** aims to be an integrative R package delivering nonparametric, parametric, and semiparametric methods in a unified and consistent manner.
+
+The package **VARshrink** provides a simple interface function `VARshrink()`, which is an extension of the function `VAR()` in the **vars** package. 
+
+Example:
+
+```
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(Y, p = 2, type = "const", method = "ns")
+plot(predict(estim), names = "U")
+```
+
+
 
 Namgil Lee, Heon-Young Yang (@ Kangwon National University, South Korea), Sung-Ho Kim (@ KAIST, South Korea)
 

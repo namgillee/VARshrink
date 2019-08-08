@@ -2,6 +2,13 @@
 #'
 #' An extension of vars::arch.test() to the class "varshrinkest".
 #' Performs univariate and multivariate ARCH-LM tests for a VAR.
+#' @param x An object of class "varshrinkest" obtained by VARshrink()
+#' @param lags.single An integer of the lag order used for
+#'   univariate ARCH statistics.
+#' @param lags.multi An integer of the lag order used for
+#'   multivariate ARCH statistic.
+#' @param multivariate.only If TRUE, only the multivariate statistic
+#'   is computed.
 #' @export
 arch.test_sh <- function (x, lags.single = 16, lags.multi = 5,
                           multivariate.only = TRUE) {

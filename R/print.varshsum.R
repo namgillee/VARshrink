@@ -10,7 +10,7 @@
 #' @param x An object of class "varshsum"
 #' @param digits,signif.stars,... Other arguments for print(),
 #' printCoefmat(), format() method
-#' @importFrom stats printCoefmat
+#' @importFrom stats printCoefmat pf cov2cor
 #' @export
 print.varshsum <- function (x, digits = max(3, getOption("digits") - 3),
                             signif.stars = getOption("show.signif.stars"),

@@ -7,6 +7,18 @@
 arch.test_sh(x, lags.single = 16, lags.multi = 5,
   multivariate.only = TRUE)
 }
+\arguments{
+\item{x}{An object of class "varshrinkest" obtained by VARshrink()}
+
+\item{lags.single}{An integer of the lag order used for
+univariate ARCH statistics.}
+
+\item{lags.multi}{An integer of the lag order used for
+multivariate ARCH statistic.}
+
+\item{multivariate.only}{If TRUE, only the multivariate statistic
+is computed.}
+}
 \description{
 An extension of vars::arch.test() to the class "varshrinkest".
 Performs univariate and multivariate ARCH-LM tests for a VAR.

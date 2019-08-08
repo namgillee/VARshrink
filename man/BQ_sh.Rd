@@ -6,6 +6,9 @@
 \usage{
 BQ_sh(x)
 }
+\arguments{
+\item{x}{An object of class "varshrinkest" obtained by VARshrink().}
+}
 \description{
 An extension of vars::BQ() to the class "varshrinkest".
 }

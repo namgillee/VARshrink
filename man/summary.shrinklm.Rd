@@ -15,6 +15,8 @@ the estimated coefficients is returned and printed.}
 
 \item{symbolic.cor}{If TRUE, print the correlations in a symbolic form
 rather than as numbers}
+
+\item{...}{Currently not used.}
 }
 \description{
 Class "shrinklm" inherits the class "lm", and it extends

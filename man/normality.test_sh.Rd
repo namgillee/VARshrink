@@ -4,7 +4,13 @@
 \alias{normality.test_sh}
 \title{Normality, multivariate skewness and kurtosis test for VAR shrinkage estimates}
 \usage{
-normality.test_sh(x, ...)
+normality.test_sh(x, multivariate.only = TRUE)
+}
+\arguments{
+\item{x}{An object of class "varshrinkest" obtained by VARshrink().}
+
+\item{multivariate.only}{If TRUE, only the multivariate statistics
+is computed.}
 }
 \description{
 An extension of vars::normallity.test() to the class "varshrinkest".
