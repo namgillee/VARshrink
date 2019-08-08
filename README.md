@@ -3,7 +3,7 @@ Shrinkage Estimation Methods for Vector Autoregressive (VAR) Models
 
 Namgil Lee, Heon-Young Yang (@ Kangwon National University, South Korea), Sung-Ho Kim (@ KAIST, South Korea)
 
-### References {-}
+### References
 
 N. Lee, H. Choi, and S.-H. Kim (2016). Bayes shrinkage estimation for high-dimensional VAR models with scale mixture of normal distributions for noise. Computational Statistics & Data Analysis 101, 250-276. doi: 10.1016/j.csda.2016.03.007
 
