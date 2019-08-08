@@ -6,6 +6,11 @@
 \usage{
 restrict_sh(x, ...)
 }
+\arguments{
+\item{x}{An object of class "varshrinkest"}
+
+\item{...}{Other arguments to vars::restrict()}
+}
 \description{
 Warning: this function ignores shrinkage estimation, so it need to be
 revised.

@@ -30,13 +30,13 @@
 #' had been centered. If Y and X had been centered (ybar and xbar are not NULL)
 #' and type is "const" or "both", then the coefficients for the constant term
 #' is computed and concatenated to the coefficients.
-#' @param Q-values Nonnegative weight vector of length N. Defaut is NULL.
-#' Consider to replace data Y and X with weighted data sqrt(Q)Y and sqrt(Q)X.
+#' @param Q_values Nonnegative weight vector of length N. Defaut is NULL.
+#' Take weights on rows (samples) of Y and X by sqrt(Q).
 #' @param callstr The call to VARshrink().
 #' @return A list object with objects of class c("shrinklm", "lm").
 #' Each "shrinklm" object has components: coefficients, residuals, fitted.values,
 #' rank, df.residual, lambda0, call, terms, svd
-
+#' @importFrom stats terms
 convPsi2varresult <- function(Psi, Y, X, lambda0,
                               type = c("const", "trend", "both", "none"),
                               ybar = NULL, xbar = NULL,

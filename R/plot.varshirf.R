@@ -1,3 +1,5 @@
+#' @import graphics
+#' @importFrom grDevices xy.coords
 plot.varshirf <-
   function (x, plot.type = c("multiple", "single"), names = NULL,
             main = NULL, sub = NULL, lty = NULL, lwd = NULL, col = NULL,

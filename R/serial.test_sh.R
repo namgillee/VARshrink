@@ -1,3 +1,6 @@
+#' Test for serially correlated errors for VAR shrinkage estimate
+#'
+#' An extension of vars::serial.test() to the class "varshrinkest".
 #' @export
 serial.test_sh <- function(x, ...) {
   if (inherits(x, "varest")) {

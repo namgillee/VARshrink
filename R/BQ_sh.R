@@ -1,3 +1,6 @@
+#' BQ function for class "varshrinkest"
+#'
+#' An extension of vars::BQ() to the class "varshrinkest".
 #' @export
 BQ_sh <- function(x) {
   if (inherits(x, "varest")) {

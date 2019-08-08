@@ -1,3 +1,7 @@
+#' Causality Analysis for class "varshrinkest"
+#'
+#' An extension of vars::causality() to the class "varshrinkest".
+#'
 #' @export
 causality_sh <- function(x, ...) {
   if (inherits(x, "varest")) {

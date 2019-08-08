@@ -1,3 +1,4 @@
+#' @importFrom stats update quantile
 h_boot <- function (x, n.ahead, runs, ortho, cumulative, impulse, response,
                     ci, seed, y.names) {
   if (!(is.null(seed)))

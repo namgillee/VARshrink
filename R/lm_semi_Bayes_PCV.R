@@ -42,6 +42,7 @@
 #' estimation for high-dimensional VAR models with scale mixture of normal
 #' distributions for noise. Computational Statistics & Data Analysis 101,
 #' 250-276. doi: 10.1016/j.csda.2016.03.007
+#' @importFrom stats var median
 #
 # Last modified: 19 Nov. 2017, Namgil Lee @ Kangwon National University
 

@@ -7,6 +7,15 @@
 \method{summary}{shrinklm}(object, correlation = FALSE,
   symbolic.cor = FALSE, ...)
 }
+\arguments{
+\item{object}{An object of class "shrinklm"}
+
+\item{correlation}{If TRUE, the correlation matrix of the
+the estimated coefficients is returned and printed.}
+
+\item{symbolic.cor}{If TRUE, print the correlations in a symbolic form
+rather than as numbers}
+}
 \description{
 Class "shrinklm" inherits the class "lm", and it extends
 the "lm" class to incorporate shrinkage estimates with

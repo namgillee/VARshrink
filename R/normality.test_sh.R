@@ -1,3 +1,6 @@
+#' Normality, multivariate skewness and kurtosis test for VAR shrinkage estimates
+#'
+#' An extension of vars::normallity.test() to the class "varshrinkest".
 #' @export
 normality.test_sh <- function(x, ...) {
   if (inherits(x, "varest")) {

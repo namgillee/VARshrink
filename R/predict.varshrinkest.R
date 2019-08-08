@@ -1,3 +1,5 @@
+#' @importFrom utils tail
+#' @importFrom stats qnorm
 #' @export
 predict.varshrinkest <- function (object, ..., n.ahead = 10, ci = 0.95,
                                   dumvar = NULL) {

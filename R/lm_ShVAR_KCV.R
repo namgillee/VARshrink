@@ -25,6 +25,7 @@
 #' estimation for high-dimensional VAR models with scale mixture of normal
 #' distributions for noise. Computational Statistics & Data Analysis 101,
 #' 250-276. doi: 10.1016/j.csda.2016.03.007
+#' @importFrom stats var median
 #
 # Last modified: 01 Dec. 2017, Namgil Lee @ Kangwon National University
 
@@ -33,7 +34,7 @@ lm_ShVAR_KCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
                          m0 = ncol(Y)) {
 
   if (num_folds <= 1)
-    error("In:lm_ShVAR_KCV:", "Number of folds must be >= 2")
+    stop("Number of folds must be >= 2")
 
   if (is.null(lambda))
     lambda <- c(1e-3,  seq(1e-2, 1 - 1e-2, by = 0.01), 1 - 1e-3, 1 - 1e-5, 1)

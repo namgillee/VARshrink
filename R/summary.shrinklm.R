@@ -3,7 +3,12 @@
 #' Class "shrinklm" inherits the class "lm", and it extends
 #' the "lm" class to incorporate shrinkage estimates with
 #' effective number of parameter.
-#'
+#' @param object An object of class "shrinklm"
+#' @param correlation If TRUE, the correlation matrix of the
+#' the estimated coefficients is returned and printed.
+#' @param symbolic.cor If TRUE, print the correlations in a symbolic form
+#' rather than as numbers
+#' @importFrom stats coef var pt
 #' @export
 summary.shrinklm <- function (object, correlation = FALSE,
                               symbolic.cor = FALSE, ...) {

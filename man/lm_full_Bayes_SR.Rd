@@ -16,6 +16,10 @@ lm_full_Bayes_SR(Y, X, dof = Inf, burnincycle = 1000,
 If dof = Inf (default), then multivarate normal distribution is applied and
 weight vector q is not estimated. If dof = NULL or dof <= 0, then dof and q
 are estimated automatically. If dof is a positive number, q is estimated.}
+
+\item{burnincycle, mcmccycle}{Number of burnin cycles is the number of
+initially generated sample values to drop. Number of MCMC cycles is the
+number of generated sample values to compute estimates.}
 }
 \value{
 A list object with estimated parameters: Psi, Sigma, dof, delta

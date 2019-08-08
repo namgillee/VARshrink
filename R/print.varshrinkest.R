@@ -1,7 +1,9 @@
 #' Print method for class "varshrinkest"
 #'
-#' Print method for an object of class "varshrinkest" estimated by
-#' VARshrink()
+#' Print method for an object of class "varshrinkest"
+#' @param x An object of class "varshrinkest"
+#' @param digits,... Other arguments for print() method
+#' @importFrom stats coef
 #' @export
 print.varshrinkest <- function(x, digits = max(3, getOption("digits") - 3),
                                ...) {

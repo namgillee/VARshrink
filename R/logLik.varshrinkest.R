@@ -5,12 +5,14 @@
 #' 1) multivariate t-dribution for residuals,
 #' 2) scale matrix Sigma provided by shrinkage methods, and
 #' 3) effective number of parameters provided by shrinkage methods.
+#' @param object An object of class "varshrinkest"
+#' @importFrom stats df.residual resid
 #'
-# Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
+## Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
 # Acknowledgement: this code was contributed by Sung-Hoon Han & Dong-Han Lee
 # @ Kangwon National University (2018.11.29.)
 #' @export
-logLik.varshrinkest <- function(object, ...) {
+logLik.varshrinkest <- function(object) {
 
   obs <- object$obs
   df <- sum( obs - unlist(lapply(object$varresult, df.residual )) )

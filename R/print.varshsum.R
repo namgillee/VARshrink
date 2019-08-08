@@ -7,6 +7,10 @@
 #' for multivariate t-distribution for residuals.
 #'
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
+#' @param x An object of class "varshsum"
+#' @param digits,signif.stars,... Other arguments for print(),
+#' printCoefmat(), format() method
+#' @importFrom stats printCoefmat
 #' @export
 print.varshsum <- function (x, digits = max(3, getOption("digits") - 3),
                             signif.stars = getOption("show.signif.stars"),

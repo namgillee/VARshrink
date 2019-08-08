@@ -34,6 +34,9 @@
 #' @param dof  Degree of freedom of multivariate t-distribution for noise.
 #' Valid only for method = "fbayes" and method = "sbayes".
 #' dof=Inf means multivariate normal distribution.
+#' @param ... Extra arguments to pass to a specific function of the
+#' estimation method. For example, burnincycle and mcmccycle are for
+#' "fbayes".
 #' @return An object of class "varshrinkest" with the components:
 #' varresult, datamat, y, type, p, K, obs,
 #' totobs, restrictions, method, lambda, call.

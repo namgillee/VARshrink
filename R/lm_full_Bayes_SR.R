@@ -24,6 +24,9 @@
 #' If dof = Inf (default), then multivarate normal distribution is applied and
 #' weight vector q is not estimated. If dof = NULL or dof <= 0, then dof and q
 #' are estimated automatically. If dof is a positive number, q is estimated.
+#' @param burnincycle,mcmccycle Number of burnin cycles is the number of
+#' initially generated sample values to drop. Number of MCMC cycles is the
+#' number of generated sample values to compute estimates.
 #' @return A list object with estimated parameters: Psi, Sigma, dof, delta
 #' (delta is the reciprocal of lambda), and lambda.
 #' Additional components are se.param (standard error of the parameters) and
@@ -31,6 +34,8 @@
 #' @references S. Ni and D. Sun (2005). Bayesian estimates for vector
 #' autoregressive models. Journal of Business & Economic Statistics 23(1),
 #' 105-117.
+#' @importFrom stats rgamma rnorm runif
+#' @importFrom utils capture.output
 #
 # Last modified: Nov. 8th, 2018 by Namgil Lee @ Kangwon National University,
 # South Korea.

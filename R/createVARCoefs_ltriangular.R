@@ -25,6 +25,7 @@
 #' [-range_max, -range_min] U [range_min, range_max]
 #' @return A list object with components $A and $c. $A is a list of K-by-K
 #' matrices A_1, ..., A_p, and $c is a constant vector of length K.
+#' @importFrom stats runif
 #' @export
 createVARCoefs_ltriangular <- function(p = 1, K = 5, diag_val = 1 / p,
                                        num_nonzero = 0, const_vector = NULL,

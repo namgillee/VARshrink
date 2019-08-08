@@ -5,6 +5,8 @@
 #' VAR parameters estimated by VARshrink()
 #'
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
+#' @param x An object of class "varshrinkest"
+#' @param modulus TRUE for modulus of the roots.
 #' @export
 roots_sh <- function(x, modulus = TRUE) {
 

@@ -39,6 +39,10 @@ the same value does not imply the same shrinkage estimates.}
 \item{dof}{Degree of freedom of multivariate t-distribution for noise.
 Valid only for method = "fbayes" and method = "sbayes".
 dof=Inf means multivariate normal distribution.}
+
+\item{...}{Extra arguments to pass to a specific function of the
+estimation method. For example, burnincycle and mcmccycle are for
+"fbayes".}
 }
 \value{
 An object of class "varshrinkest" with the components:

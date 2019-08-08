@@ -19,11 +19,13 @@ Imports:
     corpcor (>= 1.6.9),
     strucchange,
     stats,
-    MASS
+    MASS,
+    mvtnorm
 Suggests:
     devtools,
     knitr,
-    rmarkdown
+    rmarkdown,
+    kableExtra
 BugReports: https://github.com/namgillee/VARshrink/issues
 Encoding: UTF-8
 LazyData: true

@@ -12,6 +12,12 @@
 #' for multivariate t-distribution for residuals.
 #'
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
+#' @param object An object of class "varshrinkest", usually
+#' a result of call to "VARshrink()".
+#' @param equations Subset of names of endogenous time series variables
+#' to summarize.
+#' @param ... Currently not used.
+#' @importFrom stats resid cov df.residual cor
 #' @export
 summary.varshrinkest <- function (object, equations = NULL, ...) {
   ynames <- names(object$varresult)

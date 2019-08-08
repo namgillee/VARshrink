@@ -7,7 +7,11 @@
 \method{print}{varshrinkest}(x, digits = max(3, getOption("digits") - 3),
   ...)
 }
+\arguments{
+\item{x}{An object of class "varshrinkest"}
+
+\item{digits, ...}{Other arguments for print() method}
+}
 \description{
-Print method for an object of class "varshrinkest" estimated by
-VARshrink()
+Print method for an object of class "varshrinkest"
 }

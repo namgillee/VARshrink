@@ -1,7 +1,10 @@
 #' Stability function
 #'
+#' A variant of vars::stability().
 #' Warning: this function has not been tested for small sample sizes yet.
 #'
+#' @param x An object of class "varshrinkest"
+#' @param type,h,dynamic,rescale,... Other arguments to strucchange::efp()
 #' @export
 stability_sh <- function (x, type = c("OLS-CUSUM", "Rec-CUSUM", "Rec-MOSUM",
                                       "OLS-MOSUM", "RE", "ME", "Score-CUSUM",

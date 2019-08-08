@@ -1,3 +1,4 @@
+#' @importFrom stats df.residual resid
 h_fecov <- function (x, n.ahead) {
   n.par <- sapply(x$varresult, df.residual)
   sigma.u <- crossprod(resid(x))/n.par

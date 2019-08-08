@@ -7,6 +7,11 @@ a VAR(p)-process}
 \usage{
 roots_sh(x, modulus = TRUE)
 }
+\arguments{
+\item{x}{An object of class "varshrinkest"}
+
+\item{modulus}{TRUE for modulus of the roots.}
+}
 \description{
 This is a variant of vars::roots() for an object of class 'varshrinkest',
 VAR parameters estimated by VARshrink()

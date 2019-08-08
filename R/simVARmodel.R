@@ -33,11 +33,9 @@ simVARmodel <- function (numT, model, burnin = 0) {
 
   #-- Generate All Noise Vectors --#
   if (is.infinite(dof)) {
-    require(MASS)
-    retTS <- mvrnorm(p + burnin + numT, rep(0, K), noiseCov)
+    retTS <- MASS::mvrnorm(p + burnin + numT, rep(0, K), noiseCov)
   } else {
-    require(mvtnorm)
-    retTS <- rmvt(p + burnin + numT, df = dof, delta = rep(0, K), sigma = noiseCov)
+    retTS <- mvtnorm::rmvt(p + burnin + numT, df = dof, delta = rep(0, K), sigma = noiseCov)
   }
 
 	#-- Generate time series --#

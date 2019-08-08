@@ -7,6 +7,15 @@ VAR parameters estimated by VARshrink()}
 \usage{
 \method{summary}{varshrinkest}(object, equations = NULL, ...)
 }
+\arguments{
+\item{object}{An object of class "varshrinkest", usually
+a result of call to "VARshrink()".}
+
+\item{equations}{Subset of names of endogenous time series variables
+to summarize.}
+
+\item{...}{Currently not used.}
+}
 \description{
 Extend summary.varest() to class 'varshrinest' to incorporate
 adapted methods for new classes:

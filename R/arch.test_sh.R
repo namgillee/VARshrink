@@ -1,3 +1,7 @@
+#' ARCH-LM test
+#'
+#' An extension of vars::arch.test() to the class "varshrinkest".
+#' Performs univariate and multivariate ARCH-LM tests for a VAR.
 #' @export
 arch.test_sh <- function (x, lags.single = 16, lags.multi = 5,
                           multivariate.only = TRUE) {

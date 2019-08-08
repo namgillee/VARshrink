@@ -8,6 +8,12 @@ stability_sh(x, type = c("OLS-CUSUM", "Rec-CUSUM", "Rec-MOSUM",
   "OLS-MOSUM", "RE", "ME", "Score-CUSUM", "Score-MOSUM", "fluctuation"),
   h = 0.15, dynamic = FALSE, rescale = TRUE, ...)
 }
+\arguments{
+\item{x}{An object of class "varshrinkest"}
+
+\item{type, h, dynamic, rescale, ...}{Other arguments to strucchange::efp()}
+}
 \description{
+A variant of vars::stability().
 Warning: this function has not been tested for small sample sizes yet.
 }

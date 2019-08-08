@@ -7,6 +7,12 @@
 \method{print}{varshsum}(x, digits = max(3, getOption("digits") - 3),
   signif.stars = getOption("show.signif.stars"), ...)
 }
+\arguments{
+\item{x}{An object of class "varshsum"}
+
+\item{digits, signif.stars, ...}{Other arguments for print(),
+printCoefmat(), format() method}
+}
 \description{
 Print method for an object obtained by summary.varshrinkest().
 }
