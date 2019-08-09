@@ -6,15 +6,17 @@ Authors@R: c(
            email = "namgil.lee@kangwon.ac.kr",
            comment = c(ORCID = "0000-0003-0593-9028")), 
     person(given = "Heon Young", family = "Yang", role = c("ctb"),
-           email = "hyyang@kangwon.ac.kr")
+           email = "hyyang@kangwon.ac.kr"),
+    person(given = "Sung-Ho", family = "Kim", role = c("aut"),
+           email = "sung-ho.kim@kaist.edu")
     )
 Description: Several shrinkage estimation methods for vector 
     autoregressive models.
 License: file LICENSE
 Depends: 
-    R (>= 3.1.2)
+    R (>= 3.6.0)
 Imports: 
-    vars (>= 1.5-3),
+    vars (>= 1.5.3),
     ars (>= 0.6),
     corpcor (>= 1.6.9),
     strucchange,
@@ -25,6 +27,7 @@ Suggests:
     devtools,
     knitr,
     rmarkdown,
+    rticles,
     kableExtra
 BugReports: https://github.com/namgillee/VARshrink/issues
 Encoding: UTF-8
