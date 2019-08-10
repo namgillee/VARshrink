@@ -1,6 +1,6 @@
 #' Normality, multivariate skewness and kurtosis test for VAR shrinkage estimates
 #'
-#' An extension of vars::normallity.test() to the class "varshrinkest".
+#' An extension of vars::normality.test() to the class "varshrinkest".
 #' @param x An object of class "varshrinkest" obtained by VARshrink().
 #' @param multivariate.only If TRUE, only the multivariate statistics
 #'   is computed.

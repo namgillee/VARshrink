@@ -30,7 +30,7 @@
 #' had been centered. If Y and X had been centered (ybar and xbar are not NULL)
 #' and type is "const" or "both", then the coefficients for the constant term
 #' is computed and concatenated to the coefficients.
-#' @param Q_values Nonnegative weight vector of length N. Defaut is NULL.
+#' @param Q_values Nonnegative weight vector of length N. Default is NULL.
 #' Take weights on rows (samples) of Y and X by sqrt(Q).
 #' @param callstr The call to VARshrink().
 #' @return A list object with objects of class c("shrinklm", "lm").

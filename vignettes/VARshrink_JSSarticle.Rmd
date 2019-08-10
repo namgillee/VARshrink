@@ -425,7 +425,7 @@ There are several arguments to be specified as follows.
   If \code{dof = NULL}, we estimate both the degree of freedom $\nu$ and the weight $\mathbf{Q}$.	In this case, the package \pkg{ars} is required for sampling the parameter $\nu$ from its conditional posterior distribution.
 	
 - \code{burnincycle}, \code{mcmccycle}: The Gibbs MCMC method samples a series of parameter values of the length, \code{burnincycle + mcmccycle}.
-	\code{burnincycle} is the number of sampled parameter values to be discarded in the begining, and \code{mcmccycle} is the number to be attained and used for computing the parameter estimates.
+	\code{burnincycle} is the number of sampled parameter values to be discarded in the beginning, and \code{mcmccycle} is the number to be attained and used for computing the parameter estimates.
 	By default, we set \code{burnincycle = 1000} and \code{mcmccycle = 2000}.
 
 
@@ -568,7 +568,7 @@ resu_estim$`K-fold CV (fixed dof)` <-
 resu_estim$`K-fold CV (fixed dof)`
 ```
 
-Degree of freedom of multivariate t-distribution for noise can be selected automatically by setting the arugument \code{dof = Inf} as follows. 
+Degree of freedom of multivariate t-distribution for noise can be selected automatically by setting the argument \code{dof = Inf} as follows. 
 
 ```{r, results = "hide"}
 resu_estim$`K-fold CV (estim dof)` <-
@@ -600,7 +600,7 @@ In addition, by simulated experiments, we compute an expected value of the SSE o
 ## Benchmark Data
 
 The Canada data set is a benchmark macroeconomic data included in the package \pkg{vars}.
-It contains four time series variables representing employment(\code{e}), labour productivity(\code{prod}), real wage(\code{rw}), and unemployment rate(\code{U}), with $84$ observations. We took differene on the data to remove trend, yielding $T = 83$. Figure \ref{fig:diffCanada} shows the differencing result.
+It contains four time series variables representing employment(\code{e}), labor productivity(\code{prod}), real wage(\code{rw}), and unemployment rate(\code{U}), with $84$ observations. We took difference on the data to remove trend, yielding $T = 83$. Figure \ref{fig:diffCanada} shows the differencing result.
 
 ```{r diffCanada, fig.cap = "\\label{fig:diffCanada}The benchmark data set obtained by differencing the Canada data."}
 data(Canada, package = "vars")
@@ -717,7 +717,7 @@ in one frame via a common interface function \code{VARshrink()},
 which makes it easy and convenient to use various types of shrinkage estimation methods.
 Moreover, we note that the shrinkage estimation methods implemented in the current version have not been widely implemented in \proglang{R} packages in the context of VAR models.
 
-We demonstrated the use of model selection criteria as AIC and BIC by using benchmark time series data. We note that computation of the log-likelihood of an estimated model must consider the actual distribution assumption of each method. We explained that the multivariate normal distribution is not the only choice for a distribution of noise, but another distributions such as the multivariate t-distribution can be chosen. Moreover, an effective number of parameters must be calculated for computing the AIC and BIC values. In this case, a large number of shrinkage parameter value leads to a small value of the effectie number of parameters. In the package \pkg{VARshrink}, effective number of parameters is computed automatically based on the selected shrinkage parameter value. 
+We demonstrated the use of model selection criteria as AIC and BIC by using benchmark time series data. We note that computation of the log-likelihood of an estimated model must consider the actual distribution assumption of each method. We explained that the multivariate normal distribution is not the only choice for a distribution of noise, but another distributions such as the multivariate t-distribution can be chosen. Moreover, an effective number of parameters must be calculated for computing the AIC and BIC values. In this case, a large number of shrinkage parameter value leads to a small value of the effective number of parameters. In the package \pkg{VARshrink}, effective number of parameters is computed automatically based on the selected shrinkage parameter value. 
 
 Shrinkage methods are quite crucial especially for high dimensional VAR models.
 Bayesian approaches have been developed widely for VAR models in the literature for various purposes. However, the computational time for carrying out MCMC processes may be intractably high for high dimensional VAR models.

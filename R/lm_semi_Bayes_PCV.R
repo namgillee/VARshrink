@@ -29,7 +29,7 @@
 #' @param Y An N x K matrix of dependent variables.
 #' @param X An N x M matrix of regressors.
 #' @param dof Degree of freedom for multivariate t-distribution.
-#' If dof = Inf (default), then multivarate normal distribution is applied and
+#' If dof = Inf (default), then multivariate normal distribution is applied and
 #' weight vector q is not estimated. If dof = NULL or a numeric vector,
 #' then dof is selected by K-fold CV automatically and q is estimated.
 #' @param lambda If NULL or a vector of length >=2, it is selected by PCV.

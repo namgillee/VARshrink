@@ -21,7 +21,7 @@
 #' @param Y An N x K matrix of dependent variables.
 #' @param X An N x M matrix of regressors.
 #' @param dof Degree of freedom for multivariate t-distribution.
-#' If dof = Inf (default), then multivarate normal distribution is applied and
+#' If dof = Inf (default), then multivariate normal distribution is applied and
 #' weight vector q is not estimated. If dof = NULL or dof <= 0, then dof and q
 #' are estimated automatically. If dof is a positive number, q is estimated.
 #' @param burnincycle,mcmccycle Number of burnin cycles is the number of
