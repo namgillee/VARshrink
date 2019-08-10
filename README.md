@@ -12,7 +12,7 @@ Example:
 ```
 data(Canada, package = "vars")
 y <- diff(Canada)
-estim <- VARshrink(Y, p = 2, type = "const", method = "ns")
+estim <- VARshrink(y, p = 2, type = "const", method = "ns")
 plot(predict(estim), names = "U")
 ```
 
