@@ -13,7 +13,7 @@ lm_full_Bayes_SR(Y, X, dof = Inf, burnincycle = 1000,
 \item{X}{An N x M matrix of regressors.}
 
 \item{dof}{Degree of freedom for multivariate t-distribution.
-If dof = Inf (default), then multivarate normal distribution is applied and
+If dof = Inf (default), then multivariate normal distribution is applied and
 weight vector q is not estimated. If dof = NULL or dof <= 0, then dof and q
 are estimated automatically. If dof is a positive number, q is estimated.}
 

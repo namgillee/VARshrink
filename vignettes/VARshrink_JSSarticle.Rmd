@@ -211,9 +211,10 @@ MC = c("coef, fevd, fitted, irf, logLik, Phi, plot, predict, print, Psi, resid, 
 FC = c("Acoef_sh, arch.test_sh, Bcoef_sh, BQ_sh, causality_sh, normality.test_sh, restrict_sh, roots_sh, serial.test_sh, stability_sh", " ", " ", "fanchart", " ", " ", " ", " ", " ")
 )
 colnames(text_tbl) <- c("Function or method", "Class", "Methods for class", "Functions for class")
-knitr::kable(text_tbl,
-     caption = "\\label{tab:methods}Structure of the package VARshrink.") %>%
-     column_spec(1:4, width = "7em", border_left = FALSE, border_right = FALSE)
+kableExtra::column_spec(
+  knitr::kable(text_tbl,
+       caption = "\\label{tab:methods}Structure of the package VARshrink."),
+  1:4, width = "7em", border_left = FALSE, border_right = FALSE)
 ```
 
 

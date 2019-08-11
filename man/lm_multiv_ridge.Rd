@@ -13,7 +13,7 @@ lm_multiv_ridge(Y, X, lambda = 0, do_scale = FALSE)
 
 \item{lambda}{Numeric vector of lambda values}
 
-\item{do_scale}{If true, X is centered and scaleed, and Y is centered.}
+\item{do_scale}{If true, X is centered and scaled, and Y is centered.}
 }
 \value{
 A list object with the components: 1) Psi - A list of

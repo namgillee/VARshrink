@@ -13,5 +13,5 @@ normality.test_sh(x, multivariate.only = TRUE)
 is computed.}
 }
 \description{
-An extension of vars::normallity.test() to the class "varshrinkest".
+An extension of vars::normality.test() to the class "varshrinkest".
 }
