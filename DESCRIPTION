@@ -1,7 +1,6 @@
 Package: VARshrink
 Title: Shrinkage Estimation Methods for Vector Autoregressive Models
 Version: 0.3.0
-Date: 2019-08-11
 Authors@R: c(
     person("Namgil", "Lee", role = c("aut", "cre"),
            email = "namgil.lee@kangwon.ac.kr",
@@ -15,7 +14,7 @@ Description: Several shrinkage estimation methods for vector
     autoregressive models.
 License: GPL-3 | file LICENSE
 Depends: 
-    R (>= 3.6.0)
+    R (>= 3.4.0)
 Imports: 
     vars (>= 1.5.3),
     ars (>= 0.6),
@@ -33,4 +32,4 @@ BugReports: https://github.com/namgillee/VARshrink/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
-VignetteBuilder: knitr, rmarkdown
+VignetteBuilder: knitr
