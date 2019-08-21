@@ -10,8 +10,16 @@ Authors@R: c(
     person("Sung-Ho", "Kim", role = c("aut"),
            email = "sung-ho.kim@kaist.edu")
     )
-Description: Several shrinkage estimation methods for vector 
-    autoregressive models.
+Description:
+    Vector autoregressive (VAR) model is a fundamental and effective approach
+    for multivariate time series analysis. Shrinkage estimation methods can be
+    applied to high-dimensional VAR models with dimensionality greater than
+    the number of observations, contrary to the standard ordinary least squares
+    method. The package VARshrink is an integrative R package delivering
+    nonparametric, parametric, and semiparametric methods in a unified and
+    consistent manner, such as the multivariate ridge regression, a James-Stein
+    type nonparametric shrinkage method, and Bayesian estimation methods using
+    noninformative and informative priors.
 License: GPL-3 | file LICENSE
 Depends: 
     R (>= 3.4.0)
@@ -28,6 +36,7 @@ Suggests:
     rmarkdown,
     rticles,
     kableExtra
+URL: https://github.com/namgillee/VARshrink/
 BugReports: https://github.com/namgillee/VARshrink/issues
 Encoding: UTF-8
 LazyData: true
