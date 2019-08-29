@@ -15,3 +15,12 @@ is computed.}
 \description{
 An extension of vars::normality.test() to the class "varshrinkest".
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+normality.test_sh(estim)
+}
+\seealso{
+\code{\link[vars]{normality.test}}
+}

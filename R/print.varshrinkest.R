@@ -4,6 +4,11 @@
 #' @param x An object of class "varshrinkest"
 #' @param digits,... Other arguments for print() method
 #' @importFrom stats coef
+#' @examples
+#' data(Canada, package = "vars")
+#' y <- diff(Canada)
+#' estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+#' print(estim)
 #' @export
 print.varshrinkest <- function(x, digits = max(3, getOption("digits") - 3),
                                ...) {

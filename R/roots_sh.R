@@ -7,6 +7,12 @@
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
 #' @param x An object of class "varshrinkest"
 #' @param modulus TRUE for modulus of the roots.
+#' @examples
+#' data(Canada, package = "vars")
+#' y <- diff(Canada)
+#' estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+#' roots_sh(estim)
+#' @seealso \code{\link[vars]{roots}}
 #' @export
 roots_sh <- function(x, modulus = TRUE) {
 

@@ -64,3 +64,8 @@ Shrinkage estimation methods can estimate the coefficients
 even when the dimensionality K is larger than the
 number of observations.
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+VARshrink(y, p = 2, type = "const", method = "ridge")
+}

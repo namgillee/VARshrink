@@ -5,6 +5,12 @@
 #' @param cause,vcov.,boot,boot.runs Other arguments for
 #'   causality analysis; see help(causality) for details from
 #'   the package vars documentation.
+#' @examples
+#' data(Canada, package = "vars")
+#' y <- diff(Canada)
+#' estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+#' causality_sh(estim, cause = "e")
+#' @seealso \code{\link[vars]{causality}}
 #' @export
 causality_sh <- function(x, cause = NULL, vcov. = NULL,
                          boot = FALSE, boot.runs = 100) {

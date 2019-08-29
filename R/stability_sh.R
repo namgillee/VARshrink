@@ -5,6 +5,12 @@
 #'
 #' @param x An object of class "varshrinkest"
 #' @param type,h,dynamic,rescale,... Other arguments to strucchange::efp()
+#' @examples
+#' data(Canada, package = "vars")
+#' y <- diff(Canada)
+#' estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+#' stability_sh(estim)
+#' @seealso \code{\link[vars]{stability}}
 #' @export
 stability_sh <- function (x, type = c("OLS-CUSUM", "Rec-CUSUM", "Rec-MOSUM",
                                       "OLS-MOSUM", "RE", "ME", "Score-CUSUM",

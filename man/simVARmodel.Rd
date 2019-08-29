@@ -28,3 +28,8 @@ First, it creates (p+burnin+numT x K) data, then
 it remove the first (p+burnin) vectors.
 Finally, it returns (numT x K) data.
 }
+\examples{
+myCoef <- list(A = list(matrix(c(0.5, 0, 0, 0.5), 2, 2)), c = c(0.2, 0.7))
+myModel <- list(Coef = myCoef, Sigma = diag(0.1^2, 2), dof = Inf)
+simVARmodel(numT = 100, model = myModel, burnin = 10)
+}

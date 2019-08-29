@@ -21,3 +21,12 @@ variables of a VAR(p) model.
 Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t.
 The function returns the K-by-K matrices {A_1, ..., A_p} as a list object.
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+Acoef_sh(estim)
+}
+\seealso{
+\code{\link[vars]{Acoef}}
+}

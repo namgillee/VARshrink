@@ -44,3 +44,9 @@ nonzero elements. Nonzero off-diagonal elements are selected from
 lower-triangular parts of A_i and the values are drawn from a uniform
 distribution over [-range_max, -range_min] U [range_min, range_max].
 }
+\examples{
+p <- 1; K <- 20;
+const_vector <- c(rep(0.2, 5), rep(0.7, 15))
+createVARCoefs_ltriangular(p = p, K = K, diag_val = 0.6,
+num_nonzero = K, const_vector = const_vector, range_max = 1)
+}

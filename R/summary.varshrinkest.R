@@ -18,6 +18,11 @@
 #' to summarize.
 #' @param ... Currently not used.
 #' @importFrom stats resid cov df.residual cor
+#' @examples
+#' data(Canada, package = "vars")
+#' y <- diff(Canada)
+#' estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+#' summary(estim)
 #' @export
 summary.varshrinkest <- function (object, equations = NULL, ...) {
   ynames <- names(object$varresult)

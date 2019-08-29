@@ -4,6 +4,12 @@
 #' @param x An object of class "varshrinkest" obtained by VARshrink().
 #' @param multivariate.only If TRUE, only the multivariate statistics
 #'   is computed.
+#' @examples
+#' data(Canada, package = "vars")
+#' y <- diff(Canada)
+#' estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+#' normality.test_sh(estim)
+#' @seealso \code{\link[vars]{normality.test}}
 #' @export
 normality.test_sh <- function(x, multivariate.only = TRUE) {
   if (inherits(x, "varest")) {
