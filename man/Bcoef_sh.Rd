@@ -21,3 +21,12 @@ Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t.
 The function returns the concatenated matrix (A_1, ..., A_p, C) as a matrix
 object.
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+Bcoef_sh(estim)
+}
+\seealso{
+\code{\link[vars]{Bcoef}}
+}

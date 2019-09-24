@@ -8,9 +8,17 @@
 #' sum_{k=1}^p sum_{i=1}^K sum_{j=1}^K ( (A_k)_{ij} - (A_k')_{ij} )^2.
 #'
 #' @param Acoef1,Acoef2 Each one is a list object with K-by-K coefficient
-#' matrices of lagged endogenous variables. See help(Acoef.varshrinkest), or,
+#' matrices of lagged endogenous variables. See help(Acoef_sh), or,
 #' help(Acoef).
 #' @return SSE value.
+#' @examples
+#' data(Canada, package = "vars")
+#' y <- diff(Canada)
+#' estim1 <- VARshrink(y, p = 2, type = "const", method = "fbayes")
+#' Acoef1 <- Acoef_sh(estim1)
+#' estim2 <- VARshrink(y, p = 2, type = "const", method = "ridge")
+#' Acoef2 <- Acoef_sh(estim2)
+#' calcSSE_Acoef(Acoef1, Acoef2)
 #' @export
 calcSSE_Acoef <- function(Acoef1, Acoef2) {
 

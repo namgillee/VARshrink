@@ -28,3 +28,9 @@ and to use effective numbers of parameters of shrinkage estimates.
 Output includes the scale matrix, Sigma, and degree-of-freedom, dof,
 for multivariate t-distribution for residuals.
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+summary(estim)
+}

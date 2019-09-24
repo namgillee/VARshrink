@@ -17,3 +17,12 @@ the package vars documentation.}
 \description{
 An extension of vars::causality() to the class "varshrinkest".
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+causality_sh(estim, cause = "e")
+}
+\seealso{
+\code{\link[vars]{causality}}
+}

@@ -15,3 +15,9 @@
 \description{
 Print method for an object of class "varshrinkest"
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+print(estim)
+}

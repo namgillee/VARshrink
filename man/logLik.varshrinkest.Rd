@@ -18,3 +18,9 @@ Extend vars::logLik.varest() to incorporate
 2) scale matrix Sigma provided by shrinkage methods, and
 3) effective number of parameters provided by shrinkage methods.
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+logLik(estim)
+}

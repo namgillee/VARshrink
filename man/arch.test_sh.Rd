@@ -23,3 +23,12 @@ is computed.}
 An extension of vars::arch.test() to the class "varshrinkest".
 Performs univariate and multivariate ARCH-LM tests for a VAR.
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+arch.test_sh(estim)
+}
+\seealso{
+\code{\link[vars]{arch.test}}
+}

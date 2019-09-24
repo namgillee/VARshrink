@@ -12,3 +12,12 @@ BQ_sh(x)
 \description{
 An extension of vars::BQ() to the class "varshrinkest".
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+BQ_sh(estim)
+}
+\seealso{
+\code{\link[vars]{BQ}}
+}

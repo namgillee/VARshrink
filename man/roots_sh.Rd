@@ -16,3 +16,12 @@ roots_sh(x, modulus = TRUE)
 This is a variant of vars::roots() for an object of class 'varshrinkest',
 VAR parameters estimated by VARshrink()
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+roots_sh(estim)
+}
+\seealso{
+\code{\link[vars]{roots}}
+}

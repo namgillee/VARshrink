@@ -15,3 +15,12 @@ restrict_sh(x, ...)
 Warning: this function ignores shrinkage estimation, so it need to be
 revised.
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+restrict_sh(estim)
+}
+\seealso{
+\code{\link[vars]{restrict}}
+}

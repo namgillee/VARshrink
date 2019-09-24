@@ -16,3 +16,12 @@ see help(serial.test) for details.}
 \description{
 An extension of vars::serial.test() to the class "varshrinkest".
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+serial.test_sh(estim)
+}
+\seealso{
+\code{\link[vars]{serial.test}}
+}

@@ -17,3 +17,12 @@ stability_sh(x, type = c("OLS-CUSUM", "Rec-CUSUM", "Rec-MOSUM",
 A variant of vars::stability().
 Warning: this function has not been tested for small sample sizes yet.
 }
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+stability_sh(estim)
+}
+\seealso{
+\code{\link[vars]{stability}}
+}

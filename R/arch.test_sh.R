@@ -9,6 +9,12 @@
 #'   multivariate ARCH statistic.
 #' @param multivariate.only If TRUE, only the multivariate statistic
 #'   is computed.
+#' @examples
+#' data(Canada, package = "vars")
+#' y <- diff(Canada)
+#' estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+#' arch.test_sh(estim)
+#' @seealso \code{\link[vars]{arch.test}}
 #' @export
 arch.test_sh <- function (x, lags.single = 16, lags.multi = 5,
                           multivariate.only = TRUE) {

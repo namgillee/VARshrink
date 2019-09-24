@@ -43,6 +43,10 @@
 #' The class "varshrinkest" inherits the class "varest"
 #' in the package vars.
 #' @import vars
+#' @examples
+#' data(Canada, package = "vars")
+#' y <- diff(Canada)
+#' VARshrink(y, p = 2, type = "const", method = "ridge")
 #' @export
 VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
                        season = NULL, exogen = NULL,
@@ -66,7 +70,15 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   }
   if (totobs <= (p + 1))
     stop("Number of total observations must be > p+1\n")
-
+  if (method == 'ns') {
+    if (identical(type, "const")) {
+      type <- "none"
+      warning("'ns' method does not allow type='const'.. changed to 'none'.")
+    } else if (identical(type, "both")) {
+      type <- "trend"
+      warning("'ns' method does not allow type='both'.. changed to 'trend'.")
+    }
+  }
   ######## Build Data Matrices: datX, datY ########
 
   datY <- y[(p + 1):totobs, ] #N-by-K
@@ -161,9 +173,9 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
 
     # datY and datX are centered separately by dybar and dxbar.
     dybar <- dxbar <- NULL
-    if (identical(type, "const") || identical(type, "both")) {
-      datX <- datX[, -ncol(datX)]  # Remove 1's from datX
-    }
+    # if (identical(type, "const") || identical(type, "both")) {
+    #   datX <- datX[, -ncol(datX)]  # Remove 1's from datX
+    # }
     dybar <- colMeans(datY)
     dxbar <- colMeans(datX)
     datY <- datY - rep(dybar, each = N)

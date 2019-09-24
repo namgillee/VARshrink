@@ -14,6 +14,10 @@
 #' dof is a degree of freedom for multivariate t-distribution for noise.
 #' @param burnin Number of initial points which are not included in the final values.
 #' @return A numT-by-K matrix
+#' @examples
+#' myCoef <- list(A = list(matrix(c(0.5, 0, 0, 0.5), 2, 2)), c = c(0.2, 0.7))
+#' myModel <- list(Coef = myCoef, Sigma = diag(0.1^2, 2), dof = Inf)
+#' simVARmodel(numT = 100, model = myModel, burnin = 10)
 #' @export
 simVARmodel <- function (numT, model, burnin = 0) {
   varCoef <- model$Coef

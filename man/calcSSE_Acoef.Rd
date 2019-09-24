@@ -8,7 +8,7 @@ calcSSE_Acoef(Acoef1, Acoef2)
 }
 \arguments{
 \item{Acoef1, Acoef2}{Each one is a list object with K-by-K coefficient
-matrices of lagged endogenous variables. See help(Acoef.varshrinkest), or,
+matrices of lagged endogenous variables. See help(Acoef_sh), or,
 help(Acoef).}
 }
 \value{
@@ -22,4 +22,13 @@ variables (Acoef) of two VAR models.
 Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t.
 The SSE of two VAR(p) models is expressed as
 sum_{k=1}^p sum_{i=1}^K sum_{j=1}^K ( (A_k)_{ij} - (A_k')_{ij} )^2.
+}
+\examples{
+data(Canada, package = "vars")
+y <- diff(Canada)
+estim1 <- VARshrink(y, p = 2, type = "const", method = "fbayes")
+Acoef1 <- Acoef_sh(estim1)
+estim2 <- VARshrink(y, p = 2, type = "const", method = "ridge")
+Acoef2 <- Acoef_sh(estim2)
+calcSSE_Acoef(Acoef1, Acoef2)
 }

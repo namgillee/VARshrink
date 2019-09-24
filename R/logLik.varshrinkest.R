@@ -12,6 +12,11 @@
 ## Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
 # Acknowledgement: this code was contributed by Sung-Hoon Han & Dong-Han Lee
 # @ Kangwon National University (2018.11.29.)
+#' @examples
+#' data(Canada, package = "vars")
+#' y <- diff(Canada)
+#' estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
+#' logLik(estim)
 #' @export
 logLik.varshrinkest <- function(object, ...) {
 
