@@ -22,7 +22,7 @@ Description:
     noninformative and informative priors.
 License: GPL-3 | file LICENSE
 Depends: 
-    R (>= 3.4.0)
+    R (>= 3.5.0)
 Imports: 
     vars (>= 1.5.3),
     ars (>= 0.6),
