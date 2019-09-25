@@ -2,7 +2,8 @@
 #'
 #' Print method for an object obtained by summary.varshrinkest().
 #'
-#' Extend print.varsum() for VAR models estimated by shrinkage methods.
+#' This function extends print.varsum() for VAR models estimated by
+#' shrinkage methods.
 #' The output includes scale matrix Sigma and degree of freedom dof
 #' for multivariate t-distribution for residuals.
 #'

@@ -1,6 +1,7 @@
 #' BQ function for class "varshrinkest"
 #'
-#' An extension of vars::BQ() to the class "varshrinkest".
+#' This is a modification of vars::BQ() for the class "varshrinkest".
+#'
 #' @param x An object of class "varshrinkest" obtained by VARshrink().
 #' @examples
 #' data(Canada, package = "vars")

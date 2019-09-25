@@ -1,10 +1,9 @@
 #' Causality Analysis for class "varshrinkest"
 #'
-#' An extension of vars::causality() to the class "varshrinkest".
+#' A modification of vars::causality() for the class "varshrinkest".
 #' @param x An object of class "varshrinkest" obtained by VARshrink().
 #' @param cause,vcov.,boot,boot.runs Other arguments for
-#'   causality analysis; see help(causality) for details from
-#'   the package vars documentation.
+#'   causality analysis; see help(causality) for details.
 #' @examples
 #' data(Canada, package = "vars")
 #' y <- diff(Canada)

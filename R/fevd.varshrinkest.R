@@ -1,3 +1,9 @@
+#' Forecast Error Variance Decomposition
+#'
+#' Computes the forecast error variance decomposition of a VAR(p) for
+#' n.ahead steps.
+#' This is a modification of vars::fevd() for the class "varshrinkest".
+#' @seealso \code{\link[vars]{fevd}}
 #' @export
 fevd.varshrinkest <-
 function (x, n.ahead = 10, ...) {

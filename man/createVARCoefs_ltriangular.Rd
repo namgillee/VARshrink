@@ -33,7 +33,8 @@ Randomly create sparse lower-triangular matrices for VAR coefficients of
 lagged endogenous variables, and set a constant vector.
 }
 \details{
-Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + c + e_t,
+Consider VAR(p) model:
+\deqn{y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + c + e_t,}
 with the constant deterministic variable (d_t = 1).
 The function creates the coefficient matrices A_1, ..., A_p and constant
 vector c.

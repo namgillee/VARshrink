@@ -2,7 +2,7 @@
 % Please edit documentation in R/restrict_sh.R
 \name{restrict_sh}
 \alias{restrict_sh}
-\title{Restrict function}
+\title{Restricted VAR}
 \usage{
 restrict_sh(x, ...)
 }
@@ -12,8 +12,10 @@ restrict_sh(x, ...)
 \item{...}{Other arguments to vars::restrict()}
 }
 \description{
-Warning: this function ignores shrinkage estimation, so it need to be
-revised.
+This is a modification of vars::restrict() for the class "varshrinkest".
+Warning: THIS CODE IS NOT COMPLETE:
+this function may raise an error because it ignores shrinkage
+estimation.
 }
 \examples{
 data(Canada, package = "vars")

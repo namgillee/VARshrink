@@ -1,6 +1,11 @@
-#' Normality, multivariate skewness and kurtosis test for VAR shrinkage estimates
+#' Normality, multivariate skewness and kurtosis test
 #'
-#' An extension of vars::normality.test() to the class "varshrinkest".
+#' This function computes univariate and multivariate Jarque-Bera tests and
+#' multivariate skewness and kurtosis tests for the residuals of a VAR(p)
+#' or of a VECM in levels.
+#' This is a modification of vars::normality.test() for
+#' the class "varshrinkest".
+#'
 #' @param x An object of class "varshrinkest" obtained by VARshrink().
 #' @param multivariate.only If TRUE, only the multivariate statistics
 #'   is computed.

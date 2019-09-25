@@ -13,12 +13,13 @@ Acoef_sh(x)
 A list object with K-by-K VAR coefficient matrices A_1, A_2, ..., A_p
 }
 \description{
-An extension of vars::Acoef() to the class "varshrinkest".
 Returns the estimated coefficient matrices of the lagged endogenous
 variables of a VAR(p) model.
+This is a modification of vars::Acoef() for the class "varshrinkest".
 }
 \details{
-Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t.
+Consider VAR(p) model:
+\deqn{y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t .}
 The function returns the K-by-K matrices {A_1, ..., A_p} as a list object.
 }
 \examples{

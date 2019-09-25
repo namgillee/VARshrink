@@ -1,17 +1,17 @@
 #' Log-likelihood method for class "varshrinkest"
 #'
 #' Returns the log-likelihood of a VAR model estimated by VARshrink().
-#' Extend vars::logLik.varest() to incorporate
+#' It extends vars::logLik.varest() to incorporate
 #' 1) multivariate t-distribution for residuals,
 #' 2) scale matrix Sigma provided by shrinkage methods, and
 #' 3) effective number of parameters provided by shrinkage methods.
+#'
+# Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
+#' Acknowledgement: This code was contributed by
+#' Sung-Hoon Han & Dong-Han Lee @@ Kangwon National University (2018.11.29.)
 #' @param object An object of class "varshrinkest"
 #' @param ... Currently not used.
 #' @importFrom stats df.residual resid
-#'
-## Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
-# Acknowledgement: this code was contributed by Sung-Hoon Han & Dong-Han Lee
-# @ Kangwon National University (2018.11.29.)
 #' @examples
 #' data(Canada, package = "vars")
 #' y <- diff(Canada)

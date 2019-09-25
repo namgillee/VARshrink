@@ -2,7 +2,7 @@
 % Please edit documentation in R/normality.test_sh.R
 \name{normality.test_sh}
 \alias{normality.test_sh}
-\title{Normality, multivariate skewness and kurtosis test for VAR shrinkage estimates}
+\title{Normality, multivariate skewness and kurtosis test}
 \usage{
 normality.test_sh(x, multivariate.only = TRUE)
 }
@@ -13,7 +13,11 @@ normality.test_sh(x, multivariate.only = TRUE)
 is computed.}
 }
 \description{
-An extension of vars::normality.test() to the class "varshrinkest".
+This function computes univariate and multivariate Jarque-Bera tests and
+multivariate skewness and kurtosis tests for the residuals of a VAR(p)
+or of a VECM in levels.
+This is a modification of vars::normality.test() for
+the class "varshrinkest".
 }
 \examples{
 data(Canada, package = "vars")

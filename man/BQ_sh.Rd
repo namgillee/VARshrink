@@ -10,7 +10,7 @@ BQ_sh(x)
 \item{x}{An object of class "varshrinkest" obtained by VARshrink().}
 }
 \description{
-An extension of vars::BQ() to the class "varshrinkest".
+This is a modification of vars::BQ() for the class "varshrinkest".
 }
 \examples{
 data(Canada, package = "vars")

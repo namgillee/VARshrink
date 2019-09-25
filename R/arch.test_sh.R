@@ -1,7 +1,8 @@
 #' ARCH-LM test
 #'
-#' An extension of vars::arch.test() to the class "varshrinkest".
 #' Performs univariate and multivariate ARCH-LM tests for a VAR.
+#' This is a modification of vars::arch.test() for the class "varshrinkest".
+#'
 #' @param x An object of class "varshrinkest" obtained by VARshrink()
 #' @param lags.single An integer of the lag order used for
 #'   univariate ARCH statistics.

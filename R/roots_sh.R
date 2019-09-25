@@ -2,7 +2,7 @@
 #' a VAR(p)-process
 #'
 #' This is a variant of vars::roots() for an object of class 'varshrinkest',
-#' VAR parameters estimated by VARshrink()
+#' VAR parameters estimated by \code{VARshrink()}.
 #'
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
 #' @param x An object of class "varshrinkest"

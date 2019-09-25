@@ -20,8 +20,8 @@ multivariate ARCH statistic.}
 is computed.}
 }
 \description{
-An extension of vars::arch.test() to the class "varshrinkest".
 Performs univariate and multivariate ARCH-LM tests for a VAR.
+This is a modification of vars::arch.test() for the class "varshrinkest".
 }
 \examples{
 data(Canada, package = "vars")

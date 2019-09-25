@@ -11,11 +11,10 @@ causality_sh(x, cause = NULL, vcov. = NULL, boot = FALSE,
 \item{x}{An object of class "varshrinkest" obtained by VARshrink().}
 
 \item{cause, vcov., boot, boot.runs}{Other arguments for
-causality analysis; see help(causality) for details from
-the package vars documentation.}
+causality analysis; see help(causality) for details.}
 }
 \description{
-An extension of vars::causality() to the class "varshrinkest".
+A modification of vars::causality() for the class "varshrinkest".
 }
 \examples{
 data(Canada, package = "vars")

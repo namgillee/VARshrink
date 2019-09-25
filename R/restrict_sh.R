@@ -1,7 +1,9 @@
-#' Restrict function
+#' Restricted VAR
 #'
-#' Warning: this function ignores shrinkage estimation, so it need to be
-#' revised.
+#' This is a modification of vars::restrict() for the class "varshrinkest".
+#' Warning: THIS CODE IS NOT COMPLETE:
+#' this function may raise an error because it ignores shrinkage
+#' estimation.
 #'
 #' @param x An object of class "varshrinkest"
 #' @param ... Other arguments to vars::restrict()

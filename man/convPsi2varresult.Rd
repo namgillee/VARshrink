@@ -15,7 +15,7 @@ convPsi2varresult(Psi, Y, X, lambda0, type = c("const", "trend", "both",
 \item{X}{An N-by-M data matrix of regressors}
 
 \item{lambda0}{A rescaled shrinkage intensity parameter, based on which the
-effective number of parameters is computed by Trace(X(X'X+lambda0*I)^{-1}X')}
+effective number of parameters is computed by \deqn{Trace(X(X'X+lambda0*I)^{-1} X')}}
 
 \item{type}{Type of deterministic variables in the VAR estimation problem.
 Either of "const", "trend", "both", or "none".}
@@ -37,22 +37,27 @@ rank, df.residual, lambda0, call, terms, svd
 }
 \description{
 Convert a matrix of VAR coefficients estimated by a shrinkage method
-into a list of "shrinklm" object. The class "shrinklm" inherits the class
-"lm".
+into a list of "shrinklm" object, where the class "shrinklm" inherits the
+class "lm".
 }
 \details{
-Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t.
-It can be written in the matrix form: Y = X %*% Psi + E,
+Consider VAR(p) model:
+\deqn{y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t.}
+It can be written in the matrix form:
+\deqn{Y = X Psi + E,}
 where Psi is a concatenated M-by-K matrix, Psi = (A_1, ..., A_p, C)^T.
-
-The function converts Psi into a list of "shrinklm" objects which
-inherited the class "lm". Consider the multiple linear regression form
-of a VAR(p) model: y_j = X %*% psi_j + e_j, j=1,...,K.
-Each "shrinklm" object contains the length-M vector psi_j as coefficients.
+It can be written in the multiple linear regression form of a VAR(p) model:
+\deqn{y_j = X psi_j + e_j, \quad j=1,...,K,}
+where y_j, psi_j, and e_j are the j-th column vectors of Y, Psi, and E,
+respectively.
+This function converts Psi into a list of "shrinklm" objects, where
+each "shrinklm" object contains the length-M vector psi_j as coefficients.
 
 Considering that each coefficient vector psi_j is estimated by a
 shrinkage method, the effective number of parameters, k_eff, is
-computed as: k_eff = Trace(X %*% (X^T %*% X + lambda0 * I)^{-1} %*% X').
-Then, the degree of freedom of residuals is computed as: df.residual =
-N - k_eff, where N is the number of rows of data matrices Y and X.
+computed as:
+\deqn{k_{eff} = Trace(X (X^T X + lambda0 * I)^{-1} X^T).}
+Then, the degree of freedom of residuals is computed as:
+\deqn{df.residual = N - k_{eff},}
+where N is the number of rows of data matrices Y and X.
 }

@@ -14,7 +14,7 @@ roots_sh(x, modulus = TRUE)
 }
 \description{
 This is a variant of vars::roots() for an object of class 'varshrinkest',
-VAR parameters estimated by VARshrink()
+VAR parameters estimated by \code{VARshrink()}.
 }
 \examples{
 data(Canada, package = "vars")

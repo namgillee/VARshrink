@@ -6,7 +6,7 @@
 #' regression coefficients and scale matrix for noise.
 #'
 #' Consider the multivariate regression:
-#' Y = X * Psi + e, with e ~ mvt(0, dof, Sigma).
+#' \deqn{Y = X Psi + e, \quad e ~ mvt(0, dof, Sigma).}
 #' Psi is a M-by-K matrix of regression coefficients and
 #' Sigma is a K-by-K scale matrix for multivariate t-distribution for noise.
 #'

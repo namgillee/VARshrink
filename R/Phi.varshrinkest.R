@@ -1,3 +1,11 @@
+#' Coefficient matrices of the MA represention
+#'
+#' Returns the estimated coefficient matrices of the moving average
+#' representation of a stable VAR(p), of an SVAR as an array or a converted
+#' VECM to VAR.
+#' This is a modification of vars::Phi() for the class "varshrinkest".
+#'
+#' @seealso \code{\link[vars]{Phi}}
 #' @export
 Phi.varshrinkest <-
 function (x, nstep = 10, ...) {

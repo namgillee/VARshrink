@@ -1,3 +1,10 @@
+#' Impulse response function
+#'
+#' Computes the impulse response coefficients of a VAR(p)
+#' (or transformed VECM to VAR(p)) for n.ahead steps.
+#' This is a modification of vars::irf() for the class "varshrinkest".
+#'
+#' @seealso \code{\link[vars]{irf}}
 #' @export
 irf.varshrinkest <-
   function (x, impulse = NULL, response = NULL, n.ahead = 10, ortho = TRUE,

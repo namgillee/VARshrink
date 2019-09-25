@@ -14,10 +14,12 @@
 #' @param y A T-by-K matrix of endogenous variables
 #' @param p Integer for the lag order
 #' @param type  Type of deterministic regressors to include.
-#' 1) "const" - the constant.
+#' #' 1) "const" - the constant.
 #' 2) "trend" - the trend.
 #' 3) "both" - both the constant and the trend.
 #' 4) "none"  - no deterministic regressors.
+#' ***Note: In the package version <= 0.3, method='ns' does not accept
+#' type="const" and type="both" to avoid constant term.
 #' @param season An integer value of frequency for inclusion of
 #' centered seasonal dummy variables. abs(season) >= 3.
 #' @param exogen A T-by-L matrix of exogenous variables. Default is NULL.

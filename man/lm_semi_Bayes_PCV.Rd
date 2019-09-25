@@ -38,11 +38,11 @@ for noise.
 }
 \details{
 Consider the multivariate regression:
-Y = X * Psi + e, with e ~ mvt(0, dof, Sigma).
+\deqn{Y = X Psi + e, \quad e ~ mvt(0, dof, Sigma).}
 Psi is a M-by-K matrix of regression coefficients and
 Sigma is a K-by-K scale matrix for multivariate t-distribution for noise.
 
-Sampling distribution for noise e is multivariate t-distribution with
+Sampling distribution for noise e is the multivariate t-distribution with
 degree of freedom dof and scale matrix Sigma: e ~ mvt(0, dof, Sigma).
 The priors are informative priors: 1) a shrinkage prior for regression
 coefficients Psi, and 2) inverse Wishart prior for scale matrix Sigma,
@@ -54,7 +54,7 @@ selecting a shrinkage parameter lambda for estimating regression
 coefficients (0 < lambda <= 1).
 In addition, the function uses a Stein-type shrinkage method for selecting
 a shrinkage parameter lambda_var for estimating variances of
-dependent variables and regressors.
+time series variables.
 }
 \references{
 N. Lee, H. Choi, and S.-H. Kim (2016). Bayes shrinkage

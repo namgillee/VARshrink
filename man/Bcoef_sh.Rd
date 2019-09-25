@@ -13,11 +13,12 @@ Bcoef_sh(x)
 A matrix holding the estimated coefficients of a VAR.
 }
 \description{
-An extension of vars::Bcoef() to the class "varshrinkest".
 Returns the estimated coefficients of a VAR(p) model as a matrix.
+This is a modification of vars::Bcoef() for the class "varshrinkest".
 }
 \details{
-Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t.
+Consider VAR(p) model:
+\deqn{y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t .}
 The function returns the concatenated matrix (A_1, ..., A_p, C) as a matrix
 object.
 }

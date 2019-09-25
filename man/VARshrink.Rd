@@ -14,10 +14,12 @@ VARshrink(y, p = 1, type = c("const", "trend", "both", "none"),
 \item{p}{Integer for the lag order}
 
 \item{type}{Type of deterministic regressors to include.
-1) "const" - the constant.
+#' 1) "const" - the constant.
 2) "trend" - the trend.
 3) "both" - both the constant and the trend.
-4) "none"  - no deterministic regressors.}
+4) "none"  - no deterministic regressors.
+***Note: In the package version <= 0.3, method='ns' does not accept
+type="const" and type="both" to avoid constant term.}
 
 \item{season}{An integer value of frequency for inclusion of
 centered seasonal dummy variables. abs(season) >= 3.}

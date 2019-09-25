@@ -19,9 +19,10 @@ Compute sum of squared errors of coefficients of lagged endogenous
 variables (Acoef) of two VAR models.
 }
 \details{
-Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t.
+Consider VAR(p) model:
+\deqn{y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t.}
 The SSE of two VAR(p) models is expressed as
-sum_{k=1}^p sum_{i=1}^K sum_{j=1}^K ( (A_k)_{ij} - (A_k')_{ij} )^2.
+\deqn{sum_{k=1}^p sum_{i=1}^K sum_{j=1}^K ( (A_k)_{ij} - (A_k')_{ij} )^2.}
 }
 \examples{
 data(Canada, package = "vars")

@@ -13,10 +13,14 @@
 }
 \description{
 Returns the log-likelihood of a VAR model estimated by VARshrink().
-Extend vars::logLik.varest() to incorporate
+It extends vars::logLik.varest() to incorporate
 1) multivariate t-distribution for residuals,
 2) scale matrix Sigma provided by shrinkage methods, and
 3) effective number of parameters provided by shrinkage methods.
+}
+\details{
+Acknowledgement: This code was contributed by
+Sung-Hoon Han & Dong-Han Lee @ Kangwon National University (2018.11.29.)
 }
 \examples{
 data(Canada, package = "vars")

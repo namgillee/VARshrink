@@ -25,7 +25,13 @@ Estimate regression coefficients by using ridge regression.
 }
 \details{
 Consider the multivariate regression:
-Y = X * Psi + e. Psi is a M-by-K matrix of regression coefficients.
+\deqn{Y = X Psi + e.}
+Psi is a M-by-K matrix of regression coefficients.
 The ridge regression estimate for the coefficients is
-Psi = (X'X + lambda*I)^{-1}X'Y.
+\deqn{Psi = (X'X + lambda * I)^{-1} X'Y.}
+}
+\references{
+G. H. Golub, M. Heath, G. Wahba (1979).
+Generalized cross-validation as a method for choosing a good
+ridge parameter. Technometrics 21(2), 215-223. doi: 10.2307/1268518
 }
