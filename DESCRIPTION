@@ -4,7 +4,7 @@ Version: 0.3.1
 Authors@R: c(
     person("Namgil", "Lee", role = c("aut", "cre"),
            email = "namgil.lee@kangwon.ac.kr",
-           comment = c(ORCID = "0000-0003-0593-9028")), 
+           comment = c(ORCID = "0000-0003-0593-9028")),
     person("Heon Young", "Yang", role = c("ctb"),
            email = "hyyang@kangwon.ac.kr"),
     person("Sung-Ho", "Kim", role = c("aut"),
@@ -15,15 +15,18 @@ Description:
     for multivariate time series analysis. Shrinkage estimation methods can be
     applied to high-dimensional VAR models with dimensionality greater than
     the number of observations, contrary to the standard ordinary least squares
-    method. The package VARshrink is an integrative R package delivering
-    nonparametric, parametric, and semiparametric methods in a unified and
-    consistent manner, such as the multivariate ridge regression, a James-Stein
-    type nonparametric shrinkage method, and Bayesian estimation methods using
-    noninformative and informative priors.
+    method. This package is an integrative package delivering nonparametric,
+    parametric, and semiparametric methods in a unified and consistent manner,
+    such as the multivariate ridge regression in Golub, Heath, and Wahba (1979)
+    <doi:10.2307/1268518>, a James-Stein type nonparametric shrinkage method in
+    Opgen-Rhein and Strimmer (2007) <doi:10.1186/1471-2105-8-S2-S3>, and
+    Bayesian estimation methods using noninformative and informative priors
+    in Lee, Choi, and S.-H. Kim (2016) <doi:10.1016/j.csda.2016.03.007> and
+    Ni and Sun (2005) <doi:10.1198/073500104000000622>.
 License: GPL-3 | file LICENSE
-Depends: 
+Depends:
     R (>= 3.5.0)
-Imports: 
+Imports:
     vars (>= 1.5.3),
     ars (>= 0.6),
     corpcor (>= 1.6.9),
@@ -37,7 +40,7 @@ Suggests:
     rticles,
     kableExtra
 URL: https://github.com/namgillee/VARshrink/
-BugReports: https://github.com/namgillee/VARshrink/issues
+BugReports: https://github.com/namgillee/VARshrink/issues/
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1

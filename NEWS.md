@@ -3,7 +3,7 @@
 * The vignette is reduced in order to compile quicker.
 * The R codes include examples.
 * In VARshrink(), if method="ns", then type="const" is switched to type="none"
-and type="both" is switched to type="season" in order to avoid to estimate the constant term. This is because estimated parameters by the NS can result in unexpected errors on the functions derived from the package vars.
+and type="both" is switched to type="season" in order to avoid to estimate the constant term. This is because estimated parameters by the 'NS' can result in unexpected errors on the functions borrowed from the package vars.
 
 # VARshrink 0.3.0
 * Date: 2019-08-13
