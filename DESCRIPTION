@@ -23,7 +23,7 @@ Description:
     Bayesian estimation methods using noninformative and informative priors
     in Lee, Choi, and S.-H. Kim (2016) <doi:10.1016/j.csda.2016.03.007> and
     Ni and Sun (2005) <doi:10.1198/073500104000000622>.
-License: GPL-3 | file LICENSE
+License: GPL-3
 Depends:
     R (>= 3.5.0)
 Imports:
