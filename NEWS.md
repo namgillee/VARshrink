@@ -1,3 +1,7 @@
+# VARshrink 0.3.1.9000
+* Date: 2020-03-09
+* Created a release at the GitHub repository for the VARshrink 0.3.1. The version 0.3.1.9000 started.
+
 # VARshrink 0.3.1
 * Date: 2019-09-25
 * The vignette is reduced in order to compile quicker.

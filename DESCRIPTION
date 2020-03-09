@@ -1,6 +1,6 @@
 Package: VARshrink
 Title: Shrinkage Estimation Methods for Vector Autoregressive Models
-Version: 0.3.1
+Version: 0.3.1.9000
 Authors@R: c(
     person("Namgil", "Lee", role = c("aut", "cre"),
            email = "namgil.lee@kangwon.ac.kr",
