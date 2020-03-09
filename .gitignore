@@ -39,3 +39,6 @@ inst/doc
 
 # CRAN
 cran-comments.md
+
+# Article files (including .Rmd, .tex, .pdf)
+article_varshrink_jss/
