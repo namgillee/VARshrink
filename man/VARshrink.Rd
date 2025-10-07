@@ -4,9 +4,18 @@
 \alias{VARshrink}
 \title{Shrinkage estimation of VAR parameters}
 \usage{
-VARshrink(y, p = 1, type = c("const", "trend", "both", "none"),
-  season = NULL, exogen = NULL, method = c("ridge", "ns", "fbayes",
-  "sbayes", "kcv"), lambda = NULL, lambda_var = NULL, dof = Inf, ...)
+VARshrink(
+  y,
+  p = 1,
+  type = c("const", "trend", "both", "none"),
+  season = NULL,
+  exogen = NULL,
+  method = c("ridge", "ns", "fbayes", "sbayes", "kcv"),
+  lambda = NULL,
+  lambda_var = NULL,
+  dof = Inf,
+  ...
+)
 }
 \arguments{
 \item{y}{A T-by-K matrix of endogenous variables}

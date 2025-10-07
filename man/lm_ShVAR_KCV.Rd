@@ -5,8 +5,16 @@
 \title{K-fold Cross Validation for Selection of Shrinkage Parameters of
 Semiparametric Bayesian Shrinkage Estimator for Multivariate Regression}
 \usage{
-lm_ShVAR_KCV(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
-  prior_type = c("NCJ", "CJ"), num_folds = 5, m0 = ncol(Y))
+lm_ShVAR_KCV(
+  Y,
+  X,
+  dof = Inf,
+  lambda = NULL,
+  lambda_var = NULL,
+  prior_type = c("NCJ", "CJ"),
+  num_folds = 5,
+  m0 = ncol(Y)
+)
 }
 \arguments{
 \item{Y}{An N x K matrix of dependent variables.}

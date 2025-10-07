@@ -5,8 +5,15 @@
 \title{Semiparametric Bayesian Shrinkage Estimator for
 Multivariate Regression}
 \usage{
-shrinkVARcoef(Y, X, lambda, dof = Inf, prior_type = "NCJ",
-  TolDRes = 1e-04, m0 = ncol(Y))
+shrinkVARcoef(
+  Y,
+  X,
+  lambda,
+  dof = Inf,
+  prior_type = "NCJ",
+  TolDRes = 1e-04,
+  m0 = ncol(Y)
+)
 }
 \arguments{
 \item{Y}{An N x K matrix of dependent variables.}

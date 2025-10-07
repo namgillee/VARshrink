@@ -4,8 +4,7 @@
 \alias{print.varshrinkest}
 \title{Print method for class "varshrinkest"}
 \usage{
-\method{print}{varshrinkest}(x, digits = max(3, getOption("digits") - 3),
-  ...)
+\method{print}{varshrinkest}(x, digits = max(3, getOption("digits") - 3), ...)
 }
 \arguments{
 \item{x}{An object of class "varshrinkest"}

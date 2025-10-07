@@ -4,8 +4,7 @@
 \alias{predict.varshrinkest}
 \title{Predict method for objects of class varshrinkest}
 \usage{
-\method{predict}{varshrinkest}(object, ..., n.ahead = 10, ci = 0.95,
-  dumvar = NULL)
+\method{predict}{varshrinkest}(object, ..., n.ahead = 10, ci = 0.95, dumvar = NULL)
 }
 \arguments{
 \item{object}{An object of class 'varshrinkest';

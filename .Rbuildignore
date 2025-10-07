@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.git$
+^\.DS_Store$
 ^cran-comments\.md$
 ^revdep$
-^article_jss$
 ^CRAN-RELEASE$

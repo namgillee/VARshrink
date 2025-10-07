@@ -16,10 +16,12 @@
 
 # RStudio files
 .Rproj.user/
+/*.Rproj
 
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
+vignettes/*.RData
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
@@ -39,6 +41,3 @@ inst/doc
 
 # CRAN
 cran-comments.md
-
-# Article files (including .Rmd, .tex, .pdf)
-article_varshrink_jss/

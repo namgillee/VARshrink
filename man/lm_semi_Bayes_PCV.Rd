@@ -5,8 +5,16 @@
 \title{Semiparametric Bayesian Shrinkage Estimation Method for Multivariate
 Regression}
 \usage{
-lm_semi_Bayes_PCV(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
-  prior_type = c("NCJ", "CJ"), num_folds = 5, m0 = ncol(Y))
+lm_semi_Bayes_PCV(
+  Y,
+  X,
+  dof = Inf,
+  lambda = NULL,
+  lambda_var = NULL,
+  prior_type = c("NCJ", "CJ"),
+  num_folds = 5,
+  m0 = ncol(Y)
+)
 }
 \arguments{
 \item{Y}{An N x K matrix of dependent variables.}
