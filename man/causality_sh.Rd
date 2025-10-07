@@ -4,8 +4,7 @@
 \alias{causality_sh}
 \title{Causality Analysis for class "varshrinkest"}
 \usage{
-causality_sh(x, cause = NULL, vcov. = NULL, boot = FALSE,
-  boot.runs = 100)
+causality_sh(x, cause = NULL, vcov. = NULL, boot = FALSE, boot.runs = 100)
 }
 \arguments{
 \item{x}{An object of class "varshrinkest" obtained by VARshrink().}

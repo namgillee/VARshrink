@@ -4,8 +4,7 @@
 \alias{lm_full_Bayes_SR}
 \title{Full Bayesian Shrinkage Estimation Method for Multivariate Regression}
 \usage{
-lm_full_Bayes_SR(Y, X, dof = Inf, burnincycle = 1000,
-  mcmccycle = 2000)
+lm_full_Bayes_SR(Y, X, dof = Inf, burnincycle = 1000, mcmccycle = 2000)
 }
 \arguments{
 \item{Y}{An N x K matrix of dependent variables.}

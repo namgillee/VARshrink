@@ -4,9 +4,15 @@
 \alias{createVARCoefs_ltriangular}
 \title{Create coefficients of a VAR model}
 \usage{
-createVARCoefs_ltriangular(p = 1, K = 5, diag_val = 1/p,
-  num_nonzero = 0, const_vector = NULL, range_min = 0.2,
-  range_max = 1/p)
+createVARCoefs_ltriangular(
+  p = 1,
+  K = 5,
+  diag_val = 1/p,
+  num_nonzero = 0,
+  const_vector = NULL,
+  range_min = 0.2,
+  range_max = 1/p
+)
 }
 \arguments{
 \item{p}{lag order}

@@ -4,9 +4,19 @@
 \alias{irf.varshrinkest}
 \title{Impulse response function}
 \usage{
-\method{irf}{varshrinkest}(x, impulse = NULL, response = NULL,
-  n.ahead = 10, ortho = TRUE, cumulative = FALSE, boot = TRUE,
-  ci = 0.95, runs = 100, seed = NULL, ...)
+\method{irf}{varshrinkest}(
+  x,
+  impulse = NULL,
+  response = NULL,
+  n.ahead = 10,
+  ortho = TRUE,
+  cumulative = FALSE,
+  boot = TRUE,
+  ci = 0.95,
+  runs = 100,
+  seed = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{Object of class 'varshrinkest';

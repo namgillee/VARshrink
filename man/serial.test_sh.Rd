@@ -4,8 +4,12 @@
 \alias{serial.test_sh}
 \title{Test for serially correlated errors for VAR shrinkage estimate}
 \usage{
-serial.test_sh(x, lags.pt = 16, lags.bg = 5,
-  type = c("PT.asymptotic", "PT.adjusted", "BG", "ES"))
+serial.test_sh(
+  x,
+  lags.pt = 16,
+  lags.bg = 5,
+  type = c("PT.asymptotic", "PT.adjusted", "BG", "ES")
+)
 }
 \arguments{
 \item{x}{An object of class "varshrinkest" obtained by VARshrink().}

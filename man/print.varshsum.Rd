@@ -4,8 +4,12 @@
 \alias{print.varshsum}
 \title{Print method for class "varshsum"}
 \usage{
-\method{print}{varshsum}(x, digits = max(3, getOption("digits") - 3),
-  signif.stars = getOption("show.signif.stars"), ...)
+\method{print}{varshsum}(
+  x,
+  digits = max(3, getOption("digits") - 3),
+  signif.stars = getOption("show.signif.stars"),
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class "varshsum"}

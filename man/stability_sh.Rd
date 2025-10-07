@@ -4,9 +4,15 @@
 \alias{stability_sh}
 \title{Stability function}
 \usage{
-stability_sh(x, type = c("OLS-CUSUM", "Rec-CUSUM", "Rec-MOSUM",
-  "OLS-MOSUM", "RE", "ME", "Score-CUSUM", "Score-MOSUM", "fluctuation"),
-  h = 0.15, dynamic = FALSE, rescale = TRUE, ...)
+stability_sh(
+  x,
+  type = c("OLS-CUSUM", "Rec-CUSUM", "Rec-MOSUM", "OLS-MOSUM", "RE", "ME", "Score-CUSUM",
+    "Score-MOSUM", "fluctuation"),
+  h = 0.15,
+  dynamic = FALSE,
+  rescale = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class "varshrinkest"}

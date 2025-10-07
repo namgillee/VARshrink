@@ -4,8 +4,17 @@
 \alias{convPsi2varresult}
 \title{Convert format for VAR coefficients from Psi to varresult}
 \usage{
-convPsi2varresult(Psi, Y, X, lambda0, type = c("const", "trend", "both",
-  "none"), ybar = NULL, xbar = NULL, Q_values = NULL, callstr = "")
+convPsi2varresult(
+  Psi,
+  Y,
+  X,
+  lambda0,
+  type = c("const", "trend", "both", "none"),
+  ybar = NULL,
+  xbar = NULL,
+  Q_values = NULL,
+  callstr = ""
+)
 }
 \arguments{
 \item{Psi}{An M-by-K matrix of VAR coefficients}

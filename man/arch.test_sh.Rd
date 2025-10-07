@@ -4,8 +4,7 @@
 \alias{arch.test_sh}
 \title{ARCH-LM test}
 \usage{
-arch.test_sh(x, lags.single = 16, lags.multi = 5,
-  multivariate.only = TRUE)
+arch.test_sh(x, lags.single = 16, lags.multi = 5, multivariate.only = TRUE)
 }
 \arguments{
 \item{x}{An object of class "varshrinkest" obtained by VARshrink()}

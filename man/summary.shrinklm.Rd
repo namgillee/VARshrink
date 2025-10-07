@@ -4,8 +4,7 @@
 \alias{summary.shrinklm}
 \title{Summary method for class "shrinklm"}
 \usage{
-\method{summary}{shrinklm}(object, correlation = FALSE,
-  symbolic.cor = FALSE, ...)
+\method{summary}{shrinklm}(object, correlation = FALSE, symbolic.cor = FALSE, ...)
 }
 \arguments{
 \item{object}{An object of class "shrinklm"}
