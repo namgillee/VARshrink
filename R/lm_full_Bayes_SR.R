@@ -37,15 +37,13 @@
 #' @importFrom stats rgamma rnorm runif
 #' @importFrom utils capture.output
 #
-# Last modified: Nov. 8th, 2018 by Namgil Lee @ Kangwon National University,
+# Last modified: 13th Oct 2025 by Namgil Lee @ Kangwon National University,
 # South Korea.
 
 lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
                              mcmccycle = 2000) {
-  # Find the lag order p
-  K <- ncol(Y)   #size D
-  M <- ncol(X)   #size M = D^2p, D(Dp+1)
-  p <- M %/% K   #lag order
+  K <- ncol(Y)
+  M <- ncol(X)
 
   N <- nrow(X)
 	J <- K * M
@@ -106,7 +104,7 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
 	  mu0 <- Dv * as.vector(t(eXX$vectors) %*% mXY %*% eSig$vectors)
 	  # mean in U'phi ~ N_J(mu0, Dv)
 	  phi <- mu0 + sqrt(Dv) * rnorm(J, 0, 1)		# U'phi
-	  dim(phi) <- c(K * p + 1, K)
+	  dim(phi) <- c(M, K)
 	  phi <- eXX$vectors %*% (phi %*% t(eSig$vectors))  # U * U'phi
 	  ######################################
 

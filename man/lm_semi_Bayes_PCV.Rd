@@ -24,7 +24,7 @@ lm_semi_Bayes_PCV(
 \item{dof}{Degree of freedom for multivariate t-distribution.
 If dof = Inf (default), then multivariate normal distribution is applied and
 weight vector q is not estimated. If dof = NULL or a numeric vector,
-then dof is selected by K-fold CV automatically and q is estimated.}
+then dof is selected by k-fold CV automatically and q is estimated.}
 
 \item{lambda}{If NULL or a vector of length >=2, it is selected by PCV.}
 

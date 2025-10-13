@@ -1,3 +1,10 @@
+# VARshrink 0.4.0
+* Date: 2025-10-13
+* Fixed errors in all methods to allow larger column sizes in the input data
+  matrix for season >= 3.
+* Fixed errors in sbayes and kcv to correctly compute the lag order and standard
+  deviation of the time series, and to properly scale the coefficient matrix.
+
 # VARshrink 0.3.1.9100
 * Date: 2025-10-07
 * Added vignettes/article_varshrink.R

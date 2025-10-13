@@ -72,7 +72,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   }
   if (totobs <= (p + 1))
     stop("Number of total observations must be > p+1\n")
-  if (method == 'ns') {
+  if (method == "ns") {
     if (identical(type, "const")) {
       type <- "none"
       warning("'ns' method does not allow type='const'.. changed to 'none'.")
@@ -90,14 +90,14 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     M <- K * p + 1
     datX <- matrix(1, N, M) #N-by-M
     for (h in 1:p)
-      datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+        datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
     colnames(datX) <- c(paste(rep(tsnames, times = p), ".l",
                               rep(1:p, each = K), sep = ""), "const")
   } else if (identical(type, "trend")) {
     M <- K * p + 1
     datX <- matrix(1, N, M) #N-by-M
     for (h in 1:p)
-      datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+        datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
     datX[, M] <- seq(p + 1, length.out = N)
     colnames(datX) <- c(paste(rep(tsnames, times = p), ".l",
                               rep(1:p, each = K), sep = ""), "trend")
@@ -105,7 +105,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     M <- K * p + 2
     datX <- matrix(1, N, M) #N-by-M
     for (h in 1:p)
-      datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+        datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
     datX[, M - 1] <- seq(p + 1, length.out = N)
     colnames(datX) <- c(paste(rep(tsnames, times = p), ".l",
                               rep(1:p, each = K), sep = ""), "trend", "const")
@@ -113,7 +113,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     M <- K * p
     datX <- matrix(1, N, M) #N-by-M
     for (h in 1:p)
-      datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+        datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
     colnames(datX) <- paste(rep(tsnames, times = p), ".l",
                             rep(1:p, each = K), sep = "")
   } else {
@@ -121,14 +121,14 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   }
   if (!(is.null(season)) && (length(season) == 1) && (abs(season) >= 3)) {
     season <- abs(as.integer(season))
-    dum <- (diag(season) - 1/season)[, -season]
+    dum <- (diag(season) - 1 / season)[, -season]
     dums <- dum
     while (nrow(dums) < totobs) {
       dums <- rbind(dums, dum)
     }
     dums <- dums[1:totobs, ]
-    colnames(dums) <- paste("sd", 1:ncol(dums), sep = "")
-    rhs <- cbind(rhs, dums[-c(1:p), ])
+    colnames(dums) <- paste("sd", seq_len(ncol(dums)), sep = "")
+    datX <- cbind(datX, dums[-c(1:p), ])
   }
   if (!(is.null(exogen))) {
     exogen <- as.matrix(exogen)
@@ -136,7 +136,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
       stop("\nDifferent row size of y and exogen.\n")
     }
     if (is.null(colnames(exogen))) {
-      colnames(exogen) <- paste("exo", 1:ncol(exogen), sep = "")
+      colnames(exogen) <- paste("exo", seq_len(ncol(exogen)), sep = "")
       warning(paste("No column names supplied in exogen, using:",
                     paste(colnames(exogen), collapse = ", "), ", instead.\n"))
     }
@@ -175,9 +175,6 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
 
     # datY and datX are centered separately by dybar and dxbar.
     dybar <- dxbar <- NULL
-    # if (identical(type, "const") || identical(type, "both")) {
-    #   datX <- datX[, -ncol(datX)]  # Remove 1's from datX
-    # }
     dybar <- colMeans(datY)
     dxbar <- colMeans(datX)
     datY <- datY - rep(dybar, each = N)
@@ -186,26 +183,28 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     # Estimate covariance matrix S_Z
     Z <- cbind(datX, datY)
     if (is.null(lambda)) {
-      if (is.null(lambda_var)){
+      if (is.null(lambda_var)) {
         SZ <- corpcor::cov.shrink(Z, verbose = FALSE, ...)
       } else {
-        SZ <- corpcor::cov.shrink(Z, lambda.var = lambda_var, verbose = FALSE, ...)
+        SZ <- corpcor::cov.shrink(Z, lambda.var = lambda_var, verbose = FALSE,
+                                  ...)
       }
     } else {
-      if (is.null(lambda_var)){
+      if (is.null(lambda_var)) {
         SZ <- corpcor::cov.shrink(Z, lambda = lambda, verbose = FALSE, ...)
       } else {
         SZ <- corpcor::cov.shrink(Z, lambda = lambda, lambda.var = lambda_var,
-                         verbose = FALSE, ...)
+                                  verbose = FALSE, ...)
       }
     }
 
     # Compute the coefficient matrix Psi by solving linear system
-    eigSZ <- eigen(SZ[1:(K * p), 1:(K * p)])  # Use EVD to avoid singularity
+    # Use EVD to avoid singularity
+    eigSZ <- eigen(SZ[seq_len(ncol(datX)), seq_len(ncol(datX))])
     idr <- eigSZ$values > 0
     myPsi <- eigSZ$vectors[, idr] %*%
-            ( 1/eigSZ$values[idr] * t(eigSZ$vectors[,idr]) ) %*%
-            SZ[1:(K*p), (K*p+1):(K*p+K)]
+      (1 / eigSZ$values[idr] * t(eigSZ$vectors[, idr])) %*%
+      SZ[seq_len(ncol(datX)), (ncol(datX) + 1):ncol(Z)]
     rownames(myPsi) <- colnames(datX)
     colnames(myPsi) <- colnames(datY)
 
@@ -339,8 +338,8 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   if (!with(estim, exists("varresult"))) {
     warning("VAR parameters were not estimated. Check the method.")
   }
-  estim$datamat  <- cbind(datY, datX) #.boot.varshrinkest();predict()#
-  estim$y        <- y  #..#
+  estim$datamat  <- cbind(datY, datX)
+  estim$y        <- y
   estim$type     <- type
   estim$p        <- p
   estim$K        <- K
