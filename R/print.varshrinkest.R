@@ -23,12 +23,12 @@ print.varshrinkest <- function(x, digits = max(3, getOption("digits") - 3),
   for (i in 1:K) {
       result <- coef(x$varresult[[i]])
       text1 <- paste("Estimated coefficients for equation ",
-          tsnames[i], ":", sep = "")
+                     tsnames[i], ":", sep = "")
       cat(text1, "\n")
       row <- paste(rep("=", nchar(text1)), collapse = "")
       cat(row, "\n")
-      text2 <- paste("Call:\n", tsnames[i], " = ", paste(names(result),
-          collapse = " + "), sep = "")
+      text2 <- paste("Call:\n", tsnames[i], " = ",
+                     paste(names(result), collapse = " + "), sep = "")
       cat(text2, "\n\n")
       print(result, ...)
       cat("\n\n")
@@ -39,29 +39,31 @@ print.varshrinkest <- function(x, digits = max(3, getOption("digits") - 3),
 		print(x$Sigma, ...)
 	}
 	if (!is.null(x$dof)) {
-		text1 = paste("dof for noise: ", x$dof,
-		              " (estimated: ",
-					  ifelse(is.null(e<-x$dof.estimated),FALSE,e),
-					  ")", sep = "")
-		cat(text1,"\n")
+		text1 <- paste("dof for noise: ", x$dof,
+		               " (estimated: ",
+		               ifelse(is.null(e <- x$dof.estimated), FALSE, e), ")",
+		               sep = "")
+		cat(text1, "\n")
 	}
 	if (!is.null(x$lambda)) {
-		text1 = paste("lambda: ", paste(x$lambda, collapse = " "),
-					  " (estimated: ",
-					  ifelse(is.null(e<-x$lambda.estimated),FALSE,e),
-					  ")", sep = "")
-		cat(text1,"\n")
+		text1 <- paste("lambda: ", paste(x$lambda, collapse = " "),
+		               " (estimated: ",
+		               ifelse(is.null(e <- x$lambda.estimated), FALSE, e),
+		               ")",
+		               sep = "")
+		cat(text1, "\n")
 	}
 	if (!is.null(x$lambda_var)) {
-		text1 = paste("lambda_var: ", paste(x$lambda_var, collapse = " "),
-					  " (estimated: ",
-					  ifelse(is.null(e<-x$lambda_var.estimated),FALSE,e),
-					  ")", sep = "")
-		cat(text1,"\n")
+		text1 <- paste("lambda_var: ", paste(x$lambda_var, collapse = " "),
+		               " (estimated: ",
+		               ifelse(is.null(e <- x$lambda_var.estimated), FALSE, e),
+		               ")",
+		               sep = "")
+		cat(text1, "\n")
 	}
 	if (!is.null(x$GCV)) {
-		text1 = paste("GCV: ", paste(round(x$GCV, digits), collapse = " "))
-		cat(text1,"\n")
+		text1 <- paste("GCV: ", paste(round(x$GCV, digits), collapse = " "))
+		cat(text1, "\n")
 	}
 	## return value
 	invisible(x)

@@ -11,8 +11,8 @@
 #' @param ... Currently not used.
 #' @importFrom stats coef var pt
 #' @export
-summary.shrinklm <- function (object, correlation = FALSE,
-                              symbolic.cor = FALSE, ...) {
+summary.shrinklm <- function(object, correlation = FALSE,
+                             symbolic.cor = FALSE, ...) {
   z <- object
   p <- z$rank
   rdf <- z$df.residual
@@ -22,12 +22,11 @@ summary.shrinklm <- function (object, correlation = FALSE,
     w <- z$weights
     if (is.null(w)) {
       rss <- sum(r^2)
-    }
-    else {
+    } else {
       rss <- sum(w * r^2)
       r <- sqrt(w) * r
     }
-    resvar <- rss/rdf
+    resvar <- rss / rdf
     ans <- z[c("call", "terms", if (!is.null(z$weights)) "weights")]
     class(ans) <- "summary.lm"
     ans$aliased <- is.na(coef(z))
@@ -53,22 +52,22 @@ summary.shrinklm <- function (object, correlation = FALSE,
   n <- length(r)
   if (is.null(w)) {
     mss <- if (attr(z$terms, "intercept"))
-      sum( (f - mean(f))^2 )
+      sum((f - mean(f))^2)
     else sum(f^2)
     rss <- sum(r^2)
-  }
-  else {
+  } else {
     mss <- if (attr(z$terms, "intercept")) {
-      m <- sum(w * f/sum(w))
+      m <- sum(w * f / sum(w))
       sum(w * (f - m)^2)
+    } else {
+      sum(w * f^2)
     }
-    else sum(w * f^2)
     rss <- sum(w * r^2)
     r <- sqrt(w) * r
   }
-  resvar <- rss/rdf
+  resvar <- rss / rdf
   if (is.finite(resvar) && resvar < (mean(f)^2 + var(f)) *
-      1e-30)
+        1e-30)
     warning("essentially perfect fit: summary may be unreliable")
   p1 <- (abs(z$svd$d) >= 1e-14)
   R <- z$svd$v[, p1, drop = FALSE] %*% (
@@ -86,7 +85,7 @@ summary.shrinklm <- function (object, correlation = FALSE,
     sqrt(diag(R) * resvar)
   }
   est <- z$coefficients
-  tval <- est/se
+  tval <- est / se
   ans <- z[c("call", "terms", if (!is.null(z$weights)) "weights")]
   ans$residuals <- r
   ans$coefficients <-
@@ -99,18 +98,19 @@ summary.shrinklm <- function (object, correlation = FALSE,
     df.int <- if (attr(z$terms, "intercept"))
       1L
     else 0L
-    ans$r.squared <- mss/(mss + rss)
+    ans$r.squared <- mss / (mss + rss)
     ans$adj.r.squared <- 1 - (1 - ans$r.squared) * ((n - df.int) / rdf)
-    ans$fstatistic <- c(value = (mss/(n - rdf - df.int)) / resvar,
+    ans$fstatistic <- c(value = (mss / (n - rdf - df.int)) / resvar,
                         numdf = n - rdf - df.int, dendf = rdf)
+  } else {
+    ans$r.squared <- ans$adj.r.squared <- 0
   }
-  else ans$r.squared <- ans$adj.r.squared <- 0
   ans$cov.unscaled <- R
   dimnames(ans$cov.unscaled) <-
-    list(dimnames(ans$coefficients)[[1]][1:nrow(R)],
-         dimnames(ans$coefficients)[[1]][1:nrow(R)])
+    list(dimnames(ans$coefficients)[[1]][seq_len(nrow(R))],
+         dimnames(ans$coefficients)[[1]][seq_len(nrow(R))])
   if (correlation) {
-    ans$correlation <- (R * resvar)/outer(se, se)
+    ans$correlation <- (R * resvar) / outer(se, se)
     dimnames(ans$correlation) <- dimnames(ans$cov.unscaled)
     ans$symbolic.cor <- symbolic.cor
   }

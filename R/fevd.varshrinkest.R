@@ -10,14 +10,12 @@
 #' @param ... Currently not used.
 #' @seealso \code{\link[vars]{fevd}}
 #' @export
-fevd.varshrinkest <-
-function (x, n.ahead = 10, ...) {
+fevd.varshrinkest <- function(x, n.ahead = 10, ...) {
   if (!inherits(x, "varest")) {
     stop("\nPlease provide an object inheriting class 'varest'.\n")
   }
   n.ahead <- abs(as.integer(n.ahead))
   K <- x$K
-  p <- x$p
   ynames <- names(x$varresult)
   msey <- h_fecov(x, n.ahead = n.ahead)
   Psi <- Psi(x, nstep = n.ahead)
@@ -33,7 +31,7 @@ function (x, n.ahead = 10, ...) {
         }
       }
     }
-    temp <- temp/mse[i, ]
+    temp <- temp / mse[i, ]
     for (j in 1:K) {
       Omega[i, , j] <- temp[j, ]
     }

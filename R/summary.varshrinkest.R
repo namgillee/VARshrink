@@ -24,13 +24,12 @@
 #' estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
 #' summary(estim)
 #' @export
-summary.varshrinkest <- function (object, equations = NULL, ...) {
+summary.varshrinkest <- function(object, equations = NULL, ...) {
   ynames <- names(object$varresult)
   obs <- object$obs
   if (is.null(equations)) {
     ysubnames <- ynames
-  }
-  else {
+  } else {
     ysubnames <- as.character(equations)
     if (!(all(ysubnames %in% ynames))) {
       warning("\nInvalid variable name(s) supplied, using first variable.\n")

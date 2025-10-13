@@ -18,11 +18,10 @@
 #' @importFrom utils tail
 #' @importFrom stats qnorm
 #' @export
-predict.varshrinkest <- function (object, ..., n.ahead = 10, ci = 0.95,
-                                  dumvar = NULL) {
+predict.varshrinkest <- function(object, ..., n.ahead = 10, ci = 0.95,
+                                 dumvar = NULL) {
   K <- object$K
   p <- object$p
-  obs <- object$obs
   type <- object$type
   data.all <- object$datamat
   ynames <- colnames(object$y)
@@ -32,20 +31,17 @@ predict.varshrinkest <- function (object, ..., n.ahead = 10, ci = 0.95,
   if (type == "const") {
     Zdet <- matrix(rep(1, n.ahead), nrow = n.ahead, ncol = 1)
     colnames(Zdet) <- "const"
-  }
-  else if (type == "trend") {
+  } else if (type == "trend") {
     trdstart <- nrow(Z) + 1 + p
     Zdet <- matrix(seq(trdstart, length = n.ahead), nrow = n.ahead,
                    ncol = 1)
     colnames(Zdet) <- "trend"
-  }
-  else if (type == "both") {
+  } else if (type == "both") {
     trdstart <- nrow(Z) + 1 + p
     Zdet <- matrix(c(rep(1, n.ahead), seq(trdstart, length = n.ahead)),
                    nrow = n.ahead, ncol = 2)
     colnames(Zdet) <- c("const", "trend")
-  }
-  else if (type == "none") {
+  } else if (type == "none") {
     Zdet <- NULL
   }
   if (!is.null(eval(object$call$season))) {
@@ -57,8 +53,7 @@ predict.varshrinkest <- function (object, ..., n.ahead = 10, ci = 0.95,
     if (nrow(seasonal) >= n.ahead) {
       seasonal <- as.matrix(cycle[1:n.ahead, ], nrow = n.ahead,
                             ncol = season - 1)
-    }
-    else {
+    } else {
       while (nrow(seasonal) < n.ahead) {
         seasonal <- rbind(seasonal, cycle)
       }
@@ -67,14 +62,14 @@ predict.varshrinkest <- function (object, ..., n.ahead = 10, ci = 0.95,
     rownames(seasonal) <- seq(nrow(data.all) + 1, length = n.ahead)
     if (!is.null(Zdet)) {
       Zdet <- as.matrix(cbind(Zdet, seasonal))
-    }
-    else {
+    } else {
       Zdet <- as.matrix(seasonal)
     }
   }
   if (!is.null(eval(object$call$exogen))) {
     if (is.null(dumvar)) {
-      stop("\nNo matrix for dumvar supplied, but object varest contains exogenous variables.\n")
+      stop(paste0("\nNo matrix for dumvar supplied, but object varest ",
+                  "contains exogenous variables.\n"))
     }
     if (!all(colnames(dumvar) %in% colnames(data.all))) {
       stop("\nColumn names of dumvar do not coincide with exogen.\n")
@@ -84,8 +79,7 @@ predict.varshrinkest <- function (object, ..., n.ahead = 10, ci = 0.95,
     }
     if (!is.null(Zdet)) {
       Zdet <- as.matrix(cbind(Zdet, dumvar))
-    }
-    else {
+    } else {
       Zdet <- as.matrix(dumvar)
     }
   }
@@ -95,7 +89,7 @@ predict.varshrinkest <- function (object, ..., n.ahead = 10, ci = 0.95,
   for (i in 1:n.ahead) {
     yse[i, ] <- sqrt(diag(sig.y[, , i]))
   }
-  yse <- -1 * qnorm((1 - ci)/2) * yse
+  yse <- -1 * qnorm((1 - ci) / 2) * yse
   colnames(yse) <- paste(ci, "of", ynames)
   forecast <- matrix(NA, ncol = K, nrow = n.ahead)
   lasty <- c(Zy[nrow(Zy), ])

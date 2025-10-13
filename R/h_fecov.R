@@ -1,7 +1,7 @@
 #' @importFrom stats df.residual resid
-h_fecov <- function (x, n.ahead) {
+h_fecov <- function(x, n.ahead) {
   n.par <- sapply(x$varresult, df.residual)
-  sigma.u <- crossprod(resid(x))/n.par
+  sigma.u <- crossprod(resid(x)) / n.par
   Sigma.yh <- array(NA, dim = c(x$K, x$K, n.ahead))
   Sigma.yh[, , 1] <- sigma.u
   Phi <- Phi(x, nstep = n.ahead)

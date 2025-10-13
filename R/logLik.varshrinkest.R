@@ -21,7 +21,7 @@
 logLik.varshrinkest <- function(object, ...) {
 
   obs <- object$obs
-  df <- sum( obs - unlist(lapply(object$varresult, df.residual )) )
+  df <- sum(obs - unlist(lapply(object$varresult, df.residual)))
   K <- object$K
   resids <- resid(object) #
   Sigma <- if (is.null(object$Sigma)) {
@@ -31,13 +31,13 @@ logLik.varshrinkest <- function(object, ...) {
   }
   dof <- ifelse(is.null(object$dof), Inf, object$dof)
   r <- if (is.infinite(dof)) {
-    -(obs * K/2) * log(2 * pi) - (obs/2) * log(det(Sigma)) -
-      (1/2) * sum( diag(resids %*% solve(Sigma, t(resids))) )
+    -(obs * K / 2) * log(2 * pi) - (obs / 2) * log(det(Sigma)) -
+      (1 / 2) * sum(diag(resids %*% solve(Sigma, t(resids))))
   } else {
-    obs * lgamma((dof + K)/2) - obs * lgamma(dof / 2) -
-      (obs * K/2) * log(dof * pi) - (obs/2) * log(det(Sigma)) -
-      (dof + K)/2 * sum(log(1 +
-                              diag(resids %*% solve(Sigma, t(resids))) / dof))
+    obs * lgamma((dof + K) / 2) - obs * lgamma(dof / 2) -
+      (obs * K / 2) * log(dof * pi) - (obs / 2) * log(det(Sigma)) -
+      (dof + K) / 2 * sum(log(1 +
+                                diag(resids %*% solve(Sigma, t(resids))) / dof))
   }
   class(r) <- "logLik"
   attr(r, "df") <- df

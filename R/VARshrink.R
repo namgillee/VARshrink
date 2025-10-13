@@ -72,7 +72,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   }
   if (totobs <= (p + 1))
     stop("Number of total observations must be > p+1\n")
-  if (method == 'ns') {
+  if (method == "ns") {
     if (identical(type, "const")) {
       type <- "none"
       warning("'ns' method does not allow type='const'.. changed to 'none'.")
@@ -88,32 +88,36 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
 
   if (identical(type, "const")) {
     M <- K * p + 1
-    datX <- matrix(1, N, M) #N-by-M
-    for (h in 1:p)
+    datX <- matrix(1, N, M)
+    for (h in 1:p) {
       datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    }
     colnames(datX) <- c(paste(rep(tsnames, times = p), ".l",
                               rep(1:p, each = K), sep = ""), "const")
   } else if (identical(type, "trend")) {
     M <- K * p + 1
-    datX <- matrix(1, N, M) #N-by-M
-    for (h in 1:p)
+    datX <- matrix(1, N, M)
+    for (h in 1:p) {
       datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    }
     datX[, M] <- seq(p + 1, length.out = N)
     colnames(datX) <- c(paste(rep(tsnames, times = p), ".l",
                               rep(1:p, each = K), sep = ""), "trend")
   } else if (identical(type, "both")) {
     M <- K * p + 2
-    datX <- matrix(1, N, M) #N-by-M
-    for (h in 1:p)
+    datX <- matrix(1, N, M)
+    for (h in 1:p) {
       datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    }
     datX[, M - 1] <- seq(p + 1, length.out = N)
     colnames(datX) <- c(paste(rep(tsnames, times = p), ".l",
                               rep(1:p, each = K), sep = ""), "trend", "const")
   } else if (identical(type, "none")) {
     M <- K * p
     datX <- matrix(1, N, M) #N-by-M
-    for (h in 1:p)
+    for (h in 1:p) {
       datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    }
     colnames(datX) <- paste(rep(tsnames, times = p), ".l",
                             rep(1:p, each = K), sep = "")
   } else {
@@ -121,14 +125,14 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   }
   if (!(is.null(season)) && (length(season) == 1) && (abs(season) >= 3)) {
     season <- abs(as.integer(season))
-    dum <- (diag(season) - 1/season)[, -season]
+    dum <- (diag(season) - 1 / season)[, -season]
     dums <- dum
     while (nrow(dums) < totobs) {
       dums <- rbind(dums, dum)
     }
     dums <- dums[1:totobs, ]
-    colnames(dums) <- paste("sd", 1:ncol(dums), sep = "")
-    rhs <- cbind(rhs, dums[-c(1:p), ])
+    colnames(dums) <- paste("sd", seq_len(ncol(dums)), sep = "")
+    datX <- cbind(datX, dums[-c(1:p), ])
   }
   if (!(is.null(exogen))) {
     exogen <- as.matrix(exogen)
@@ -136,7 +140,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
       stop("\nDifferent row size of y and exogen.\n")
     }
     if (is.null(colnames(exogen))) {
-      colnames(exogen) <- paste("exo", 1:ncol(exogen), sep = "")
+      colnames(exogen) <- paste("exo", seq_len(ncol(exogen)), sep = "")
       warning(paste("No column names supplied in exogen, using:",
                     paste(colnames(exogen), collapse = ", "), ", instead.\n"))
     }
@@ -161,10 +165,11 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
 
     # Update the return value
     estim$varresult <-
-      convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = resu_ridge$lambda[id_min_gcv] * N,
-                        type = type, callstr = cl
-    )
+      convPsi2varresult(
+        Psi = myPsi, Y = datY, X = datX,
+        lambda0 = resu_ridge$lambda[id_min_gcv] * N,
+        type = type, callstr = cl
+      )
     estim$lambda <- resu_ridge$lambda
     estim$lambda.estimated <- as.logical(length(resu_ridge$lambda) > 1)
     estim$GCV <- resu_ridge$GCV
@@ -175,9 +180,6 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
 
     # datY and datX are centered separately by dybar and dxbar.
     dybar <- dxbar <- NULL
-    # if (identical(type, "const") || identical(type, "both")) {
-    #   datX <- datX[, -ncol(datX)]  # Remove 1's from datX
-    # }
     dybar <- colMeans(datY)
     dxbar <- colMeans(datX)
     datY <- datY - rep(dybar, each = N)
@@ -186,26 +188,28 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     # Estimate covariance matrix S_Z
     Z <- cbind(datX, datY)
     if (is.null(lambda)) {
-      if (is.null(lambda_var)){
+      if (is.null(lambda_var)) {
         SZ <- corpcor::cov.shrink(Z, verbose = FALSE, ...)
       } else {
-        SZ <- corpcor::cov.shrink(Z, lambda.var = lambda_var, verbose = FALSE, ...)
+        SZ <- corpcor::cov.shrink(Z, lambda.var = lambda_var, verbose = FALSE,
+                                  ...)
       }
     } else {
-      if (is.null(lambda_var)){
+      if (is.null(lambda_var)) {
         SZ <- corpcor::cov.shrink(Z, lambda = lambda, verbose = FALSE, ...)
       } else {
         SZ <- corpcor::cov.shrink(Z, lambda = lambda, lambda.var = lambda_var,
-                         verbose = FALSE, ...)
+                                  verbose = FALSE, ...)
       }
     }
 
     # Compute the coefficient matrix Psi by solving linear system
-    eigSZ <- eigen(SZ[1:(K * p), 1:(K * p)])  # Use EVD to avoid singularity
+    # Use EVD to avoid singularity
+    eigSZ <- eigen(SZ[seq_len(ncol(datX)), seq_len(ncol(datX))])
     idr <- eigSZ$values > 0
     myPsi <- eigSZ$vectors[, idr] %*%
-            ( 1/eigSZ$values[idr] * t(eigSZ$vectors[,idr]) ) %*%
-            SZ[1:(K*p), (K*p+1):(K*p+K)]
+      (1 / eigSZ$values[idr] * t(eigSZ$vectors[, idr])) %*%
+      SZ[seq_len(ncol(datX)), (ncol(datX) + 1):ncol(Z)]
     rownames(myPsi) <- colnames(datX)
     colnames(myPsi) <- colnames(datY)
 
@@ -213,12 +217,12 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     # If type=="const" or "both", then the constant vector will be computed
     # by const' = dybar' - dxbar' %*% Psi and appended to the coefficients.
     estim$varresult <-
-      convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = attr(SZ, "lambda") /
-                          (1 - attr(SZ, "lambda")) * (N - 1),
-                        type = type, ybar = dybar, xbar = dxbar,
-                        callstr = cl
-    )
+      convPsi2varresult(
+        Psi = myPsi, Y = datY, X = datX,
+        lambda0 = attr(SZ, "lambda") / (1 - attr(SZ, "lambda")) * (N - 1),
+        type = type, ybar = dybar, xbar = dxbar,
+        callstr = cl
+      )
     estim$lambda <- attr(SZ, "lambda")
     estim$lambda.estimated <- attr(SZ, "lambda.estimated")
     estim$lambda_var <- attr(SZ, "lambda.var")
@@ -247,11 +251,12 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     sigbar <- ifelse(K >= 2, mean(diag(resu_fbayes$Sigma), na.rm = TRUE),
                      resu_fbayes$Sigma)
     estim$varresult <-
-      convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = resu_fbayes$lambda * sigbar,
-                        type = type,
-                        Q_values = resu_fbayes$q, callstr = cl
-    )
+      convPsi2varresult(
+        Psi = myPsi, Y = datY, X = datX,
+        lambda0 = resu_fbayes$lambda * sigbar,
+        type = type,
+        Q_values = resu_fbayes$q, callstr = cl
+      )
 
     #### How to get kappa ####
     # From Eq. (11) for psi_hat(lambda), Y can be separated as:
@@ -262,7 +267,8 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     # After vectorizing:
     #    vec(Y_hat) = (I(x)H) %*% y == (I(x)X) %*% psi
     # Combining above two equations:
-    #    (I(x)H) %*% y == (I(x)X) %*% (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q) %*% y
+    #    (I(x)H) %*% y ==
+    #          (I(x)X) %*% (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q) %*% y
     #    ...
     #    (I(x)H) == (I(x)X) %*% (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q)
     # Approximate Sig by a scalar:
@@ -275,8 +281,9 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   ##--------- (4) Semi-parametric Bayesian with lambda by P-CV ----------
   if (method == "sbayes") {
 
-    resu_sbayes <- lm_semi_Bayes_PCV(datY, datX, dof = dof,
-                              lambda = lambda, lambda_var = lambda_var, ...)
+    resu_sbayes <- 
+      lm_semi_Bayes_PCV(datY, datX, dof = dof, lambda = lambda,
+                        lambda_var = lambda_var, ...)
 
     # Update the return value
     estim$lambda <- resu_sbayes$lambda
@@ -294,19 +301,20 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     sigbar <- ifelse(K >= 2, mean(diag(resu_sbayes$Sigma), na.rm = TRUE),
                      resu_sbayes$Sigma)
     estim$varresult <-
-      convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = resu_sbayes$lambda * sigbar /
-                          (1 - resu_sbayes$lambda) * (N - 1),
-                        type = type,
-                        Q_values = resu_sbayes$q, callstr = cl
-    )
+      convPsi2varresult(
+        Psi = myPsi, Y = datY, X = datX,
+        lambda0 = resu_sbayes$lambda * sigbar / (1 - resu_sbayes$lambda) *
+          (N - 1),
+        type = type,
+        Q_values = resu_sbayes$q, callstr = cl
+      )
 
   }
   ##--------- (5) Semi-parametric Bayesian with lambda by K-CV ----------
   if (method == "kcv") {
 
     resu_kcv <- lm_ShVAR_KCV(datY, datX, dof = dof,
-                         lambda = lambda, lambda_var = lambda_var, ...)
+                             lambda = lambda, lambda_var = lambda_var, ...)
 
     # Update the return value
     estim$lambda <- resu_kcv$lambda
@@ -324,13 +332,13 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     sigbar <- ifelse(K >= 2, mean(diag(resu_kcv$Sigma), na.rm = TRUE),
                      resu_kcv$Sigma)
     estim$varresult <-
-      convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = resu_kcv$lambda * sigbar /
-                          (1 - resu_kcv$lambda) * (N - 1),
-                        type = type,
-                        Q_values = resu_kcv$q,
-                        callstr = cl
-    )
+      convPsi2varresult(
+        Psi = myPsi, Y = datY, X = datX,
+        lambda0 = resu_kcv$lambda * sigbar / (1 - resu_kcv$lambda) * (N - 1),
+        type = type,
+        Q_values = resu_kcv$q,
+        callstr = cl
+      )
   }
   ##---------------------------------------------------
 
@@ -339,8 +347,8 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   if (!with(estim, exists("varresult"))) {
     warning("VAR parameters were not estimated. Check the method.")
   }
-  estim$datamat  <- cbind(datY, datX) #.boot.varshrinkest();predict()#
-  estim$y        <- y  #..#
+  estim$datamat  <- cbind(datY, datX)
+  estim$y        <- y
   estim$type     <- type
   estim$p        <- p
   estim$K        <- K

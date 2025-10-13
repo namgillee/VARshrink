@@ -22,8 +22,8 @@
 #
 # Last modified: 20 Nov. 2017, Namgil Lee @ Kangwon National University
 
-shrinkVARcoef <- function (Y, X, lambda, dof = Inf, prior_type = "NCJ",
-                           TolDRes = 1e-4, m0 = ncol(Y)) {
+shrinkVARcoef <- function(Y, X, lambda, dof = Inf, prior_type = "NCJ",
+                          TolDRes = 1e-4, m0 = ncol(Y)) {
   #Argument check
   if ((toupper(prior_type) != "NCJ") && (toupper(prior_type) != "CJ")) {
     stop(paste("Unknown argument prior_type =", prior_type))
@@ -39,7 +39,7 @@ shrinkVARcoef <- function (Y, X, lambda, dof = Inf, prior_type = "NCJ",
 
   ## 1. When lambda==1, return zero matrix
 	if (lambda == 1) {
-		Psihat <- matrix(0, K, d)
+    Psihat <- matrix(0, K, d)
 		attr(Psihat, "weight.estimated") <- FALSE
 		attr(Psihat, "weight") <- NULL
     attr(Psihat, "noiseCov") <- NULL
@@ -53,15 +53,17 @@ shrinkVARcoef <- function (Y, X, lambda, dof = Inf, prior_type = "NCJ",
   w <- rep(1, N)  #Initial Weights
   l0 <- (m0 + d + 1) * rep(1, d) #InvWishart, L0 = diag(l0)
   if ((lambda <= 1e-7) && (N <= (K + 1))) {
-    TMPs <- svd( (t(X) %*% (X * w)) / (N - 1) * (1 - lambda) +
-                   lambda * diag(rep(1, K)) )
+    TMPs <- svd((t(X) %*% (X * w)) / (N - 1) * (1 - lambda) +
+                  lambda * diag(rep(1, K)))
     TMPY <- (t(X) %*% (Y * w)) / (N - 1) * (1 - lambda)
     Psihat <- TMPs$v %*% ((t(TMPs$u) %*% TMPY) / TMPs$d)
   } else {
-    U <- chol( (t(X) %*% (X * w)) / (N - 1) * (1 - lambda) +
-                 lambda * diag(rep(1, K)) )
-    Psihat <- backsolve(U, backsolve(U, (t(X) %*% (Y * w)) /
-                                       (N-1) * (1 - lambda), transpose=TRUE) )
+    U <- chol((t(X) %*% (X * w)) / (N - 1) * (1 - lambda) +
+                lambda * diag(rep(1, K)))
+    Psihat <- 
+      backsolve(U,
+                backsolve(U, (t(X) %*% (Y * w)) / (N - 1) *
+                            (1 - lambda), transpose = TRUE))
   }
   Vhat <- t(Y) %*% ((Y - (X %*% Psihat)) * w)
   diag(Vhat) <- diag(Vhat) + l0
@@ -92,59 +94,63 @@ shrinkVARcoef <- function (Y, X, lambda, dof = Inf, prior_type = "NCJ",
 
   #AT LEAST ONE MORE UPDATE OF w,Psihat,Vhat IS NEEDED
   for (count in 1:MaxCount) {
-    iVhat <- eVhat$vectors %*% diag(1/pmax((eVhat$values), 1e-18)) %*%
+    iVhat <- eVhat$vectors %*% diag(1 / pmax((eVhat$values), 1e-18)) %*%
       t(eVhat$vectors)
 
-		### w is determined by w_t = h( e_t' V^{-1} e_t )
+    ### w is determined by w_t = h( e_t' V^{-1} e_t )
     if (!isNormal && !flag_for_ncj_loop) {
       w_prev     <- w
       Err        <- Y - X %*% Psihat
-      w          <- h( colSums(t(Err) * (iVhat %*% t(Err))) )
+      w          <- h(colSums(t(Err) * (iVhat %*% t(Err))))
     }
 
     ### Psihat
     if (toupper(prior_type) == "CJ" || !flag_for_ncj_loop) {
       if ((lambda <= 1e-7) && (N <= (K + 1))) {
-        TMPs <- svd( (t(X)%*%(X*w))/(N-1)*(1-lambda) + lambda*diag(rep(1,K)) )
-        TMPY <- (t(X)%*%(Y*w))/(N-1)*(1-lambda)
-        Psihat <- TMPs$v %*% ((t(TMPs$u) %*% TMPY)/TMPs$d)
+        TMPs <- svd((t(X) %*% (X * w)) / (N - 1) * (1 - lambda) +
+                      lambda * diag(rep(1, K)))
+        TMPY <- (t(X) %*% (Y * w)) / (N - 1) * (1 - lambda)
+        Psihat <- TMPs$v %*% ((t(TMPs$u) %*% TMPY) / TMPs$d)
       } else {
-        U <- chol( (t(X)%*%(X*w))/(N-1)*(1-lambda) + lambda*diag(rep(1,K)) )
-        Psihat <- backsolve(U, backsolve(U, (t(X)%*%(Y*w))/(N-1)*(1-lambda), transpose=TRUE) )
+        U <- chol((t(X) %*% (X * w)) / (N - 1) * (1 - lambda) +
+                    lambda * diag(rep(1, K)))
+        Psihat <- backsolve(U, backsolve(U, (t(X) %*% (Y * w)) / (N - 1) *
+                                           (1 - lambda), transpose = TRUE))
       }
 
-    } else { #'NCJ' && flag_for_ncj_loop
-      if ( !exists('eXX') || (!isNormal && !flag_for_ncj_loop)) {
+    } else { #'NCJ' and flag_for_ncj_loop
+      if (!exists("eXX") || (!isNormal && !flag_for_ncj_loop)) {
         eXX <- eigen(t(X) %*% (X * w))
       }
-  		mXY <- t(X) %*% (Y * w) %*% iVhat
-  		Dv <- 1/( kronecker(1/pmax((eVhat$values), 1e-18), eXX$values) +
-  		            lambda / (1 - lambda) * (N - 1) )
-  		Psihat <- matrix(Dv, K, d) * ( t(eXX$vectors) %*% mXY %*% eVhat$vectors )
-  		Psihat <- eXX$vectors %*% (Psihat %*% t(eVhat$vectors))
+      mXY <- t(X) %*% (Y * w) %*% iVhat
+  		Dv <- 1 / (kronecker(1 / pmax((eVhat$values), 1e-18), eXX$values) +
+  		           lambda / (1 - lambda) * (N - 1))
+      Psihat <- matrix(Dv, K, d) * (t(eXX$vectors) %*% mXY %*% eVhat$vectors)
+      Psihat <- eXX$vectors %*% (Psihat %*% t(eVhat$vectors))
 		}
 
     ### Vhat
-		ev_prev <- eVhat$values
+    ev_prev <- eVhat$values
 		Vhat <- t(Y) %*% ((Y - (X %*% Psihat)) * w)
 		diag(Vhat) <- diag(Vhat) + l0
 		Vhat <- Vhat / (m0 + N + d + 1)
 		Vhat <- (Vhat + t(Vhat)) / 2 #To ensure real eigenvalues
 		eVhat <- eigen(Vhat)
 
-    #Convergence Criterion
-    if (isNormal || flag_for_ncj_loop) { #w is not changed, so we use eVhat$values
-      if ( sum(abs((ev_prev - eVhat$values)^2)) <= TolDRes * sum(ev_prev^2) ) {
+    # Convergence Criterion
+    # w is not changed, so we use eVhat$values
+    if (isNormal || flag_for_ncj_loop) {
+      if (sum(abs((ev_prev - eVhat$values)^2)) <= TolDRes * sum(ev_prev^2)) {
         break
       }
 
     } else {
-      if ( sum((w - w_prev)^2) <= TolDRes^2 * sum(w_prev^2) ) {
-          if (toupper(prior_type) == "CJ") {
-            break
-          } else {
-            flag_for_ncj_loop <- TRUE
-          }
+      if (sum((w - w_prev)^2) <= TolDRes^2 * sum(w_prev^2)) {
+        if (toupper(prior_type) == "CJ") {
+          break
+        } else {
+          flag_for_ncj_loop <- TRUE
+        }
       }
     }
   }

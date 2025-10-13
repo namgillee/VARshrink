@@ -46,8 +46,8 @@ lm_multiv_ridge <- function (Y, X, lambda = 0, do_scale = FALSE) {
   # Ridge regression: (X'X+nLI)^{-1} X'Y == V(d^2+nL)^{-1}d * Rhs
   k <- length(lambda)
   r <- length(d)
-  Div <- d ^ 2 / n + rep(lambda, each = r * ncol(Y))  #(d^2/n + lambda)
-  a <- rep(drop(d / n * Rhs), k) / Div  #(d^2/n + lambda)^{-1} * d/n * Rhs
+  Div <- d ^ 2 / n + rep(lambda, each = r * ncol(Y))
+  a <- rep(drop(d / n * Rhs), k) / Div
   dim(a) <- c(r, ncol(Y) * k)
   coef <- Xs$v %*% a                           #p x K*k
 

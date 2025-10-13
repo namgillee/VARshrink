@@ -28,7 +28,8 @@
 #' @param Y An N-by-K data matrix of dependent variables
 #' @param X An N-by-M data matrix of regressors
 #' @param lambda0 A rescaled shrinkage intensity parameter, based on which the
-#' effective number of parameters is computed by \deqn{Trace(X(X'X+lambda0*I)^{-1} X')}
+#' effective number of parameters is computed by
+#' \deqn{Trace(X(X'X+lambda0*I)^{-1} X')}
 #' @param type Type of deterministic variables in the VAR estimation problem.
 #' Either of "const", "trend", "both", or "none".
 #' @param ybar,xbar NULL if Y and X are not centered. Mean vectors if Y and X
@@ -39,8 +40,8 @@
 #' Take weights on rows (samples) of Y and X by sqrt(Q).
 #' @param callstr The call to VARshrink().
 #' @return A list object with objects of class c("shrinklm", "lm").
-#' Each "shrinklm" object has components: coefficients, residuals, fitted.values,
-#' rank, df.residual, lambda0, call, terms, svd
+#' Each "shrinklm" object has components: coefficients, residuals,
+#' fitted.values, rank, df.residual, lambda0, call, terms, svd
 #' @importFrom stats terms
 convPsi2varresult <- function(Psi, Y, X, lambda0,
                               type = c("const", "trend", "both", "none"),
@@ -59,7 +60,7 @@ convPsi2varresult <- function(Psi, Y, X, lambda0,
   nparam_to_adjust <- 0 #number of parameters to adjust
 
   if ((identical(type, "const") || identical(type, "both")) &&
-      !is.null(ybar) && !is.null(xbar)) {
+        !is.null(ybar) && !is.null(xbar)) {
     # If both ybar and xbar are supplied as arguments, then
     # suppose that:   X = (x_t - xbar), Y = (y_t - ybar), Y ~ X %*% Psi,
     # and
@@ -86,23 +87,24 @@ convPsi2varresult <- function(Psi, Y, X, lambda0,
     sing_val <- s$d
   }
   idnonzero <- (abs(sing_val) >= 1e-14)
-  mykapp <- sum( (sing_val[idnonzero]^2) /
-                   (sing_val[idnonzero]^2 + lambda0),
-                 na.rm = TRUE) + nparam_to_adjust
+  mykapp <- sum((sing_val[idnonzero]^2) /
+                  (sing_val[idnonzero]^2 + lambda0),
+                na.rm = TRUE) + nparam_to_adjust
 
   #### Return value ####
 
   varresult <- vector("list", K)
   names(varresult) <- colnames(Y)
-  obj <- list(coefficients = Psi[, 1],
-              residuals = my_resid[, 1],
-              fitted.values = my_fitted[, 1],
-              rank = sum(idnonzero) + nparam_to_adjust,
-              df.residual = max(1, N - mykapp),
-              lambda0 = lambda0,
-              call = callstr,
-              terms = terms(y ~ ., data = X),
-              svd = s # for class 'shrinklm', replace qr=qr(X) with svd=svd(X)
+  obj <- list(
+    coefficients = Psi[, 1],
+    residuals = my_resid[, 1],
+    fitted.values = my_fitted[, 1],
+    rank = sum(idnonzero) + nparam_to_adjust,
+    df.residual = max(1, N - mykapp),
+    lambda0 = lambda0,
+    call = callstr,
+    terms = terms(y ~ ., data = X),
+    svd = s  # For class 'shrinklm', replace qr=qr(X) with svd=svd(X)
   )
   class(obj) <- c("shrinklm", "lm")
 

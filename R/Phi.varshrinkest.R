@@ -12,8 +12,7 @@
 #' @param ... Currently not used.
 #' @seealso \code{\link[vars]{Phi}}
 #' @export
-Phi.varshrinkest <-
-function (x, nstep = 10, ...) {
+Phi.varshrinkest <- function(x, nstep = 10, ...) {
   if (!(inherits(x, "varest"))) {
     stop("\nPlease provide an object inheriting class 'varest'.\n")
   }
@@ -26,8 +25,7 @@ function (x, nstep = 10, ...) {
     for (i in (p + 1):(nstep + 1)) {
       As[, , i] <- matrix(0, nrow = K, ncol = K)
     }
-  }
-  else {
+  } else {
     As <- array(0, dim = c(K, K, p))
   }
   for (i in 1:p) {

@@ -18,7 +18,7 @@
 #' Bcoef_sh(estim)
 #' @seealso \code{\link[vars]{Bcoef}}
 #' @export
-Bcoef_sh <- function (x) {
+Bcoef_sh <- function(x) {
 
   if (!inherits(x, "varest")) {
     stop("\nPlease provide an object inheriting class 'varest'.\n")
@@ -34,8 +34,7 @@ Bcoef_sh <- function (x) {
     for (i in 1:x$K) {
       B[i, ] <- coef(x$varresult[[i]])
     }
-  }
-  else if (!(is.null(x$restriction))) {
+  } else if (!(is.null(x$restriction))) {
     for (i in 1:x$K) {
       restrictions <- x$restrictions
       restrictions[i, restrictions[i, ] == TRUE] <- coef(x$varresult[[i]])

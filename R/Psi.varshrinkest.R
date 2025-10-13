@@ -1,5 +1,5 @@
 #' @importFrom stats df.residual resid
-Psi.varshrinkest <- function (x, nstep = 10, ...) {
+Psi.varshrinkest <- function(x, nstep = 10, ...) {
   if (!(inherits(x, "varest"))) {
     stop("\nPlease provide an object inheriting class 'varest'.\n")
   }

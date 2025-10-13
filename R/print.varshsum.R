@@ -13,9 +13,9 @@
 #' printCoefmat(), format() method
 #' @importFrom stats printCoefmat pf cov2cor
 #' @export
-print.varshsum <- function (x, digits = max(3, getOption("digits") - 3),
-                            signif.stars = getOption("show.signif.stars"),
-                            ...) {
+print.varshsum <- function(x, digits = max(3, getOption("digits") - 3),
+                           signif.stars = getOption("show.signif.stars"),
+                           ...) {
   dim <- length(x$names)
   text1 <- "\nVAR Shrinkage Estimation Results:\n"
   cat(text1)

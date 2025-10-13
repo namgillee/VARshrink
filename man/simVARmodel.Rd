@@ -15,7 +15,8 @@ matrices and c is a length-K vector.
 Sigma is a K-by-K scale matrix and
 dof is a degree of freedom for multivariate t-distribution for noise.}
 
-\item{burnin}{Number of initial points which are not included in the final values.}
+\item{burnin}{Number of initial points which are not included in the final
+values.}
 }
 \value{
 A numT-by-K matrix

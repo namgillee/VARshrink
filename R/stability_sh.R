@@ -12,10 +12,10 @@
 #' stability_sh(estim)
 #' @seealso \code{\link[vars]{stability}}
 #' @export
-stability_sh <- function (x, type = c("OLS-CUSUM", "Rec-CUSUM", "Rec-MOSUM",
-                                      "OLS-MOSUM", "RE", "ME", "Score-CUSUM",
-                                      "Score-MOSUM", "fluctuation"),
-                          h = 0.15, dynamic = FALSE, rescale = TRUE, ...) {
+stability_sh <- function(x, type = c("OLS-CUSUM", "Rec-CUSUM", "Rec-MOSUM",
+                                     "OLS-MOSUM", "RE", "ME", "Score-CUSUM",
+                                     "Score-MOSUM", "fluctuation"),
+                         h = 0.15, dynamic = FALSE, rescale = TRUE, ...) {
   type <- match.arg(type)
   K <- x$K
   stability <- list()

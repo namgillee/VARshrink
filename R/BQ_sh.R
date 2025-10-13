@@ -28,7 +28,7 @@ BQ_sh <- function(x) {
   mat1 <- Ident + mat1
   mat2 <- Ident + mat2
   df <- summary(x$varresult[[1]])$df[2]
-  SigmaU <- crossprod(resid(x))/df
+  SigmaU <- crossprod(resid(x)) / df
   eval <- solve(mat1) %*% SigmaU %*% solve(mat2)
   lrim <- t(chol(eval))
   colnames(lrim) <- colnames(x$y)

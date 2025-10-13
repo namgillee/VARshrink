@@ -17,7 +17,7 @@
 #' Acoef_sh(estim)
 #' @seealso \code{\link[vars]{Acoef}}
 #' @export
-Acoef_sh <- function (x) {
+Acoef_sh <- function(x) {
 
   if (!inherits(x, "varest")) {
     stop("\nPlease provide an object inheriting class 'varest'.\n")

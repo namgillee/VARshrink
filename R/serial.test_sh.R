@@ -19,7 +19,8 @@ serial.test_sh <- function(x, lags.pt = 16, lags.bg = 5, type =
   } else if (inherits(x, "vec2var")) {
     class(x) <- "vec2var"
   } else {
-    stop("\nPlease provide an object inheriting class 'varest' or class 'vec2var'.\n")
+    stop(paste0("\nPlease provide an object inheriting class 'varest' or ",
+                "class 'vec2var'.\n"))
   }
   result <- vars::serial.test(x, lags.pt = lags.pt,
                               lags.bg = lags.bg, type = type)

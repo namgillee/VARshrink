@@ -37,18 +37,16 @@
 #' @importFrom stats rgamma rnorm runif
 #' @importFrom utils capture.output
 #
-# Last modified: Nov. 8th, 2018 by Namgil Lee @ Kangwon National University,
+# Last modified: 13th Oct 2025 by Namgil Lee @ Kangwon National University,
 # South Korea.
 
 lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
                              mcmccycle = 2000) {
-  # Find the lag order p
-  K <- ncol(Y)   #size D
-  M <- ncol(X)   #size M = D^2p, D(Dp+1)
-  p <- M %/% K   #lag order
+  K <- ncol(Y)
+  M <- ncol(X)
 
   N <- nrow(X)
-	J <- K * M
+  J <- K * M
 
 	#initial values
   delta <- 0.001
@@ -62,9 +60,9 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
     dof <- NULL
     w <- Inf
   } else {
-	  w <- dof / 2
+    w <- dof / 2
   }
-	Q <- rep(1, N) #weight vector
+  Q <- rep(1, N) #weight vector
 	vec_a4 <- rep(-4, J)
 	vec_a4[1 + M * (0:(K - 1))] <- 0.001
 	Sig <- 0.0001 + diag(1 / rgamma(K, shape = 3, scale = 1 / 4), K) #inverse gamma
@@ -90,23 +88,21 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
 	  #    U'phi ~ N_J (D vec(Ux' (X'QY Sig^{-1}) Us), D)
 	  #
 	  if (i == 1) {
-	  	eSig <- eigen(Sig)						# eigenvalue decomposition of Sig
+      eSig <- eigen(Sig)
 		  invSig <- eSig$vectors %*% diag(1 / pmax(eSig$values, 1e-20)) %*%
 		    t(eSig$vectors)
 	  }
-	  eXX <- eigen(t(X) %*% (X * Q))			# eigenvalue decomposition of X'QX
-	  mXY <- t(X) %*% (Y * Q) %*% invSig	# matrix X'QY Sig^{-1}
+	  eXX <- eigen(t(X) %*% (X * Q))
+	  mXY <- t(X) %*% (Y * Q) %*% invSig
 
 	  Dv <- 1 / (kronecker(1 / pmax(eSig$values, 1e-14),
 	                       pmax(eXX$values, 1e-14)) + 1 / delta)
-	  # eigenvalues D=Dv of V_Q
-	  #Dv = 1/( kronecker(1/abs(eSig$values) , abs(eXX$values)) + 1/delta)
 	  # eigenvalues D=Dv of V_Q
 
 	  mu0 <- Dv * as.vector(t(eXX$vectors) %*% mXY %*% eSig$vectors)
 	  # mean in U'phi ~ N_J(mu0, Dv)
 	  phi <- mu0 + sqrt(Dv) * rnorm(J, 0, 1)		# U'phi
-	  dim(phi) <- c(K * p + 1, K)
+	  dim(phi) <- c(M, K)
 	  phi <- eXX$vectors %*% (phi %*% t(eSig$vectors))  # U * U'phi
 	  ######################################
 
@@ -122,7 +118,7 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
 
     ##### (3) draw Sig based on Sun & Ni (2004) #####
     Sk <- Y - X %*% phi
-	  Sk <- t(Sk) %*% (Sk*Q)					# S_k
+	  Sk <- t(Sk) %*% (Sk * Q)					# S_k
 
 	  logLambda <- log(pmax(eSig$values, 1e-20)) #eSig <- eigen(Sig)
 	  SigStar <- (eSig$vectors) %*% diag(logLambda) %*% t(eSig$vectors) # Sig_star
@@ -135,7 +131,7 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
 	    for (k in 1:(j - 1))						#
 	      V[j, k] <- V[k, j]						# V is a symmetric metric
 
-    W <- SigStar + rnorm(1) * V				# W = Sigstar + z*V
+    W <- SigStar + rnorm(1) * V
     eW <- eigen(W)
 	  id_sort <- sort.list(eW$values, decreasing = TRUE)
 	  eW$values <- eW$values[id_sort]
@@ -143,7 +139,8 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
 	  Cstar <- eW$values
 
 	  alpha_k <- N / 2 * sum(logLambda - Cstar) +
-      1/2*sum((invSig - eW$vectors %*% diag(1 / exp(Cstar)) %*% t(eW$vectors)) * Sk)
+      1 / 2 * sum((invSig - eW$vectors %*% diag(1 / exp(Cstar)) %*%
+                     t(eW$vectors)) * Sk)
 	  for (j in 1:(K - 1)) {
 	    for (k in (j + 1):K) {
         alpha_k <- alpha_k + log(logLambda[j] - logLambda[k]) -
@@ -185,19 +182,17 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
       f_log <- function(x, N, Q) {
         N * x * log(x) + x * sum(log(Q), na.rm = TRUE) - N * lgamma(x) -
           (1 + sum(Q)) * x
-        #N*x*log(x) + x*log(prod(Q)) - N*lgamma(x) - (1+sum(Q))*x
         #N*exp(x)*x + exp(x)*log(prod(Q)) - N*lgamma(exp(x)) -
         #  (1+sum(Q))*exp(x) + x
       }
       f_dif <- function(x, N, Q) {
         N * log(x) + N + sum(log(Q), na.rm = TRUE) - N * digamma(x) -
           (1 + sum(Q))
-        #N*log(x) + N + log(prod(Q)) - N*digamma(x) - (1+sum(Q))
         #(N*x + N + log(prod(Q)) - N*digamma(exp(x)) - (1+sum(Q))) * exp(x) + 1
       }
       tmp <- capture.output( {
         w <- ars::ars(n = 1, f = f_log, fprima = f_dif, x = 10, m = 1,
-                lb = TRUE, xlb = 1e-15, N = N, Q = Q)
+                      lb = TRUE, xlb = 1e-15, N = N, Q = Q)
       })
       #w = ars::ars(n=1, f=f_log, fprima=f_dif, x=2, m=1, N=N, Q=Q)
       #w = exp(w)
@@ -205,22 +200,22 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
     }
     ##############################
 
-	  ##### update Psi01, Psi02, Sig01 #####
+    ##### update Psi01, Psi02, Sig01 #####
     if (i >= (burnincycle + 1)) {
 
-        Psi01 <- Psi01 + phi / mcmccycle
-	      Psi02 <- Psi02 + exp(-vec_a4 * phi) / mcmccycle
-	      Sig01 <- Sig01 + Sig / mcmccycle
-        delta01 <- delta01 + delta / mcmccycle
-        dof01 <- dof01 + w * 2 / mcmccycle
+      Psi01 <- Psi01 + phi / mcmccycle
+      Psi02 <- Psi02 + exp(-vec_a4 * phi) / mcmccycle
+      Sig01 <- Sig01 + Sig / mcmccycle
+      delta01 <- delta01 + delta / mcmccycle
+      dof01 <- dof01 + w * 2 / mcmccycle
 
-        # Note that, SE^2 = S^2/n = sum(x_i^2/n/(n-1)) - xbar^2/(n-1)
-        Psi01SE <- Psi01SE + phi^2 / mcmccycle / (mcmccycle - 1)
-        Psi02SE <- Psi02SE + (exp(-vec_a4 * phi))^2 / mcmccycle / (mcmccycle - 1)
-        Sig01SE <- Sig01SE + Sig^2 / mcmccycle / (mcmccycle - 1)
-        delta01SE <- delta01SE + delta^2 / mcmccycle / (mcmccycle - 1)
-        if (estimate_dof)
-          dof01SE <- dof01SE + (w * 2)^2 / mcmccycle / (mcmccycle - 1)
+      # Note that, SE^2 = S^2/n = sum(x_i^2/n/(n-1)) - xbar^2/(n-1)
+      Psi01SE <- Psi01SE + phi^2 / mcmccycle / (mcmccycle - 1)
+      Psi02SE <- Psi02SE + (exp(-vec_a4 * phi))^2 / mcmccycle / (mcmccycle - 1)
+      Sig01SE <- Sig01SE + Sig^2 / mcmccycle / (mcmccycle - 1)
+      delta01SE <- delta01SE + delta^2 / mcmccycle / (mcmccycle - 1)
+      if (estimate_dof)
+        dof01SE <- dof01SE + (w * 2)^2 / mcmccycle / (mcmccycle - 1)
 
 	  }
 	  ##########
@@ -230,7 +225,7 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
 	#Compute Psi02 first
 	#mySE.Psi02: SE value (before -log)
 	mySE.Psi02 <- matrix(sqrt(Psi02SE - Psi02^2 / (mcmccycle - 1)), M, K)
-	Psi02 <- -log(Psi02)/vec_a4     #(after -log)
+	Psi02 <- -log(Psi02) / vec_a4     #(after -log)
 	myPsi02 <- matrix(Psi02, M, K)  #(after -log)
 	mySE.Psi02 <- mySE.Psi02 / abs(vec_a4)  #Lipshitz constant: 1/a
 
