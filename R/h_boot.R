@@ -1,22 +1,19 @@
 #' @importFrom stats update quantile
-h_boot <- function (x, n.ahead, runs, ortho, cumulative, impulse, response,
-                    ci, seed, y.names) {
+h_boot <- function(x, n.ahead, runs, ortho, cumulative, impulse, response,
+                   ci, seed, y.names) {
   if (!(is.null(seed)))
     set.seed(abs(as.integer(seed)))
   if (inherits(x, "varest")) {
     VAR <- eval.parent(x)
-  }
-  else if (inherits(x, "svarest")) {
+  } else if (inherits(x, "svarest")) {
     VAR <- eval.parent(x$var)
-  }
-  else {
+  } else {
     stop("Bootstrap not implemented for this class.\n")
   }
   p <- VAR$p
   K <- VAR$K
   obs <- VAR$obs
   total <- VAR$totobs
-  type <- VAR$type
   B <- Bcoef_sh(VAR)
   BOOT <- vector("list", runs)
   ysampled <- matrix(0, nrow = total, ncol = K)
@@ -46,8 +43,8 @@ h_boot <- function (x, n.ahead, runs, ortho, cumulative, impulse, response,
                        cumulative = cumulative, impulse = impulse,
                        response = response, y.names = y.names)
   }
-  lower <- ci/2
-  upper <- 1 - ci/2
+  lower <- ci / 2
+  upper <- 1 - ci / 2
   mat.l <- matrix(NA, nrow = n.ahead + 1, ncol = length(response))
   mat.u <- matrix(NA, nrow = n.ahead + 1, ncol = length(response))
   Lower <- list()
@@ -62,8 +59,7 @@ h_boot <- function (x, n.ahead, runs, ortho, cumulative, impulse, response,
         for (i in 1:runs) {
           if (idx2 > 1) {
             temp[i] <- BOOT[[i]][[j]][l, m]
-          }
-          else {
+          } else {
             temp[i] <- matrix(BOOT[[i]][[j]])[l, m]
           }
         }

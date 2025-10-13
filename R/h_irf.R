@@ -1,13 +1,11 @@
-h_irf <- function (x, impulse, response, y.names, n.ahead, ortho, cumulative) {
+h_irf <- function(x, impulse, response, y.names, n.ahead, ortho, cumulative) {
   if (inherits(x, "varest") || inherits(x, "vec2var")) {
     if (ortho) {
       irf <- Psi(x, nstep = n.ahead)
-    }
-    else {
+    } else {
       irf <- Phi(x, nstep = n.ahead)
     }
-  }
-  else if (inherits(x, "svarest") || inherits(x, "svecest")) {
+  } else if (inherits(x, "svarest") || inherits(x, "svecest")) {
     irf <- Phi(x, nstep = n.ahead)
   }
   dimnames(irf) <- list(y.names, y.names, NULL)

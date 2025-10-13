@@ -88,32 +88,36 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
 
   if (identical(type, "const")) {
     M <- K * p + 1
-    datX <- matrix(1, N, M) #N-by-M
-    for (h in 1:p)
-        datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    datX <- matrix(1, N, M)
+    for (h in 1:p) {
+      datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    }
     colnames(datX) <- c(paste(rep(tsnames, times = p), ".l",
                               rep(1:p, each = K), sep = ""), "const")
   } else if (identical(type, "trend")) {
     M <- K * p + 1
-    datX <- matrix(1, N, M) #N-by-M
-    for (h in 1:p)
-        datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    datX <- matrix(1, N, M)
+    for (h in 1:p) {
+      datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    }
     datX[, M] <- seq(p + 1, length.out = N)
     colnames(datX) <- c(paste(rep(tsnames, times = p), ".l",
                               rep(1:p, each = K), sep = ""), "trend")
   } else if (identical(type, "both")) {
     M <- K * p + 2
-    datX <- matrix(1, N, M) #N-by-M
-    for (h in 1:p)
-        datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    datX <- matrix(1, N, M)
+    for (h in 1:p) {
+      datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    }
     datX[, M - 1] <- seq(p + 1, length.out = N)
     colnames(datX) <- c(paste(rep(tsnames, times = p), ".l",
                               rep(1:p, each = K), sep = ""), "trend", "const")
   } else if (identical(type, "none")) {
     M <- K * p
     datX <- matrix(1, N, M) #N-by-M
-    for (h in 1:p)
-        datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    for (h in 1:p) {
+      datX[, (1 + (h - 1) * K):(h * K)] <- y[(p + 1 - h):(totobs - h), ]
+    }
     colnames(datX) <- paste(rep(tsnames, times = p), ".l",
                             rep(1:p, each = K), sep = "")
   } else {
@@ -161,10 +165,11 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
 
     # Update the return value
     estim$varresult <-
-      convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = resu_ridge$lambda[id_min_gcv] * N,
-                        type = type, callstr = cl
-    )
+      convPsi2varresult(
+        Psi = myPsi, Y = datY, X = datX,
+        lambda0 = resu_ridge$lambda[id_min_gcv] * N,
+        type = type, callstr = cl
+      )
     estim$lambda <- resu_ridge$lambda
     estim$lambda.estimated <- as.logical(length(resu_ridge$lambda) > 1)
     estim$GCV <- resu_ridge$GCV
@@ -212,12 +217,12 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     # If type=="const" or "both", then the constant vector will be computed
     # by const' = dybar' - dxbar' %*% Psi and appended to the coefficients.
     estim$varresult <-
-      convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = attr(SZ, "lambda") /
-                          (1 - attr(SZ, "lambda")) * (N - 1),
-                        type = type, ybar = dybar, xbar = dxbar,
-                        callstr = cl
-    )
+      convPsi2varresult(
+        Psi = myPsi, Y = datY, X = datX,
+        lambda0 = attr(SZ, "lambda") / (1 - attr(SZ, "lambda")) * (N - 1),
+        type = type, ybar = dybar, xbar = dxbar,
+        callstr = cl
+      )
     estim$lambda <- attr(SZ, "lambda")
     estim$lambda.estimated <- attr(SZ, "lambda.estimated")
     estim$lambda_var <- attr(SZ, "lambda.var")
@@ -246,11 +251,12 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     sigbar <- ifelse(K >= 2, mean(diag(resu_fbayes$Sigma), na.rm = TRUE),
                      resu_fbayes$Sigma)
     estim$varresult <-
-      convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = resu_fbayes$lambda * sigbar,
-                        type = type,
-                        Q_values = resu_fbayes$q, callstr = cl
-    )
+      convPsi2varresult(
+        Psi = myPsi, Y = datY, X = datX,
+        lambda0 = resu_fbayes$lambda * sigbar,
+        type = type,
+        Q_values = resu_fbayes$q, callstr = cl
+      )
 
     #### How to get kappa ####
     # From Eq. (11) for psi_hat(lambda), Y can be separated as:
@@ -261,7 +267,8 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     # After vectorizing:
     #    vec(Y_hat) = (I(x)H) %*% y == (I(x)X) %*% psi
     # Combining above two equations:
-    #    (I(x)H) %*% y == (I(x)X) %*% (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q) %*% y
+    #    (I(x)H) %*% y ==
+    #          (I(x)X) %*% (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q) %*% y
     #    ...
     #    (I(x)H) == (I(x)X) %*% (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q)
     # Approximate Sig by a scalar:
@@ -274,8 +281,9 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   ##--------- (4) Semi-parametric Bayesian with lambda by P-CV ----------
   if (method == "sbayes") {
 
-    resu_sbayes <- lm_semi_Bayes_PCV(datY, datX, dof = dof,
-                              lambda = lambda, lambda_var = lambda_var, ...)
+    resu_sbayes <- 
+      lm_semi_Bayes_PCV(datY, datX, dof = dof, lambda = lambda,
+                        lambda_var = lambda_var, ...)
 
     # Update the return value
     estim$lambda <- resu_sbayes$lambda
@@ -293,19 +301,20 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     sigbar <- ifelse(K >= 2, mean(diag(resu_sbayes$Sigma), na.rm = TRUE),
                      resu_sbayes$Sigma)
     estim$varresult <-
-      convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = resu_sbayes$lambda * sigbar /
-                          (1 - resu_sbayes$lambda) * (N - 1),
-                        type = type,
-                        Q_values = resu_sbayes$q, callstr = cl
-    )
+      convPsi2varresult(
+        Psi = myPsi, Y = datY, X = datX,
+        lambda0 = resu_sbayes$lambda * sigbar / (1 - resu_sbayes$lambda) *
+          (N - 1),
+        type = type,
+        Q_values = resu_sbayes$q, callstr = cl
+      )
 
   }
   ##--------- (5) Semi-parametric Bayesian with lambda by K-CV ----------
   if (method == "kcv") {
 
     resu_kcv <- lm_ShVAR_KCV(datY, datX, dof = dof,
-                         lambda = lambda, lambda_var = lambda_var, ...)
+                             lambda = lambda, lambda_var = lambda_var, ...)
 
     # Update the return value
     estim$lambda <- resu_kcv$lambda
@@ -323,13 +332,13 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     sigbar <- ifelse(K >= 2, mean(diag(resu_kcv$Sigma), na.rm = TRUE),
                      resu_kcv$Sigma)
     estim$varresult <-
-      convPsi2varresult(Psi = myPsi, Y = datY, X = datX,
-                        lambda0 = resu_kcv$lambda * sigbar /
-                          (1 - resu_kcv$lambda) * (N - 1),
-                        type = type,
-                        Q_values = resu_kcv$q,
-                        callstr = cl
-    )
+      convPsi2varresult(
+        Psi = myPsi, Y = datY, X = datX,
+        lambda0 = resu_kcv$lambda * sigbar / (1 - resu_kcv$lambda) * (N - 1),
+        type = type,
+        Q_values = resu_kcv$q,
+        callstr = cl
+      )
   }
   ##---------------------------------------------------
 

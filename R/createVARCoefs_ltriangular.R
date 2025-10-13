@@ -41,7 +41,7 @@ createVARCoefs_ltriangular <- function(p = 1, K = 5, diag_val = 1 / p,
   names(var_coef) <- c("A", "c")
 
   coef <- matrix(0, K, K * p)
-	for (j in 1:p) {
+  for (j in 1:p) {
     diag(coef[, (1 + (j - 1) * K):(j * K)]) <- diag_val
   }
 
@@ -56,25 +56,25 @@ createVARCoefs_ltriangular <- function(p = 1, K = 5, diag_val = 1 / p,
     lenzero <- length(idxzero)
 
     idx_nonzero <- sample(lenzero,  min(lenzero, floor(num_nonzero)))
-  	val_nonzero <- runif(length(idx_nonzero), min = -1, max = 1)
-  	val_nonzero[val_nonzero >= 0] <- (range_max - range_min) *
-  	  val_nonzero[val_nonzero >= 0] + range_min
-  	val_nonzero[val_nonzero < 0] <- (range_max - range_min) *
-  	  val_nonzero[val_nonzero < 0] - range_min
+    val_nonzero <- runif(length(idx_nonzero), min = -1, max = 1)
+    val_nonzero[val_nonzero >= 0] <- (range_max - range_min) *
+      val_nonzero[val_nonzero >= 0] + range_min
+    val_nonzero[val_nonzero < 0] <- (range_max - range_min) *
+      val_nonzero[val_nonzero < 0] - range_min
 
-  	coef[idxzero[idx_nonzero]] <- val_nonzero
+    coef[idxzero[idx_nonzero]] <- val_nonzero
   }
 
   #-- Return value --#
-	for (j in 1:p) {
-		var_coef$A[[j]] <- coef[, (1 + (j - 1) * K):(j * K)]
-	}
+  for (j in 1:p) {
+    var_coef$A[[j]] <- coef[, (1 + (j - 1) * K):(j * K)]
+  }
 
-	if (is.null(const_vector)) {
-		var_coef$c <- matrix(0, K, 1)
-	}	else 	{
-		var_coef$c <- const_vector
-	}
+  if (is.null(const_vector)) {
+    var_coef$c <- matrix(0, K, 1)
+  }	else 	{
+    var_coef$c <- const_vector
+  }
 
-	return(var_coef)
+  return(var_coef)
 }

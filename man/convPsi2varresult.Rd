@@ -24,7 +24,8 @@ convPsi2varresult(
 \item{X}{An N-by-M data matrix of regressors}
 
 \item{lambda0}{A rescaled shrinkage intensity parameter, based on which the
-effective number of parameters is computed by \deqn{Trace(X(X'X+lambda0*I)^{-1} X')}}
+effective number of parameters is computed by
+\deqn{Trace(X(X'X+lambda0*I)^{-1} X')}}
 
 \item{type}{Type of deterministic variables in the VAR estimation problem.
 Either of "const", "trend", "both", or "none".}
@@ -41,8 +42,8 @@ Take weights on rows (samples) of Y and X by sqrt(Q).}
 }
 \value{
 A list object with objects of class c("shrinklm", "lm").
-Each "shrinklm" object has components: coefficients, residuals, fitted.values,
-rank, df.residual, lambda0, call, terms, svd
+Each "shrinklm" object has components: coefficients, residuals,
+fitted.values, rank, df.residual, lambda0, call, terms, svd
 }
 \description{
 Convert a matrix of VAR coefficients estimated by a shrinkage method

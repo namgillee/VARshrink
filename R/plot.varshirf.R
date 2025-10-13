@@ -1,12 +1,11 @@
 #' @import graphics
 #' @importFrom grDevices xy.coords
 plot.varshirf <-
-  function (x, plot.type = c("multiple", "single"), names = NULL,
-            main = NULL, sub = NULL, lty = NULL, lwd = NULL, col = NULL,
-            ylim = NULL, ylab = NULL, xlab = NULL, nc,
-            mar.multi = c(0, 4, 0, 4), oma.multi = c(6, 4, 6, 4),
-            adj.mtext = NA, padj.mtext = NA, col.mtext = NA, ...)
-{
+  function(x, plot.type = c("multiple", "single"), names = NULL,
+           main = NULL, sub = NULL, lty = NULL, lwd = NULL, col = NULL,
+           ylim = NULL, ylab = NULL, xlab = NULL, nc,
+           mar.multi = c(0, 4, 0, 4), oma.multi = c(6, 4, 6, 4),
+           adj.mtext = NA, padj.mtext = NA, col.mtext = NA, ...) {
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
   plot.type <- match.arg(plot.type)
@@ -14,14 +13,12 @@ plot.varshirf <-
   rnames <- x$response
   if (is.null(names)) {
     names <- inames
-  }
-  else {
+  } else {
     names <- as.character(names)
     if (!(all(names %in% inames))) {
       warning("\nInvalid variable name(s) supplied, using first variable.\n")
       inames <- inames[1]
-    }
-    else {
+    } else {
       inames <- names
     }
   }
@@ -45,17 +42,14 @@ plot.varshirf <-
       if (x$ortho) {
         text1 <- paste("Orthogonal Impulse Response from",
                        iname, sep = " ")
-      }
-      else {
+      } else {
         text1 <- paste("Impulse Response from", iname,
                        sep = " ")
       }
-    }
-    else if (any(x$model == "svarest")) {
+    } else if (any(x$model == "svarest")) {
       text1 <- paste("SVAR Impulse Response from", iname,
                      sep = " ")
-    }
-    else if (any(x$model == "svecest")) {
+    } else if (any(x$model == "svecest")) {
       text1 <- paste("SVECM Impulse Response from", iname,
                      sep = " ")
     }
@@ -74,7 +68,6 @@ plot.varshirf <-
     ifelse(is.null(sub), sub <- x$text2, sub <- sub)
     xy <- xy.coords(x$impulse[, rname])
     ifelse(is.null(ylab), ylabel <- rname, ylabel <- ylab)
-    ifelse(is.null(xlab), xlabel <- "", xlabel <- xlab)
     ifelse(is.null(ylim), ylim <- x$range, ylim <- ylim)
     plot(xy, type = "l", ylim = ylim, col = col[1], lty = lty[1],
          lwd = lwd[1], axes = FALSE, ylab = paste(ylabel),
@@ -129,8 +122,7 @@ plot.varshirf <-
              ylim = ylim, col = col[1], lty = lty[1], lwd = lwd[1],
              ...)
         axis(2, at = pretty(range)[-1])
-        axis(1, at = 1:(nrow(x)), labels = c(0:(nrow(x) -
-                                                  1)))
+        axis(1, at = seq_len(nrow(x)), labels = c(0:(nrow(x) - 1)))
         box()
         abline(h = 0, col = "red")
         if (!is.null(y))
@@ -142,8 +134,7 @@ plot.varshirf <-
             padj = padj.mtext, col = col.mtext, ...)
       mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext,
             padj = padj.mtext, col = col.mtext, ...)
-    }
-    else {
+    } else {
       for (j in 1:nvr) {
         ifelse(is.null(ylab), ylabel <- colnames(x)[j],
                ylabel <- ylab)

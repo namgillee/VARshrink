@@ -30,31 +30,30 @@
 #' @seealso \code{\link[vars]{irf}}
 #' @export
 irf.varshrinkest <-
-  function (x, impulse = NULL, response = NULL, n.ahead = 10, ortho = TRUE,
-          cumulative = FALSE, boot = TRUE, ci = 0.95, runs = 100, seed = NULL,
-          ...)
-{
+  function(x, impulse = NULL, response = NULL, n.ahead = 10, ortho = TRUE,
+           cumulative = FALSE, boot = TRUE, ci = 0.95, runs = 100, seed = NULL,
+           ...) {
   if (!inherits(x, "varest")) {
     stop("\nPlease provide an object inheriting class 'varest'.\n")
   }
   y.names <- names(x$varresult)
   if (is.null(impulse)) {
     impulse <- y.names
-  }
-  else {
+  } else {
     impulse <- as.vector(as.character(impulse))
     if (any(!(impulse %in% y.names))) {
-      stop("\nPlease provide variables names in impulse\nthat are in the set of endogenous variables.\n")
+      stop(paste0("\nPlease provide variables names in impulse\nthat are in ",
+                  "the set of endogenous variables.\n"))
     }
     impulse <- subset(y.names, subset = y.names %in% impulse)
   }
   if (is.null(response)) {
     response <- y.names
-  }
-  else {
+  } else {
     response <- as.vector(as.character(response))
     if (any(!(response %in% y.names))) {
-      stop("\nPlease provide variables names in response\nthat are in the set of endogenous variables.\n")
+      stop(paste0("\nPlease provide variables names in response\nthat are in ",
+                  "the set of endogenous variables.\n"))
     }
     response <- subset(y.names, subset = y.names %in% response)
   }
@@ -65,8 +64,9 @@ irf.varshrinkest <-
   Upper <- NULL
   if (boot) {
     ci <- as.numeric(ci)
-    if ((ci <= 0) | (ci >= 1)) {
-      stop("\nPlease provide a number between 0 and 1 for the confidence interval.\n")
+    if ((ci <= 0) || (ci >= 1)) {
+      stop(paste0("\nPlease provide a number between 0 and 1 for the ",
+                  "confidence interval.\n"))
     }
     ci <- 1 - ci
     BOOT <- h_boot(x = x, n.ahead = n.ahead, runs = runs,

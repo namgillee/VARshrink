@@ -54,7 +54,7 @@ lm_semi_Bayes_PCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
     stop("Number of folds must be >= 2")
 
   if (is.null(lambda))
-    lambda <- c(1e-3,  seq(1e-2, 1-1e-2, by = 0.01), 1-1e-3, 1-1e-5, 1)
+    lambda <- c(1e-3,  seq(1e-2, 1 - 1e-2, by = 0.01), 1 - 1e-3, 1 - 1e-5, 1)
 
   if (is.null(dof))
     dof <- c(0.2, 0.5, 1, seq(2, 10, by = 2), Inf)
@@ -73,13 +73,13 @@ lm_semi_Bayes_PCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
     if (col_end > M) {
       break
     } else if (sum(abs(X[p + 1, col_start:col_end] - X[1, 1:K])) >
-               sqrt(.Machine$double.eps)) {
+                 sqrt(.Machine$double.eps)) {
       break
     }
   }
 
   #------------- variance -----------------------------------------#
-  # Estimation by using (Y, X[, M-K+1 : M])
+  # Estimation by using centered time series data
   #----------------------------------------------------------------#
 
   # Prepare tsDatc (centered ts data)
@@ -103,28 +103,29 @@ lm_semi_Bayes_PCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
 		DatW <- DatW - rowMeans(DatW)	# don't need rep()
 
     # Compute var_s = var_r + cov_r
-		var_r = 1 / ((lenT - 1) ^ 2) * sum(rowSums(DatW ^ 2))
-		cov_r = 0
+		var_r <- 1 / ((lenT - 1) ^ 2) * sum(rowSums(DatW ^ 2))
+		cov_r <- 0
 		for (k in 1:(lenT - 1)) {
-			for (k2 in (k + 1):lenT) {  # k < k2
+			for (k2 in (k + 1):lenT) {
 				if (k2 - k >= lenT - 1) {
 					cov_r <- cov_r + 2 / ((lenT - 1) ^ 2) / lenT *
-					  sum( DatW[, -(((lenT - (k2 - k)) + 1):lenT)] * DatW[, -(1:(k2 - k))] )
+					  sum(DatW[, -(((lenT - (k2 - k)) + 1):lenT)] * DatW[, -(1:(k2 - k))])
 				} else {
 					cov_r <- cov_r + 2 / ((lenT - 1) ^ 2) / lenT *
-					  sum( rowSums( DatW[, -(((lenT - (k2 - k)) + 1):lenT)] * DatW[,-(1:(k2 - k))] ) )
+					  sum(rowSums(DatW[, -(((lenT - (k2 - k)) + 1):lenT)] *
+					                DatW[, -(1:(k2 - k))]))
 				}
 			}
 		}
 		var_s <-  var_r + cov_r
 
 		# Calculate E_vvm2 = sum of squared biases, the denominator
-		E_vvm2 = sum( (v1 - median(v1))^2 )
+		E_vvm2 <- sum((v1 - median(v1))^2)
 
 		# Determine lambda_var
-		lambda_var = var_s / E_vvm2
+		lambda_var <- var_s / E_vvm2
 
-		estimate_lambda_var <- TRUE 		#attr(myPsi,"lambda_var.estimated") = TRUE
+		estimate_lambda_var <- TRUE
 	}
 
 	# Update variance components
@@ -148,19 +149,19 @@ lm_semi_Bayes_PCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
     #### Divide sample into num_folds blocks ####
     vidx <- vector("list", num_folds)  # indices for validation data
     tidx <- vector("list", num_folds)  # indices for training data
-    idx_s <- sample(N)                  # shupple indices of sample
+    idx_s <- sample(N)                  # shuffle indices of sample
     bsize <- floor(N / num_folds)        # basic block size
     numAdded <- N - bsize * num_folds  # blocks of size floor(N/M)+1
     numDeflt <- num_folds - numAdded   # blocks of size floor(N/M)
     for (fold in 1:numDeflt) {
-      vidx[[fold]] <- idx_s[ (1 + (fold - 1) * bsize) : (fold * bsize) ]
+      vidx[[fold]] <- idx_s[(1 + (fold - 1) * bsize) : (fold * bsize)]
       tidx[[fold]] <- setdiff(idx_s, vidx[[fold]])
     }
-    tmpnum = bsize*numDeflt
+    tmpnum <- bsize * numDeflt
     for (fold in seq(1, numAdded, length.out = numAdded)) {
-      vidx[[fold + numDeflt]] <- idx_s[ (1 + tmpnum + (fold-1)*(bsize+1)) :
-                                          (tmpnum + fold*(bsize+1)) ]
-      tidx[[fold + numDeflt]] <- setdiff(idx_s, vidx[[fold+numDeflt]])
+      vidx[[fold + numDeflt]] <- idx_s[(1 + tmpnum + (fold - 1) * (bsize + 1)) :
+                                         (tmpnum + fold * (bsize + 1))]
+      tidx[[fold + numDeflt]] <- setdiff(idx_s, vidx[[fold + numDeflt]])
     }
     ################################
 
@@ -173,32 +174,31 @@ lm_semi_Bayes_PCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
 
       # Run PCV: use KCV to estimate lambda
       eta_bar <- 0
-      #MSE_ave <- 0#not_used
       for (fold in 1:num_folds) {
-          XpTrain <- matrix(X[tidx[[fold]], ], length(tidx[[fold]]))
-          XfTrain <- matrix(Y[tidx[[fold]], ], length(tidx[[fold]]))
-          XpValid <- matrix(X[vidx[[fold]], ], length(vidx[[fold]]))
-          XfValid <- matrix(Y[vidx[[fold]], ], length(vidx[[fold]]))
+        XpTrain <- matrix(X[tidx[[fold]], ], length(tidx[[fold]]))
+        XfTrain <- matrix(Y[tidx[[fold]], ], length(tidx[[fold]]))
+        XpValid <- matrix(X[vidx[[fold]], ], length(vidx[[fold]]))
+        XfValid <- matrix(Y[vidx[[fold]], ], length(vidx[[fold]]))
 
-          # train and test : select lambda^*_fold
-          lambd1 <- 1
-          mse1 <- 1e10
-          for (idL in 1:lenL) {
-              lambd2 <- lambda[idL]
-              Psihat <- shrinkVARcoef(Y = XfTrain, X = XpTrain,
-                                      lambda = lambd2, dof = dof_curr,
-                                      prior_type = prior_type, m0 = m0)
-              pe_k <- sum((XfValid -  XpValid %*% Psihat)^2) / nrow(XfValid)
+        # train and test : select lambda^*_fold
+        lambd1 <- 1
+        mse1 <- 1e10
+        for (idL in 1:lenL) {
+          lambd2 <- lambda[idL]
+          Psihat <- shrinkVARcoef(Y = XfTrain, X = XpTrain,
+                                  lambda = lambd2, dof = dof_curr,
+                                  prior_type = prior_type, m0 = m0)
+          pe_k <- sum((XfValid -  XpValid %*% Psihat)^2) / nrow(XfValid)
 
-              #Update minimum PE
-              if (pe_k < mse1) {
-                  lambd1 <- lambd2
-                  mse1 <- pe_k
-              }
+          #Update minimum PE
+          if (pe_k < mse1) {
+            lambd1 <- lambd2
+            mse1 <- pe_k
           }
-          lgtheta1 <- log(lambd1 * (nrow(XpTrain) - 1) / (1 - lambd1) /
-                            (K * M))
-          eta_bar <- eta_bar + lgtheta1 / num_folds    #log inv eta
+        }
+        lgtheta1 <- log(lambd1 * (nrow(XpTrain) - 1) / (1 - lambd1) /
+                          (K * M))
+        eta_bar <- eta_bar + lgtheta1 / num_folds    #log inv eta
       } # end of for (fold)
       etainv <- (K * M) * exp(eta_bar)
       lambda_curr <- etainv / (etainv + N - 1)
@@ -206,24 +206,24 @@ lm_semi_Bayes_PCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
       ####### Compute KCV error #######
       MSE_ave <- 0
       for (fold in 1:num_folds) {
-          XpTrain <- matrix(X[tidx[[fold]], ], length(tidx[[fold]]))
-          XfTrain <- matrix(Y[tidx[[fold]], ], length(tidx[[fold]]))
-          XpValid <- matrix(X[vidx[[fold]], ], length(vidx[[fold]]))
-          XfValid <- matrix(Y[vidx[[fold]], ], length(vidx[[fold]]))
+        XpTrain <- matrix(X[tidx[[fold]], ], length(tidx[[fold]]))
+        XfTrain <- matrix(Y[tidx[[fold]], ], length(tidx[[fold]]))
+        XpValid <- matrix(X[vidx[[fold]], ], length(vidx[[fold]]))
+        XfValid <- matrix(Y[vidx[[fold]], ], length(vidx[[fold]]))
 
-	        Psihat <- shrinkVARcoef(Y = XfTrain, X = XpTrain,
-	                                lambda = lambda_curr, dof = dof_curr,
-	                                prior_type = prior_type, m0 = m0)
-          pe_fold <- sum((XfValid -  XpValid %*% Psihat)^2) / nrow(XfValid)
-	        MSE_ave <- MSE_ave + pe_fold / num_folds
+        Psihat <- shrinkVARcoef(Y = XfTrain, X = XpTrain,
+                                lambda = lambda_curr, dof = dof_curr,
+                                prior_type = prior_type, m0 = m0)
+        pe_fold <- sum((XfValid -  XpValid %*% Psihat)^2) / nrow(XfValid)
+        MSE_ave <- MSE_ave + pe_fold / num_folds
       }
       ############################
 
       if (MSE_ave < selMSE) {
-            #Update seld, sell
-            selMSE <- MSE_ave
-            sell <- lambda_curr
-            seld <- dof_curr
+        #Update seld, sell
+        selMSE <- MSE_ave
+        sell <- lambda_curr
+        seld <- dof_curr
       }
       #### end of local k-fold CV procedure ####
 
@@ -233,7 +233,7 @@ lm_semi_Bayes_PCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
     lambda <- sell
 
     estimate_dof <- (lenD > 1)
-    estimate_lambda <- (lenL > 1 )
+    estimate_lambda <- (lenL > 1)
   }#end if
 
   lambda <- max(0, min(1, lambda))
