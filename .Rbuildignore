@@ -2,9 +2,9 @@
 ^\.Rproj\.user$
 ^\.git$
 ^\.DS_Store$
+^\.Rhistory
 ^cran-comments\.md$
 ^revdep$
 ^CRAN-RELEASE$
 ^LICENSE\.md$
-^LICENSE\.txt$
 ^NEWS\.md$
