@@ -2,12 +2,12 @@ Package: VARshrink
 Title: Shrinkage Estimation Methods for Vector Autoregressive Models
 Version: 0.3.2
 Authors@R: c(
-    person("Namgil", "Lee", role = c("aut", "cre"),
+    person("Namgil", "Lee", role = c("aut", "cre", "cph"),
            email = "namgil.lee@kangwon.ac.kr",
            comment = c(ORCID = "0000-0003-0593-9028")),
     person("Heon Young", "Yang", role = c("ctb"),
            email = "hyyang@kangwon.ac.kr"),
-    person("Sung-Ho", "Kim", role = c("aut"),
+    person("Sung-Ho", "Kim", role = c("aut", "cph"),
            email = "sung-ho.kim@kaist.edu")
     )
 Description:
