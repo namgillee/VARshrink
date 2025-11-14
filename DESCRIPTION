@@ -37,7 +37,6 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
-    rticles,
     kableExtra
 URL: https://github.com/namgillee/VARshrink/
 BugReports: https://github.com/namgillee/VARshrink/issues/
