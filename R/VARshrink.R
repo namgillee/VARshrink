@@ -14,7 +14,7 @@
 #' @param y A T-by-K matrix of endogenous variables
 #' @param p Integer for the lag order
 #' @param type  Type of deterministic regressors to include.
-#' #' 1) "const" - the constant.
+#' 1) "const" - the constant.
 #' 2) "trend" - the trend.
 #' 3) "both" - both the constant and the trend.
 #' 4) "none"  - no deterministic regressors.
@@ -257,26 +257,6 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
         type = type,
         Q_values = resu_fbayes$q, callstr = cl
       )
-
-    #### How to get kappa ####
-    # From Eq. (11) for psi_hat(lambda), Y can be separated as:
-    #    psi := psi_hat(lambda)
-    #        = (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q) %*% y
-    # From defn. of hat matrix:
-    #    Y_hat = H %*% Y == X %*% Psi
-    # After vectorizing:
-    #    vec(Y_hat) = (I(x)H) %*% y == (I(x)X) %*% psi
-    # Combining above two equations:
-    #    (I(x)H) %*% y ==
-    #          (I(x)X) %*% (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q) %*% y
-    #    ...
-    #    (I(x)H) == (I(x)X) %*% (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q)
-    # Approximate Sig by a scalar:
-    #    Sig == sigbar := Tr(Sig)/K
-    # then,
-    #    H == X %*% (X'QX + lambda * Sigbar * I)^{-1} %*% X'Q
-    #    where  sigbar := Tr(Sig)/K
-
   }
   ##--------- (4) Semi-parametric Bayesian with lambda by P-CV ----------
   if (method == "sbayes") {
@@ -308,7 +288,6 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
         type = type,
         Q_values = resu_sbayes$q, callstr = cl
       )
-
   }
   ##--------- (5) Semi-parametric Bayesian with lambda by K-CV ----------
   if (method == "kcv") {
@@ -359,14 +338,6 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
 
   ## components for 'varshrinkest':
   estim$method   <- method
-  #$lambda
-  #$lambda.estimated
-  #$lambda_var
-  #$lambda_var.estimated
-  #$Sigma
-  #$dof
-  #$dof.estimated
-  #...
 
   class(estim) <- c("varshrinkest", "varest")
 
