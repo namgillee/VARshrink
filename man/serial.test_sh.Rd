@@ -2,7 +2,7 @@
 % Please edit documentation in R/serial.test_sh.R
 \name{serial.test_sh}
 \alias{serial.test_sh}
-\title{Test for serially correlated errors for VAR shrinkage estimate}
+\title{Test for serially correlated errors}
 \usage{
 serial.test_sh(
   x,
@@ -14,11 +14,18 @@ serial.test_sh(
 \arguments{
 \item{x}{An object of class "varshrinkest" obtained by VARshrink().}
 
-\item{lags.pt, lags.bg, type}{Other arguments for vars::serial.test().
-see help(serial.test) for details.}
+\item{lags.pt, lags.bg, type}{Other arguments for \code{vars::serial.test()}.}
+}
+\value{
+An object of class "varcheck" computed by
+\code{vars::serial.test()}.
 }
 \description{
-An extension of vars::serial.test() to the class "varshrinkest".
+Computes the multivariate Portmanteau- and Breusch-Godfrey test for serially
+correlated erros.
+}
+\details{
+An extension of \code{vars::serial.test()} to the class "varshrinkest".
 }
 \examples{
 data(Canada, package = "vars")

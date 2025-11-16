@@ -1,8 +1,9 @@
-#' Summary method for class "shrinklm"
-#'
-#' Class "shrinklm" inherits the class "lm", and it extends
-#' the "lm" class to incorporate shrinkage estimates with
-#' effective number of parameter.
+#' Summarizing shrinkage estimates of an AR model
+#' 
+#' \code{summary} method for an object of class "shrinklm".
+#' 
+#' The class "shrinklm" inherits from the class "lm", and extends it to
+#' incorporate shrinkage estimates with the effective number of parameters.
 #' @param object An object of class "shrinklm"
 #' @param correlation If TRUE, the correlation matrix of the
 #' the estimated coefficients is returned and printed.
@@ -10,6 +11,8 @@
 #' rather than as numbers
 #' @param ... Currently not used.
 #' @importFrom stats coef var pt
+#' @returns Returns a list with class attribute "summary.lm", which
+#' contains summary statistics of the fitted linear model given in object.
 #' @export
 summary.shrinklm <- function(object, correlation = FALSE,
                              symbolic.cor = FALSE, ...) {

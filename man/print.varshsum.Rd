@@ -14,15 +14,16 @@
 \arguments{
 \item{x}{An object of class "varshsum"}
 
-\item{digits, signif.stars, ...}{Other arguments for print(),
-printCoefmat(), format() method}
+\item{digits, signif.stars, ...}{Other arguments for \code{print()},
+\code{printCoefmat()}, \code{format()} method}
 }
 \description{
-Print method for an object obtained by summary.varshrinkest().
+\code{print} method for an object obtained by \code{summary.varshrinkest()}.
 }
 \details{
-This function extends print.varsum() for VAR models estimated by
+This function extends \code{print.varsum()} for VAR models estimated by
 shrinkage methods.
-The output includes scale matrix Sigma and degree of freedom dof
-for multivariate t-distribution for residuals.
+The output includes the covariance matrix \code{Sigma} and the
+degrees-of-freedom \code{dof} for the multivariate t-distribution for
+the residuals.
 }

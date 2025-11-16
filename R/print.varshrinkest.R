@@ -1,8 +1,8 @@
 #' Print method for class "varshrinkest"
 #'
-#' Print method for an object of class "varshrinkest"
+#' \code{print} method for an object of class "varshrinkest"
 #' @param x An object of class "varshrinkest"
-#' @param digits,... Other arguments for print() method
+#' @param digits,... Other arguments for \code{print()} method
 #' @importFrom stats coef
 #' @examples
 #' data(Canada, package = "vars")

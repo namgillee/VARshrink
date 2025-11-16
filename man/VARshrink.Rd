@@ -23,7 +23,7 @@ VARshrink(
 \item{p}{Integer for the lag order}
 
 \item{type}{Type of deterministic regressors to include.
-#' 1) "const" - the constant.
+1) "const" - the constant.
 2) "trend" - the trend.
 3) "both" - both the constant and the trend.
 4) "none"  - no deterministic regressors.

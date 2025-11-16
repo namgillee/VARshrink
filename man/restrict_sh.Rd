@@ -11,11 +11,21 @@ restrict_sh(x, ...)
 
 \item{...}{Other arguments to vars::restrict()}
 }
+\value{
+An object of class "varest", a VAR model fitted using ordinary
+least squares. It contains an additional element \code{restrictions}, which
+is a zero-one matrix indicating which variables were fixed to zero.
+}
 \description{
-This is a modification of vars::restrict() for the class "varshrinkest".
-Warning: THIS CODE IS NOT COMPLETE:
-this function may raise an error because it ignores shrinkage
-estimation.
+Estimation of a VAR by imposing zero restrictions manually or by
+significance.
+}
+\details{
+This is a modification of \code{vars::restrict()} for the class
+"varshrinkest". Given an estimated VAR object of class "varest" or
+"varshrinkest", a restricted VAR is obtained by choosing \code{method} "ser"
+or "manual". Note: this function fits a restricted VAR using ordinary least squares 
+rather than a shrinkage method.
 }
 \examples{
 data(Canada, package = "vars")

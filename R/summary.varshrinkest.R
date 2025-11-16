@@ -1,15 +1,15 @@
-#' Summary method for an object of class 'varshrinkest',
+#' Summary method for an object of class "varshrinkest",
 #' VAR parameters estimated by VARshrink()
 #'
-#' Extend summary.varest() to class 'varshrinest' to incorporate
-#' adapted methods for new classes:
-#' summary.shrinklm(), logLik.varshrinkest(), roots.varshrinkest().
+#' Extend \code{summary.varest()} to the class "varshrinkest" to incorporate
+#' adapted methods for the new classes:
+#' \code{summary.shrinklm()}, \code{logLik.varshrinkest()}, \code{roots_sh()}.
 #'
-#' Code is modified to avoid call to data matrices ($y, $datamat)
-#' and to use effective numbers of parameters of shrinkage estimates.
-#'
-#' Output includes the scale matrix, Sigma, and degree-of-freedom, dof,
-#' for multivariate t-distribution for residuals.
+#' The code has been modified to eliminate direct calls to the data matrices
+#' (\code{$y}, \code{$datamat}) and to use the effective numbers of parameters
+#' obtained from the shrinkage estimates. The output additionally includes the
+#' covariance matrix \code{Sigma} and the degrees-of-freedom \code{dof}
+#' of the multivariate t-distribution for the residuals.
 #'
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
 #' @param object An object of class "varshrinkest", usually
@@ -18,6 +18,9 @@
 #' to summarize.
 #' @param ... Currently not used.
 #' @importFrom stats resid cov df.residual cor
+#' @returns Returns a list with class attribute "varshsum" and "varsum" which
+#' contains the following elements: names, logLik, obs, roots, type, call,
+#' varresult, covres, corres, Sigma, dof.
 #' @examples
 #' data(Canada, package = "vars")
 #' y <- diff(Canada)

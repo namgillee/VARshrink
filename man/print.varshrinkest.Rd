@@ -12,7 +12,7 @@
 \item{digits, ...}{Other arguments for print() method}
 }
 \description{
-Print method for an object of class "varshrinkest"
+\code{print} method for an object of class "varshrinkest"
 }
 \examples{
 data(Canada, package = "vars")

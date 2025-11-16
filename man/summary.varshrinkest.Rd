@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary.varshrinkest.R
 \name{summary.varshrinkest}
 \alias{summary.varshrinkest}
-\title{Summary method for an object of class 'varshrinkest',
+\title{Summary method for an object of class "varshrinkest",
 VAR parameters estimated by VARshrink()}
 \usage{
 \method{summary}{varshrinkest}(object, equations = NULL, ...)
@@ -16,17 +16,22 @@ to summarize.}
 
 \item{...}{Currently not used.}
 }
+\value{
+Returns a list with class attribute "varshsum" and "varsum" which
+contains the following elements: names, logLik, obs, roots, type, call,
+varresult, covres, corres, Sigma, dof.
+}
 \description{
-Extend summary.varest() to class 'varshrinest' to incorporate
-adapted methods for new classes:
-summary.shrinklm(), logLik.varshrinkest(), roots.varshrinkest().
+Extend \code{summary.varest()} to the class "varshrinkest" to incorporate
+adapted methods for the new classes:
+\code{summary.shrinklm()}, \code{logLik.varshrinkest()}, \code{roots_sh()}.
 }
 \details{
-Code is modified to avoid call to data matrices ($y, $datamat)
-and to use effective numbers of parameters of shrinkage estimates.
-
-Output includes the scale matrix, Sigma, and degree-of-freedom, dof,
-for multivariate t-distribution for residuals.
+The code has been modified to eliminate direct calls to the data matrices
+(\code{$y}, \code{$datamat}) and to use the effective numbers of parameters
+obtained from the shrinkage estimates. The output additionally includes the
+covariance matrix \code{Sigma} and the degrees-of-freedom \code{dof}
+of the multivariate t-distribution for the residuals.
 }
 \examples{
 data(Canada, package = "vars")

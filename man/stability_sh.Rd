@@ -2,7 +2,7 @@
 % Please edit documentation in R/stability_sh.R
 \name{stability_sh}
 \alias{stability_sh}
-\title{Stability function}
+\title{Structural stability of a VAR(p)}
 \usage{
 stability_sh(
   x,
@@ -15,19 +15,30 @@ stability_sh(
 )
 }
 \arguments{
-\item{x}{An object of class "varshrinkest"}
+\item{x}{Object of class "varshrinkest"}
 
-\item{type, h, dynamic, rescale, ...}{Other arguments to strucchange::efp()}
+\item{type, h, dynamic, rescale, ...}{Other arguments to
+\code{strucchange::efp()}}
+}
+\value{
+A list with class attribute "varstabil" which contains the following
+elements: \code{stability}, \code{endog}, \code{K}. The \code{stability} is
+a list of \code{strucchange::efp()} outputs.
 }
 \description{
-A variant of vars::stability().
-Warning: this function has not been tested for small sample sizes yet.
+Computes empirical fluctuation processes for VAR estimates.
+Utilizes \code{strucchange::efp()} for the VAR estimates of each time series
+variable.
+}
+\details{
+A variant of \code{vars::stability()} for an object of class "varshrinkest".
 }
 \examples{
 data(Canada, package = "vars")
 y <- diff(Canada)
 estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
-stability_sh(estim)
+stabil <- stability_sh(estim)
+plot(stabil)
 }
 \seealso{
 \code{\link[vars]{stability}}
