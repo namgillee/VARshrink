@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{An object of class "varshrinkest"}
 
-\item{digits, ...}{Other arguments for print() method}
+\item{digits, ...}{Other arguments for \code{print()} method}
 }
 \description{
 \code{print} method for an object of class "varshrinkest"
