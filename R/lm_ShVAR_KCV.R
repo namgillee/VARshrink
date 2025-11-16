@@ -12,11 +12,14 @@
 #' @param Y An N x K matrix of dependent variables.
 #' @param X An N x M matrix of regressors.
 #' @param dof Degree of freedom for multivariate t-distribution.
-#' If dof = Inf (default), then multivariate normal distribution is applied and
-#' weight vector q is not estimated. If dof = NULL or a numeric vector,
-#' then dof is selected by k-fold CV automatically and q is estimated.
-#' @param lambda If NULL or a vector of length >=2, it is selected by KCV.
-#' @param lambda_var If NULL or a vector of length >=2, it is selected by KCV.
+#' If \code{dof = Inf} (default), then multivariate normal distribution is
+#' applied and weight vector q is not estimated. If \code{dof = NULL} or a
+#' numeric vector, then \code{dof} is selected by k-fold CV automatically and q
+#' is estimated.
+#' @param lambda If \code{NULL} or a vector of length >=2, it is selected by
+#' KCV.
+#' @param lambda_var If \code{NULL} or a vector of length >=2, it is selected by
+#' KCV.
 #' @param prior_type "NCJ" for non-conjugate prior and "CJ" for conjugate
 #' prior for scale matrix Sigma.
 #' @param num_folds Number of folds for KCV.

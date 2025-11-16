@@ -11,7 +11,7 @@
 #' @param Acoef1,Acoef2 Each one is a list object with K-by-K coefficient
 #' matrices of lagged endogenous variables. See help(Acoef_sh), or,
 #' help(Acoef).
-#' @return SSE value.
+#' @return An SSE value.
 #' @examples
 #' data(Canada, package = "vars")
 #' y <- diff(Canada)

@@ -12,7 +12,7 @@ matrices of lagged endogenous variables. See help(Acoef_sh), or,
 help(Acoef).}
 }
 \value{
-SSE value.
+An SSE value.
 }
 \description{
 Compute sum of squared errors of coefficients of lagged endogenous

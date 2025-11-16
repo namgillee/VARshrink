@@ -6,14 +6,15 @@
 #' regression coefficients and scale matrix for noise.
 #'
 #' Consider the multivariate regression:
-#' \deqn{Y = X Psi + e, \quad e ~ mvt(0, dof, Sigma).}
-#' Psi is a M-by-K matrix of regression coefficients and
-#' Sigma is a K-by-K scale matrix for multivariate t-distribution for noise.
+#' \deqn{Y = X \Psi + e, \quad e \sim MVT(0, \nu, \Sigma).}
+#' \eqn{\Psi} is a M-by-K matrix of regression coefficients and
+#' \eqn{\Sigma} is a K-by-K scale matrix for multivariate t-distribution for noise.
 #'
 #' Sampling distribution for noise e is multivariate t-distribution with
-#' degree of freedom dof and scale matrix Sigma: e ~ mvt(0, dof, Sigma).
+#' degree of freedom dof and scale matrix \eqn{\Sigma: e \sim MVT(0, \nu, \Sigma)}.
 #' The priors are noninformative priors: 1) the shrinkage prior for regression
-#' coefficients Psi, and 2) the reference prior for scale matrix Sigma.
+#' coefficients \eqn{\Psi}, and 2) the reference prior for scale matrix
+#' \eqn{\Sigma}.
 #'
 #' The function implements Gibbs MCMC algorithm for estimating regression
 #' coefficients Psi and scale matrix Sigma.
@@ -21,9 +22,10 @@
 #' @param Y An N x K matrix of dependent variables.
 #' @param X An N x M matrix of regressors.
 #' @param dof Degree of freedom for multivariate t-distribution.
-#' If dof = Inf (default), then multivariate normal distribution is applied and
-#' weight vector q is not estimated. If dof = NULL or dof <= 0, then dof and q
-#' are estimated automatically. If dof is a positive number, q is estimated.
+#' If \code{dof = Inf} (default), then multivariate normal distribution is
+#' applied and weight vector q is not estimated. If \code{dof = NULL} or
+#' \code{dof} <= 0, then \code{dof} and q are estimated automatically.
+#' If \code{dof} is a positive number, q is estimated.
 #' @param burnincycle,mcmccycle Number of burnin cycles is the number of
 #' initially generated sample values to drop. Number of MCMC cycles is the
 #' number of generated sample values to compute estimates.

@@ -11,16 +11,16 @@
 
 \item{...}{Currently not used.}
 }
+\value{
+log-likelihood of the fitted VAR model, with the \code{class}
+attribute "logLik" and the attributes \code{df} and \code{nobs}.
+}
 \description{
-Returns the log-likelihood of a VAR model estimated by VARshrink().
-It extends vars::logLik.varest() to incorporate
+Returns the log-likelihood of a VAR model estimated by \code{VARshrink()}.
+It extends \code{vars::logLik.varest()} to incorporate
 1) multivariate t-distribution for residuals,
 2) scale matrix Sigma provided by shrinkage methods, and
 3) effective number of parameters provided by shrinkage methods.
-}
-\details{
-Acknowledgement: This code was contributed by
-Sung-Hoon Han & Dong-Han Lee @ Kangwon National University (2018.11.29.)
 }
 \examples{
 data(Canada, package = "vars")
