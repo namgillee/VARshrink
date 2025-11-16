@@ -61,7 +61,7 @@ Computes the impulse response coefficients of a VAR(p)
 (or transformed VECM to VAR(p)) for n.ahead steps.
 }
 \details{
-It runs \code{vars::irf()} for an object of class "varshrinkest".
+This function runs \code{vars::irf()} for an object of class "varshrinkest".
 }
 \seealso{
 \code{\link[vars]{irf}}

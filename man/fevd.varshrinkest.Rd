@@ -22,7 +22,7 @@ Computes the forecast error variance decomposition of a VAR(p) for
 \code{n.ahead} steps.
 }
 \details{
-It runs \code{vars::fevd()} for an object of class "varshrinkest".
+This function runs \code{vars::fevd()} for an object of class "varshrinkest".
 }
 \seealso{
 \code{\link[vars]{fevd}}

@@ -6,8 +6,8 @@
 #' This is a modification of \code{vars::restrict()} for the class
 #' "varshrinkest". Given an estimated VAR object of class "varest" or
 #' "varshrinkest", a restricted VAR is obtained by choosing \code{method} "ser"
-#' or "manual". Note: this function fits a restricted VAR using ordinary least squares 
-#' rather than a shrinkage method.
+#' or "manual". Note: this function fits a restricted VAR using ordinary least
+#' squares rather than a shrinkage method.
 #'
 #' @param x An object of class "varshrinkest"
 #' @param ... Other arguments to vars::restrict()
