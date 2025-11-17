@@ -12,11 +12,14 @@
 #' @param Y An N x K matrix of dependent variables.
 #' @param X An N x M matrix of regressors.
 #' @param dof Degree of freedom for multivariate t-distribution.
-#' If dof = Inf (default), then multivariate normal distribution is applied and
-#' weight vector q is not estimated. If dof = NULL or a numeric vector,
-#' then dof is selected by k-fold CV automatically and q is estimated.
-#' @param lambda If NULL or a vector of length >=2, it is selected by KCV.
-#' @param lambda_var If NULL or a vector of length >=2, it is selected by KCV.
+#' If \code{dof = Inf} (default), then multivariate normal distribution is
+#' applied and weight vector q is not estimated. If \code{dof = NULL} or a
+#' numeric vector, then \code{dof} is selected by k-fold CV automatically and q
+#' is estimated.
+#' @param lambda If \code{NULL} or a vector of length >=2, it is selected by
+#' KCV.
+#' @param lambda_var If \code{NULL} or a vector of length >=2, it is selected by
+#' KCV.
 #' @param prior_type "NCJ" for non-conjugate prior and "CJ" for conjugate
 #' prior for scale matrix Sigma.
 #' @param num_folds Number of folds for KCV.
@@ -82,13 +85,13 @@ lm_ShVAR_KCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
     numAdded <- N - bsize * num_folds # blocks of size floor(N/M)+1
     numDeflt <- num_folds - numAdded # blocks of size floor(N/M)
     for (fold in 1:numDeflt) {
-      vidx[[fold]] <- idx_s[ (1 + (fold - 1) * bsize):(fold * bsize)]
+      vidx[[fold]] <- idx_s[(1 + (fold - 1) * bsize):(fold * bsize)]
       tidx[[fold]] <- setdiff(idx_s, vidx[[fold]])
     }
     tmpnum <- bsize * numDeflt
     for (fold in seq(1, numAdded, length.out = numAdded)) {
       vidx[[fold + numDeflt]] <- idx_s[(1 + tmpnum + (fold - 1) * (bsize + 1)) :
-                                       (tmpnum + fold * (bsize + 1))]
+                                         (tmpnum + fold * (bsize + 1))]
       tidx[[fold + numDeflt]] <- setdiff(idx_s, vidx[[fold + numDeflt]])
     }
     ################################
@@ -121,27 +124,27 @@ lm_ShVAR_KCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
 
         # If dof_curr = Inf, the computation is much easier.
         if (!is.infinite(dof_curr)) {
-      		for (idL in 1:lenL) {
-    		    lambda_curr <- lambda[idL]
-    		    #### estimate Psihat(lambda, dof)
-    		    Psihat <- shrinkVARcoef(Y = XfTrain, X = XpTrain,
-    		                            lambda = lambda_curr, dof = dof_curr,
-    		                            prior_type = prior_type, m0 = m0)
-    		    #### estimate lambda_var
-    		    for (idLV in 1:lenLV) {
-        			lambda_var_curr <- lambda_var[idLV]
-        			vhat <- (1 - lambda_var_curr) * v1TR  + lambda_var_curr *
-        			  median(v1TR)
-        			scaledPsihat <- Psihat
-        			scaledPsihat[1:(p * K), ] <-
-        			  (scaledPsihat[1:(p * K), ] / sqrt(vhat))
-        			scaledPsihat <- scaledPsihat * rep(sqrt(vhat), each = M)
+          for (idL in 1:lenL) {
+            lambda_curr <- lambda[idL]
+            #### estimate Psihat(lambda, dof)
+            Psihat <- shrinkVARcoef(Y = XfTrain, X = XpTrain,
+                                    lambda = lambda_curr, dof = dof_curr,
+                                    prior_type = prior_type, m0 = m0)
+            #### estimate lambda_var
+            for (idLV in 1:lenLV) {
+              lambda_var_curr <- lambda_var[idLV]
+              vhat <- (1 - lambda_var_curr) * v1TR  + lambda_var_curr *
+                median(v1TR)
+              scaledPsihat <- Psihat
+              scaledPsihat[1:(p * K), ] <-
+                (scaledPsihat[1:(p * K), ] / sqrt(vhat))
+              scaledPsihat <- scaledPsihat * rep(sqrt(vhat), each = M)
 
-        			pe_k <- sum((XfValid -  XpValid %*% scaledPsihat) ^ 2) /
-        			  nrow(XfValid)
-        			MSE_ave[idL, idLV] <- MSE_ave[idL, idLV] + pe_k / num_folds
-    		    }#end of for(idLV)
-      		}#end of for(idL)
+              pe_k <- sum((XfValid -  XpValid %*% scaledPsihat) ^ 2) /
+                nrow(XfValid)
+              MSE_ave[idL, idLV] <- MSE_ave[idL, idLV] + pe_k / num_folds
+            }#end of for(idLV)
+          }#end of for(idL)
 
         } else {
           #Estimate Phihat for all theta(lambda) values
@@ -210,7 +213,7 @@ lm_ShVAR_KCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
   X[, 1:(p * K)] <- X[, 1:(p * K)] / rep(sqrt(v1TR), each = N)
 
   myPsi  <- shrinkVARcoef(Y = Y, X = X, lambda = lambda,
-	                        dof = dof, prior_type = prior_type, m0 = m0)
+                          dof = dof, prior_type = prior_type, m0 = m0)
 
   mySigma <- attr(myPsi, "noiseCov")
   myq <- attr(myPsi, "weight")

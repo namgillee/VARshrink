@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary.shrinklm.R
 \name{summary.shrinklm}
 \alias{summary.shrinklm}
-\title{Summary method for class "shrinklm"}
+\title{Summarizing shrinkage estimates of an AR model}
 \usage{
 \method{summary}{shrinklm}(object, correlation = FALSE, symbolic.cor = FALSE, ...)
 }
@@ -17,8 +17,14 @@ rather than as numbers}
 
 \item{...}{Currently not used.}
 }
+\value{
+Returns a list with class attribute "summary.lm", which
+contains summary statistics of the fitted linear model given in object.
+}
 \description{
-Class "shrinklm" inherits the class "lm", and it extends
-the "lm" class to incorporate shrinkage estimates with
-effective number of parameter.
+\code{summary} method for an object of class "shrinklm".
+}
+\details{
+The class "shrinklm" inherits from the class "lm", and extends it to
+incorporate shrinkage estimates with the effective number of parameters.
 }

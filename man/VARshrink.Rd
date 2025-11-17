@@ -23,24 +23,25 @@ VARshrink(
 \item{p}{Integer for the lag order}
 
 \item{type}{Type of deterministic regressors to include.
-#' 1) "const" - the constant.
-2) "trend" - the trend.
-3) "both" - both the constant and the trend.
-4) "none"  - no deterministic regressors.
-***Note: In the package version <= 0.3, method='ns' does not accept
-type="const" and type="both" to avoid constant term.}
+1) \code{const} - the constant.
+2) \code{trend} - the trend.
+3) \code{both} - both the constant and the trend.
+4) \code{none}  - no deterministic regressors.
+***Note: In the package version <= 0.3, \code{method="ns"} does not accept
+\code{type="const"} and \code{type="both"} to avoid constant term.}
 
 \item{season}{An integer value of frequency for inclusion of
-centered seasonal dummy variables. abs(season) >= 3.}
+centered seasonal dummy variables. \code{abs(season)} >= 3.}
 
-\item{exogen}{A T-by-L matrix of exogenous variables. Default is NULL.}
+\item{exogen}{A T-by-L matrix of exogenous variables. Default is \code{NULL}.}
 
-\item{method}{1) "ridge" - multivariate ridge regression.
-2) "ns" - a Stein-type nonparametric shrinkage method.
-3) "fbayes" - a full Bayesian shrinkage method using noninformative priors.
-4) "sbayes" - a semiparametric Bayesian shrinkage method using parameterized
-cross validation.
-5) "kcv" - a semiparametric Bayesian shrinkage method using
+\item{method}{1) \code{"ridge"} - multivariate ridge regression.
+2) \code{"ns"} - a Stein-type nonparametric shrinkage method.
+3) \code{"fbayes"} - a full Bayesian shrinkage method using noninformative
+priors.
+4) \code{"sbayes"} - a semiparametric Bayesian shrinkage method using
+parameterized cross validation.
+5) \code{"kcv"} - a semiparametric Bayesian shrinkage method using
 K-fold cross validation}
 
 \item{lambda, lambda_var}{Shrinkage parameter value(s).
@@ -48,12 +49,12 @@ Use of this parameter is slightly different for each method:
 the same value does not imply the same shrinkage estimates.}
 
 \item{dof}{Degree of freedom of multivariate t-distribution for noise.
-Valid only for method = "fbayes" and method = "sbayes".
-dof=Inf means multivariate normal distribution.}
+Valid only for \code{method = "fbayes"} and \code{method = "sbayes"}.
+\code{dof = Inf} means multivariate normal distribution.}
 
 \item{...}{Extra arguments to pass to a specific function of the
 estimation method. For example, burnincycle and mcmccycle are for
-"fbayes".}
+\code{"fbayes"}.}
 }
 \value{
 An object of class "varshrinkest" with the components:
@@ -64,10 +65,11 @@ in the package vars.
 }
 \description{
 Shrinkage estimation methods for high-dimensional VAR models.
-Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t,
-where y_t is K-dimensional time series,
-d_t is deterministic regressors, e_t is a noise process, and
-A_1, ..., A_p, and C are coefficient matrices.
+Consider VAR(p) model:
+\deqn{y_t = A_1 y_{t-1} + \cdots + A_p y_{t-p} + C d_t + e_t,}
+where \eqn{y_t} is K-dimensional time series,
+\eqn{d_t} is deterministic regressors, \eqn{e_t} is a noise process, and
+\eqn{A_1, \ldots, A_p}, and \eqn{C} are coefficient matrices.
 Exogenous variables can be included additionally as regressors.
 }
 \details{

@@ -1,15 +1,22 @@
-#' Stability function
+#' Structural stability of a VAR(p)
 #'
-#' A variant of vars::stability().
-#' Warning: this function has not been tested for small sample sizes yet.
+#' Computes empirical fluctuation processes for VAR estimates.
+#' Utilizes \code{strucchange::efp()} for the VAR estimates of each time series
+#' variable.
 #'
-#' @param x An object of class "varshrinkest"
-#' @param type,h,dynamic,rescale,... Other arguments to strucchange::efp()
+#' A variant of \code{vars::stability()} for an object of class "varshrinkest".
+#' @param x Object of class "varshrinkest"
+#' @param type,h,dynamic,rescale,... Other arguments to
+#' \code{strucchange::efp()}
+#' @returns A list with class attribute "varstabil" which contains the following
+#' elements: \code{stability}, \code{endog}, \code{K}. The \code{stability} is
+#' a list of \code{strucchange::efp()} outputs.
 #' @examples
 #' data(Canada, package = "vars")
 #' y <- diff(Canada)
 #' estim <- VARshrink(y, p = 2, type = "const", method = "ridge")
-#' stability_sh(estim)
+#' stabil <- stability_sh(estim)
+#' plot(stabil)
 #' @seealso \code{\link[vars]{stability}}
 #' @export
 stability_sh <- function(x, type = c("OLS-CUSUM", "Rec-CUSUM", "Rec-MOSUM",

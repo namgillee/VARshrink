@@ -1,9 +1,13 @@
-#' Test for serially correlated errors for VAR shrinkage estimate
+#' Test for serially correlated errors
 #'
-#' An extension of vars::serial.test() to the class "varshrinkest".
+#' Computes the multivariate Portmanteau- and Breusch-Godfrey test for serially
+#' correlated erros.
+#'
+#' An extension of \code{vars::serial.test()} to the class "varshrinkest".
 #' @param x An object of class "varshrinkest" obtained by VARshrink().
-#' @param lags.pt,lags.bg,type Other arguments for vars::serial.test().
-#'   see help(serial.test) for details.
+#' @param lags.pt,lags.bg,type Other arguments for \code{vars::serial.test()}.
+#' @returns An object of class "varcheck" computed by
+#' \code{vars::serial.test()}.
 #' @examples
 #' data(Canada, package = "vars")
 #' y <- diff(Canada)

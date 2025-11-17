@@ -2,8 +2,7 @@
 % Please edit documentation in R/roots_sh.R
 \name{roots_sh}
 \alias{roots_sh}
-\title{Eigenvalues of the companion coefficient matrix of
-a VAR(p)-process}
+\title{Eigenvalues of the companion coefficient matrix of a VAR(p)}
 \usage{
 roots_sh(x, modulus = TRUE)
 }
@@ -12,9 +11,13 @@ roots_sh(x, modulus = TRUE)
 
 \item{modulus}{TRUE for modulus of the roots.}
 }
+\value{
+A vector with the eigenvalues of the companion matrix, or their
+modulus (default).
+}
 \description{
-This is a variant of vars::roots() for an object of class 'varshrinkest',
-VAR parameters estimated by \code{VARshrink()}.
+This is a variant of \code{vars::roots()} for an object of class
+"varshrinkest", VAR parameters estimated by \code{VARshrink()}.
 }
 \examples{
 data(Canada, package = "vars")

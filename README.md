@@ -7,12 +7,23 @@ The package **VARshrink** aims to be an integrative R package delivering nonpara
 
 The package **VARshrink** provides a simple interface function `VARshrink()`, which is an extension of the function `VAR()` in the **vars** package. 
 
-Example:
+## Installation
+
+The package can be installed conveniently from GitHub:
+
+```
+if (!("devtools" %in% installed.packages())) 
+  install.packages("devtools")
+
+devtools::install_github("namgillee/VARshrink")
+```
+
+## Example
 
 ```
 data(Canada, package = "vars")
 y <- diff(Canada)
-estim <- VARshrink(y, p = 2, type = "const", method = "ns")
+estim <- VARshrink(y, p = 2, type = "none", method = "ns")
 plot(predict(estim), names = "U")
 ```
 

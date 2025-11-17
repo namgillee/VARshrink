@@ -17,18 +17,19 @@ lm_multiv_ridge(Y, X, lambda = 0, do_scale = FALSE)
 }
 \value{
 A list object with the components: 1) Psi - A list of
-estimated Psi matrices, 2) lambda - A vector of
-lambda values, 3) GCV - A vector of GCV values
+estimated \eqn{\mathbf{\Psi}} matrices, 2) lambda - A vector of
+\eqn{\lambda} values, 3) GCV - A vector of GCV values
 }
 \description{
 Estimate regression coefficients by using ridge regression.
 }
 \details{
 Consider the multivariate regression:
-\deqn{Y = X Psi + e.}
-Psi is a M-by-K matrix of regression coefficients.
+\deqn{\mathbf{Y} = \mathbf{X \Psi} + \mathbf{e}.}
+\eqn{\mathbf{\Psi}} is a M-by-K matrix of regression coefficients.
 The ridge regression estimate for the coefficients is
-\deqn{Psi = (X'X + lambda * I)^{-1} X'Y.}
+\deqn{\mathbf{\Psi} = (\mathbf{X'X} + \lambda \mathbf{I})^{-1}
+\mathbf{X'Y}.}
 }
 \references{
 G. H. Golub, M. Heath, G. Wahba (1979).

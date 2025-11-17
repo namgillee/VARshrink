@@ -1,16 +1,17 @@
 #' Print method for class "varshsum"
 #'
-#' Print method for an object obtained by summary.varshrinkest().
+#' \code{print} method for an object obtained by \code{summary.varshrinkest()}.
 #'
-#' This function extends print.varsum() for VAR models estimated by
+#' This function extends \code{print.varsum()} for VAR models estimated by
 #' shrinkage methods.
-#' The output includes scale matrix Sigma and degree of freedom dof
-#' for multivariate t-distribution for residuals.
+#' The output includes the covariance matrix \code{Sigma} and the
+#' degrees-of-freedom \code{dof} for the multivariate t-distribution for
+#' the residuals.
 #'
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
 #' @param x An object of class "varshsum"
-#' @param digits,signif.stars,... Other arguments for print(),
-#' printCoefmat(), format() method
+#' @param digits,signif.stars,... Other arguments for \code{print()},
+#' \code{printCoefmat()}, \code{format()} method
 #' @importFrom stats printCoefmat pf cov2cor
 #' @export
 print.varshsum <- function(x, digits = max(3, getOption("digits") - 3),
@@ -61,11 +62,11 @@ print.varshsum <- function(x, digits = max(3, getOption("digits") - 3),
                          result$fstatistic[3L], lower.tail = FALSE),
                       digits = digits), "\n")
     }
-    cat("\n\n")
+    cat("\n")
   }
-  cat("\nScale matrix, Sigma, of multivariate t distribution for noise:\n")
+  cat("\nScale matrix, Sigma, of the multivariate t-distribution for noise:\n")
   print(x$Sigma, digits = digits, ...)
-  cat("\nDegrees of freedom of multivariate t distribution for noise:\n")
+  cat("\nDegrees of freedom of the multivariate t-distribution for noise:\n")
   print(x$dof, digits = digits, ...)
   cat("\nCorrelation matrix of Sigma:\n")
   print(cov2cor(x$Sigma), digits = digits, ...)

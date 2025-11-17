@@ -2,7 +2,7 @@
 % Please edit documentation in R/causality_sh.R
 \name{causality_sh}
 \alias{causality_sh}
-\title{Causality Analysis for class "varshrinkest"}
+\title{Causality Analysis}
 \usage{
 causality_sh(x, cause = NULL, vcov. = NULL, boot = FALSE, boot.runs = 100)
 }
@@ -12,8 +12,17 @@ causality_sh(x, cause = NULL, vcov. = NULL, boot = FALSE, boot.runs = 100)
 \item{cause, vcov., boot, boot.runs}{Other arguments for
 causality analysis; see help(causality) for details.}
 }
+\value{
+A list of class attribute "htest"
+with the following elements: \code{Granger}, \code{Instant}.
+}
 \description{
-A modification of vars::causality() for the class "varshrinkest".
+Computes the test statistics for Granger- and Instantaneous causality for
+a VAR(p).
+}
+\details{
+This function runs \code{vars::causality()} for an object of class
+"varshrinkest".
 }
 \examples{
 data(Canada, package = "vars")

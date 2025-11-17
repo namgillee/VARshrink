@@ -1,10 +1,11 @@
 #' Shrinkage estimation of VAR parameters
 #'
 #' Shrinkage estimation methods for high-dimensional VAR models.
-#' Consider VAR(p) model: y_t = A_1 y_{t-1} + ... + A_p y_{t-p} + C d_t + e_t,
-#' where y_t is K-dimensional time series,
-#' d_t is deterministic regressors, e_t is a noise process, and
-#' A_1, ..., A_p, and C are coefficient matrices.
+#' Consider VAR(p) model:
+#' \deqn{y_t = A_1 y_{t-1} + \cdots + A_p y_{t-p} + C d_t + e_t,}
+#' where \eqn{y_t} is K-dimensional time series,
+#' \eqn{d_t} is deterministic regressors, \eqn{e_t} is a noise process, and
+#' \eqn{A_1, \ldots, A_p}, and \eqn{C} are coefficient matrices.
 #' Exogenous variables can be included additionally as regressors.
 #'
 #' Shrinkage estimation methods can estimate the coefficients
@@ -14,31 +15,32 @@
 #' @param y A T-by-K matrix of endogenous variables
 #' @param p Integer for the lag order
 #' @param type  Type of deterministic regressors to include.
-#' #' 1) "const" - the constant.
-#' 2) "trend" - the trend.
-#' 3) "both" - both the constant and the trend.
-#' 4) "none"  - no deterministic regressors.
-#' ***Note: In the package version <= 0.3, method='ns' does not accept
-#' type="const" and type="both" to avoid constant term.
+#' 1) \code{const} - the constant.
+#' 2) \code{trend} - the trend.
+#' 3) \code{both} - both the constant and the trend.
+#' 4) \code{none}  - no deterministic regressors.
+#' ***Note: In the package version <= 0.3, \code{method="ns"} does not accept
+#' \code{type="const"} and \code{type="both"} to avoid constant term.
 #' @param season An integer value of frequency for inclusion of
-#' centered seasonal dummy variables. abs(season) >= 3.
-#' @param exogen A T-by-L matrix of exogenous variables. Default is NULL.
-#' @param method 1) "ridge" - multivariate ridge regression.
-#' 2) "ns" - a Stein-type nonparametric shrinkage method.
-#' 3) "fbayes" - a full Bayesian shrinkage method using noninformative priors.
-#' 4) "sbayes" - a semiparametric Bayesian shrinkage method using parameterized
-#' cross validation.
-#' 5) "kcv" - a semiparametric Bayesian shrinkage method using
+#' centered seasonal dummy variables. \code{abs(season)} >= 3.
+#' @param exogen A T-by-L matrix of exogenous variables. Default is \code{NULL}.
+#' @param method 1) \code{"ridge"} - multivariate ridge regression.
+#' 2) \code{"ns"} - a Stein-type nonparametric shrinkage method.
+#' 3) \code{"fbayes"} - a full Bayesian shrinkage method using noninformative
+#' priors.
+#' 4) \code{"sbayes"} - a semiparametric Bayesian shrinkage method using
+#' parameterized cross validation.
+#' 5) \code{"kcv"} - a semiparametric Bayesian shrinkage method using
 #' K-fold cross validation
 #' @param lambda,lambda_var  Shrinkage parameter value(s).
 #' Use of this parameter is slightly different for each method:
 #' the same value does not imply the same shrinkage estimates.
 #' @param dof  Degree of freedom of multivariate t-distribution for noise.
-#' Valid only for method = "fbayes" and method = "sbayes".
-#' dof=Inf means multivariate normal distribution.
+#' Valid only for \code{method = "fbayes"} and \code{method = "sbayes"}.
+#' \code{dof = Inf} means multivariate normal distribution.
 #' @param ... Extra arguments to pass to a specific function of the
 #' estimation method. For example, burnincycle and mcmccycle are for
-#' "fbayes".
+#' \code{"fbayes"}.
 #' @return An object of class "varshrinkest" with the components:
 #' varresult, datamat, y, type, p, K, obs,
 #' totobs, restrictions, method, lambda, call.
@@ -257,31 +259,11 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
         type = type,
         Q_values = resu_fbayes$q, callstr = cl
       )
-
-    #### How to get kappa ####
-    # From Eq. (11) for psi_hat(lambda), Y can be separated as:
-    #    psi := psi_hat(lambda)
-    #        = (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q) %*% y
-    # From defn. of hat matrix:
-    #    Y_hat = H %*% Y == X %*% Psi
-    # After vectorizing:
-    #    vec(Y_hat) = (I(x)H) %*% y == (I(x)X) %*% psi
-    # Combining above two equations:
-    #    (I(x)H) %*% y ==
-    #          (I(x)X) %*% (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q) %*% y
-    #    ...
-    #    (I(x)H) == (I(x)X) %*% (I(x)X'QX + lambda*Sig(x)I)^{-1} %*% (I(x)X'Q)
-    # Approximate Sig by a scalar:
-    #    Sig == sigbar := Tr(Sig)/K
-    # then,
-    #    H == X %*% (X'QX + lambda * Sigbar * I)^{-1} %*% X'Q
-    #    where  sigbar := Tr(Sig)/K
-
   }
   ##--------- (4) Semi-parametric Bayesian with lambda by P-CV ----------
   if (method == "sbayes") {
 
-    resu_sbayes <- 
+    resu_sbayes <-
       lm_semi_Bayes_PCV(datY, datX, dof = dof, lambda = lambda,
                         lambda_var = lambda_var, ...)
 
@@ -308,7 +290,6 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
         type = type,
         Q_values = resu_sbayes$q, callstr = cl
       )
-
   }
   ##--------- (5) Semi-parametric Bayesian with lambda by K-CV ----------
   if (method == "kcv") {
@@ -359,14 +340,6 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
 
   ## components for 'varshrinkest':
   estim$method   <- method
-  #$lambda
-  #$lambda.estimated
-  #$lambda_var
-  #$lambda_var.estimated
-  #$Sigma
-  #$dof
-  #$dof.estimated
-  #...
 
   class(estim) <- c("varshrinkest", "varest")
 

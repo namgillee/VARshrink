@@ -1,12 +1,13 @@
-#' Eigenvalues of the companion coefficient matrix of
-#' a VAR(p)-process
+#' Eigenvalues of the companion coefficient matrix of a VAR(p)
 #'
-#' This is a variant of vars::roots() for an object of class 'varshrinkest',
-#' VAR parameters estimated by \code{VARshrink()}.
+#' This is a variant of \code{vars::roots()} for an object of class
+#' "varshrinkest", VAR parameters estimated by \code{VARshrink()}.
 #'
 # Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
 #' @param x An object of class "varshrinkest"
 #' @param modulus TRUE for modulus of the roots.
+#' @returns A vector with the eigenvalues of the companion matrix, or their
+#' modulus (default).
 #' @examples
 #' data(Canada, package = "vars")
 #' y <- diff(Canada)

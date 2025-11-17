@@ -297,7 +297,7 @@ If the input arguments `lambda` and `lambda_var` are set as `lambda = NULL` and 
 
 ```{r}
 resu_estim$`Nonparametric shrinkage` <-
-  VARshrink(Y, p = 1, type = "const", method = "ns",
+  VARshrink(Y, p = 1, type = "none", method = "ns",
                     lambda = NULL, lambda_var = NULL)
 resu_estim$`Nonparametric shrinkage`
 ```
@@ -556,7 +556,7 @@ The shrinkage methods are run with the option `const = "const"` since the mean o
 For the semiparametric Bayesian method (`method = "sbayes"`), the degree of freedom $\nu$ was automatically selected. 
 In addition, we ran the K-fold CV method (`method = "kcv"`) for choosing $\lambda$ and $\lambda_v$ values of the semiparametric Bayesian shrinkage estimator. 
 
-```
+```{r, results = "hide", message=FALSE}
 set.seed(1000)
 resu_model <- array(NA, dim = c(5, 2, 3),
   dimnames = list(c("Ridge regression", "Nonparametric shrinkage",
@@ -566,7 +566,7 @@ for (p in 1:3) {
   EstimRidge <- VARshrink(Y, p = p, type = "const", method = "ridge")
   resu_model["Ridge regression", , p] <- c(AIC(EstimRidge), BIC(EstimRidge))
 
-  EstimNS <- VARshrink(Y, p = p, type = "const", method = "ns")
+  EstimNS <- VARshrink(Y, p = p, type = "none", method = "ns")
   resu_model["Nonparametric shrinkage", , p] <-
     c(AIC(EstimNS), BIC(EstimNS))
 
@@ -586,7 +586,6 @@ for (p in 1:3) {
 We can compare several models by computing their AIC and BIC. The following results in Table 3 indicate that the NS method produced better VAR coefficients than those of the other methods, and that the AIC took the minimum at $p=3$ while the BIC took the minimum at $p=2$.
 
 ```{r modelcomp, echo = FALSE}
-load("table3_modelcomp.RData")
 knitr::kable(round(resu_model, 1),
              caption = "Table 3. Information criteria (AIC, BIC) for model comparison.")
 ```
@@ -594,7 +593,7 @@ knitr::kable(round(resu_model, 1),
 The estimated parameters by the NS method with $p=2$ can be analyzed further by using the methods and functions in Table 1. For example, we can perform time series forecasting as in Figure 2.
 
 ```{r pred, fig.cap="Figure 2. A 10-step ahead Forecasting of time series by the VAR model estimated by the nonparametric shrinkage method. The differenced Canada data were modeled by a VAR(2) model selected at the minimum BIC."}
-plot(predict(VARshrink(Y, p = 2, type = "const", method = "ns")), names = "U")
+plot(predict(VARshrink(Y, p = 2, type = "none", method = "ns")), names = "U")
 ```
 
 

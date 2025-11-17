@@ -1,9 +1,15 @@
-#' Causality Analysis for class "varshrinkest"
+#' Causality Analysis
 #'
-#' A modification of vars::causality() for the class "varshrinkest".
+#' Computes the test statistics for Granger- and Instantaneous causality for
+#' a VAR(p).
+#'
+#' This function runs \code{vars::causality()} for an object of class
+#' "varshrinkest".
 #' @param x An object of class "varshrinkest" obtained by VARshrink().
 #' @param cause,vcov.,boot,boot.runs Other arguments for
 #'   causality analysis; see help(causality) for details.
+#' @returns A list of class attribute "htest"
+#' with the following elements: \code{Granger}, \code{Instant}.
 #' @examples
 #' data(Canada, package = "vars")
 #' y <- diff(Canada)

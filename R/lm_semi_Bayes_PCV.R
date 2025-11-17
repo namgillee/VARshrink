@@ -8,16 +8,20 @@
 #' for noise.
 #'
 #' Consider the multivariate regression:
-#' \deqn{Y = X Psi + e, \quad e ~ mvt(0, dof, Sigma).}
-#' Psi is a M-by-K matrix of regression coefficients and
-#' Sigma is a K-by-K scale matrix for multivariate t-distribution for noise.
+#' \deqn{\mathbf{Y} = \mathbf{X} \mathbf{\Psi} + \mathbf{e}, \quad
+#' \mathbf{e} \sim MVT(0, \nu, \mathbf{\Sigma}).}
+#' \eqn{\mathbf{\Psi}} is a \eqn{(M \times K)} matrix of regression coefficients
+#' and \eqn{\mathbf{\Sigma}} is a \eqn{(K \times K)} scale matrix for
+#' multivariate t-distribution for noise.
 #'
-#' Sampling distribution for noise e is the multivariate t-distribution with
-#' degree of freedom dof and scale matrix Sigma: e ~ mvt(0, dof, Sigma).
+#' Sampling distribution for noise \eqn{\mathbf{e}} is the multivariate
+#' t-distribution with the degrees-of-freedom \eqn{\nu} and scale matrix
+#' \eqn{\mathbf{\Sigma}}: \eqn{\mathbf{e} \sim MVT(0, \nu, \mathbf{\Sigma})}.
 #' The priors are informative priors: 1) a shrinkage prior for regression
-#' coefficients Psi, and 2) inverse Wishart prior for scale matrix Sigma,
-#' which can be either non-conjugate ("NCJ") or conjugate ("CJ") to the
-#' shrinkage prior for coefficients Psi.
+#' coefficients \eqn{\mathbf{Psi}}, and 2) inverse Wishart prior for scale
+#' matrix \eqn{\mathbf{\Sigma}}, which can be either non-conjugate ("NCJ")
+#' or conjugate ("CJ") to the shrinkage prior for coefficients
+#' \eqn{\mathbf{\Psi}}.
 #'
 #' The function implements parameterized cross validation (PCV) for
 #' selecting a shrinkage parameter lambda for estimating regression
@@ -28,10 +32,11 @@
 #'
 #' @param Y An N x K matrix of dependent variables.
 #' @param X An N x M matrix of regressors.
-#' @param dof Degree of freedom for multivariate t-distribution.
-#' If dof = Inf (default), then multivariate normal distribution is applied and
-#' weight vector q is not estimated. If dof = NULL or a numeric vector,
-#' then dof is selected by k-fold CV automatically and q is estimated.
+#' @param dof Degrees-of-freedom, \eqn{\nu}, for multivariate t-distribution.
+#' If \code{dof = Inf} (default), then multivariate normal distribution is
+#' applied and weight vector q is not estimated. If \code{dof = NULL} or a
+#' numeric vector, then dof is selected by k-fold CV automatically and q is
+#' estimated.
 #' @param lambda If NULL or a vector of length >=2, it is selected by PCV.
 #' @param lambda_var If NULL, it is selected by a Stein-type shrinkage method.
 #' @param prior_type "NCJ" for non-conjugate prior and "CJ" for conjugate
@@ -89,53 +94,53 @@ lm_semi_Bayes_PCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
 
   v1 <- apply(tsDatc, 2, var)  # a row-vector of sample variances
 
-	estimate_lambda_var <- FALSE
+  estimate_lambda_var <- FALSE
 
-	if (is.null(lambda_var)) {
+  if (is.null(lambda_var)) {
     # Correlation data, w_kjj = (z_kj - z_j)^2, k=1.. lenT, j=1..K
-    DatW <- rep(0, K * lenT) 	# a data matrix, transposed
-		for (k in 1:lenT) {
-			DatW[((k - 1) * K + 1) : (k * K)] <- tsDatc[k, ] ^ 2
-		}
-		dim(DatW) <- c(K, lenT)
+    DatW <- rep(0, K * lenT)  # a data matrix, transposed
+    for (k in 1:lenT) {
+      DatW[((k - 1) * K + 1) : (k * K)] <- tsDatc[k, ] ^ 2
+    }
+    dim(DatW) <- c(K, lenT)
 
     # Center the correlation data, ie., w_kjj - w_jj
-		DatW <- DatW - rowMeans(DatW)	# don't need rep()
+    DatW <- DatW - rowMeans(DatW)  # don't need rep()
 
     # Compute var_s = var_r + cov_r
-		var_r <- 1 / ((lenT - 1) ^ 2) * sum(rowSums(DatW ^ 2))
-		cov_r <- 0
-		for (k in 1:(lenT - 1)) {
-			for (k2 in (k + 1):lenT) {
-				if (k2 - k >= lenT - 1) {
-					cov_r <- cov_r + 2 / ((lenT - 1) ^ 2) / lenT *
-					  sum(DatW[, -(((lenT - (k2 - k)) + 1):lenT)] * DatW[, -(1:(k2 - k))])
-				} else {
-					cov_r <- cov_r + 2 / ((lenT - 1) ^ 2) / lenT *
-					  sum(rowSums(DatW[, -(((lenT - (k2 - k)) + 1):lenT)] *
-					                DatW[, -(1:(k2 - k))]))
-				}
-			}
-		}
-		var_s <-  var_r + cov_r
+    var_r <- 1 / ((lenT - 1) ^ 2) * sum(rowSums(DatW ^ 2))
+    cov_r <- 0
+    for (k in 1:(lenT - 1)) {
+      for (k2 in (k + 1):lenT) {
+        if (k2 - k >= lenT - 1) {
+          cov_r <- cov_r + 2 / ((lenT - 1) ^ 2) / lenT *
+            sum(DatW[, -(((lenT - (k2 - k)) + 1):lenT)] * DatW[, -(1:(k2 - k))])
+        } else {
+          cov_r <- cov_r + 2 / ((lenT - 1) ^ 2) / lenT *
+            sum(rowSums(DatW[, -(((lenT - (k2 - k)) + 1):lenT)] *
+                          DatW[, -(1:(k2 - k))]))
+        }
+      }
+    }
+    var_s <-  var_r + cov_r
 
-		# Calculate E_vvm2 = sum of squared biases, the denominator
-		E_vvm2 <- sum((v1 - median(v1))^2)
+    # Calculate E_vvm2 = sum of squared biases, the denominator
+    E_vvm2 <- sum((v1 - median(v1))^2)
 
-		# Determine lambda_var
-		lambda_var <- var_s / E_vvm2
+    # Determine lambda_var
+    lambda_var <- var_s / E_vvm2
 
-		estimate_lambda_var <- TRUE
-	}
+    estimate_lambda_var <- TRUE
+  }
 
-	# Update variance components
+  # Update variance components
   lambda_var <- max(0, min(1, lambda_var))
   vhat <- (1 - lambda_var) * v1  + lambda_var * median(v1)
 
 
-	#----------------- correlation ----------------------------------#
-	# Estimation using X and Y with each column divided by its std
-	#----------------------------------------------------------------#
+  #----------------- correlation ----------------------------------#
+  # Estimation using X and Y with each column divided by its std
+  #----------------------------------------------------------------#
 
   # Divide by standard deviation
   Y <- Y / rep(sqrt(v1), each = N)
