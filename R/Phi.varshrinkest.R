@@ -2,7 +2,7 @@
 #'
 #' Returns the estimated coefficient matrices of the moving average
 #' representation of a stable VAR(p).
-#' 
+#'
 #' This is a modification of \code{vars::Phi.varest()} for the class
 #' "varshrinkest", preventing redundant copying of data matrix objects.
 #'

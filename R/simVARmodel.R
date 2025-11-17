@@ -44,16 +44,16 @@ simVARmodel <- function(numT, model, burnin = 0) {
                            sigma = noiseCov)
   }
 
-	#-- Generate time series --#
+  #-- Generate time series --#
 
   #generate jth time series vector: burn_in period + T + p
-	for (j in (p + 1):(p + burnin + numT)) {
+  for (j in (p + 1):(p + burnin + numT)) {
     #const.vector
     retTS[j, ] <- retTS[j, ] + t(varCoef$c)
 
     #A(k) %*% y(t-k
     for (k in 1:p) {
-	    retTS[j, ] <- retTS[j, ] + retTS[j - k, ] %*% t(varCoef$A[[k]])
+      retTS[j, ] <- retTS[j, ] + retTS[j - k, ] %*% t(varCoef$A[[k]])
     }
   }
 

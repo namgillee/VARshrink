@@ -1,7 +1,7 @@
 #' Summarizing shrinkage estimates of an AR model
-#' 
+#'
 #' \code{summary} method for an object of class "shrinklm".
-#' 
+#'
 #' The class "shrinklm" inherits from the class "lm", and extends it to
 #' incorporate shrinkage estimates with the effective number of parameters.
 #' @param object An object of class "shrinklm"

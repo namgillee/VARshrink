@@ -213,7 +213,7 @@ lm_ShVAR_KCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
   X[, 1:(p * K)] <- X[, 1:(p * K)] / rep(sqrt(v1TR), each = N)
 
   myPsi  <- shrinkVARcoef(Y = Y, X = X, lambda = lambda,
-	                        dof = dof, prior_type = prior_type, m0 = m0)
+                          dof = dof, prior_type = prior_type, m0 = m0)
 
   mySigma <- attr(myPsi, "noiseCov")
   myq <- attr(myPsi, "weight")

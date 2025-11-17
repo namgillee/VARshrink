@@ -35,14 +35,15 @@ irf.varshrinkest <-
   function(x, impulse = NULL, response = NULL, n.ahead = 10, ortho = TRUE,
            cumulative = FALSE, boot = TRUE, ci = 0.95, runs = 100, seed = NULL,
            ...) {
-  if (!inherits(x, "varest")) {
-    stop("\nPlease provide an object inheriting class 'varest'.\n")
+    if (!inherits(x, "varest")) {
+      stop("\nPlease provide an object inheriting class 'varest'.\n")
+    }
+    if (!identical(class(x), "varest")) {
+      class(x) <- "varest"
+    }
+    result <- vars::irf(x, impulse = impulse, response = response,
+                        n.ahead = n.ahead, ortho = ortho,
+                        cumulative = cumulative, boot = boot, ci = ci,
+                        runs = runs, seed = seed, ...)
+    return(result)
   }
-  if(!identical(class(x), "varest")) {
-    class(x) <- "varest"
-  }
-  result <- vars::irf(x, impulse = impulse, response = response,
-                      n.ahead = n.ahead, ortho = ortho, cumulative = cumulative,
-                      boot = boot, ci = ci, runs = runs, seed = seed, ...)
-  return(result)
-}

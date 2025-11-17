@@ -3,7 +3,7 @@
 #' Computes empirical fluctuation processes for VAR estimates.
 #' Utilizes \code{strucchange::efp()} for the VAR estimates of each time series
 #' variable.
-#' 
+#'
 #' A variant of \code{vars::stability()} for an object of class "varshrinkest".
 #' @param x Object of class "varshrinkest"
 #' @param type,h,dynamic,rescale,... Other arguments to

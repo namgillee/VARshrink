@@ -123,19 +123,19 @@ shrinkVARcoef <- function(Y, X, lambda, dof = Inf, prior_type = "NCJ",
         eXX <- eigen(t(X) %*% (X * w))
       }
       mXY <- t(X) %*% (Y * w) %*% iVhat
-  		Dv <- 1 / (kronecker(1 / pmax((eVhat$values), 1e-18), eXX$values) +
-  		           lambda / (1 - lambda) * (N - 1))
+      Dv <- 1 / (kronecker(1 / pmax((eVhat$values), 1e-18), eXX$values) +
+                 lambda / (1 - lambda) * (N - 1))
       Psihat <- matrix(Dv, K, d) * (t(eXX$vectors) %*% mXY %*% eVhat$vectors)
       Psihat <- eXX$vectors %*% (Psihat %*% t(eVhat$vectors))
-		}
+    }
 
     ### Vhat
     ev_prev <- eVhat$values
-		Vhat <- t(Y) %*% ((Y - (X %*% Psihat)) * w)
-		diag(Vhat) <- diag(Vhat) + l0
-		Vhat <- Vhat / (m0 + N + d + 1)
-		Vhat <- (Vhat + t(Vhat)) / 2 #To ensure real eigenvalues
-		eVhat <- eigen(Vhat)
+    Vhat <- t(Y) %*% ((Y - (X %*% Psihat)) * w)
+    diag(Vhat) <- diag(Vhat) + l0
+    Vhat <- Vhat / (m0 + N + d + 1)
+    Vhat <- (Vhat + t(Vhat)) / 2 #To ensure real eigenvalues
+    eVhat <- eigen(Vhat)
 
     # Convergence Criterion
     # w is not changed, so we use eVhat$values

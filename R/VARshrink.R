@@ -261,7 +261,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   ##--------- (4) Semi-parametric Bayesian with lambda by P-CV ----------
   if (method == "sbayes") {
 
-    resu_sbayes <- 
+    resu_sbayes <-
       lm_semi_Bayes_PCV(datY, datX, dof = dof, lambda = lambda,
                         lambda_var = lambda_var, ...)
 

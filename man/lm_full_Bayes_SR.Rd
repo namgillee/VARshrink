@@ -37,10 +37,12 @@ regression coefficients and scale matrix for noise.
 Consider the multivariate regression:
 \deqn{Y = X \Psi + e, \quad e \sim MVT(0, \nu, \Sigma).}
 \eqn{\Psi} is a M-by-K matrix of regression coefficients and
-\eqn{\Sigma} is a K-by-K scale matrix for multivariate t-distribution for noise.
+\eqn{\Sigma} is a K-by-K scale matrix for multivariate t-distribution for
+noise.
 
 Sampling distribution for noise e is multivariate t-distribution with
-degree of freedom dof and scale matrix \eqn{\Sigma: e \sim MVT(0, \nu, \Sigma)}.
+degree of freedom dof and scale matrix \eqn{\Sigma: e \sim MVT(0, \nu,
+\Sigma)}.
 The priors are noninformative priors: 1) the shrinkage prior for regression
 coefficients \eqn{\Psi}, and 2) the reference prior for scale matrix
 \eqn{\Sigma}.
