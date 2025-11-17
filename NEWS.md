@@ -1,5 +1,27 @@
+# VARshrink 0.3.3
+* Date: 2025-11-17
+* https://github.com/namgillee/VARshrink/pull/5
+* Removed redundant R files and functions that became unnecessary following the
+  update to the vars package (version 1.6-1):
+  - arch.test_sh.R
+  - BQ_sh.R
+  - fevd.varshrinkest.R
+  - h_boot.R
+  - h_fecov.R
+  - h_irf.R
+  - normality.test_sh.R
+  - plot.varshirf.R
+  - predict.varshrinkest.R
+* Polished the R documentations for all functions
+* Add installation instructions into README.md
+* Minor fixes to the vignette and README.md: changed from type = "const" to
+  type = "none" for method = "ns".
+* Removed the redundant R source code in the vignette folder
+* Removed the redundant LICENSE.txt
+
 # VARshrink 0.3.2
 * Date: 2025-10-13
+* https://github.com/namgillee/VARshrink/pull/4
 * Fixed errors in all methods to allow larger column sizes in the input data
   matrix for season >= 3.
 * Fixed errors in sbayes and kcv to correctly compute the lag order.
@@ -8,6 +30,7 @@
 
 # VARshrink 0.3.1.9100
 * Date: 2025-10-07
+* https://github.com/namgillee/VARshrink/pull/3
 * Added vignettes/article_varshrink.R
 * Removed redundant tokens from .gitignore and .Rbuildignore
 * Removed redundant .Rproj file
