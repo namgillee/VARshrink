@@ -1,39 +1,31 @@
 # VARshrink 0.3.3
 * Date: 2025-11-17
 * https://github.com/namgillee/VARshrink/pull/5
-* Removed redundant R files and functions that became unnecessary following the
-  update to the vars package (version 1.6-1):
-  - arch.test_sh.R
-  - BQ_sh.R
-  - fevd.varshrinkest.R
-  - h_boot.R
-  - h_fecov.R
-  - h_irf.R
-  - normality.test_sh.R
-  - plot.varshirf.R
-  - predict.varshrinkest.R
-* Polished the R documentations for all functions
-* Added installation instructions into README.md
-* Minor fixes to the vignette and README.md: changed from type = "const" to
-  type = "none" for method = "ns".
-* Removed the redundant R source code in the vignette folder
-* Removed the redundant LICENSE.txt
+* Removed redundant R files due to the update to the **vars** package
+  (version 1.6-1): arch.test_sh.R, BQ_sh.R, fevd.varshrinkest.R, h_boot.R,
+  h_fecov.R, h_irf.R, normality.test_sh.R, plot.varshirf.R,
+  predict.varshrinkest.R.
+* Polished the R documentations for all functions.
+* README.md includes installation instructions. 
+* In the vignette and README.md, `type = "const"` was changed to `type = "none"`
+  for `method = "ns"`.
+* vignettes/article_varshrink.R was removed.
+* LICENSE.txt was removed.
 
 # VARshrink 0.3.2
 * Date: 2025-10-13
 * https://github.com/namgillee/VARshrink/pull/4
 * Fixed errors in all methods to allow larger column sizes in the input data
   matrix for season >= 3.
-* Fixed errors in sbayes and kcv to correctly compute the lag order.
-* Fixed errors in sbayes and kcv to properly scale the coefficient matrix.
-* Ran linter on R codes.
+* Fixed `"sbayes"` and `"kcv"` to correctly compute the lag order.
+* Fixed `"sbayes"` and `"kcv"` to properly scale the coefficient matrix.
 
 # VARshrink 0.3.1.9100
 * Date: 2025-10-07
 * https://github.com/namgillee/VARshrink/pull/3
-* Added vignettes/article_varshrink.R
-* Removed redundant tokens from .gitignore and .Rbuildignore
-* Removed redundant .Rproj file
+* vignettes/article_varshrink.R was added.
+* Redundant tokens were removed from .gitignore and .Rbuildignore.
+* .Rproj file was removed.
 
 # VARshrink 0.3.1.9000
 * Date: 2020-03-09
@@ -43,8 +35,9 @@
 * Date: 2019-09-25
 * The vignette is reduced in order to compile quicker.
 * The R codes include examples.
-* In VARshrink(), if method="ns", then type="const" is switched to type="none"
-and type="both" is switched to type="season" in order to avoid to estimate the constant term. This is because estimated parameters by the 'NS' can result in unexpected errors on the functions borrowed from the package vars.
+* In `VARshrink()`, if `method="ns"`, then `type="const"` is switched to
+  `type="none"`, and `type="both"` is switched to `type="season"` in order to
+  avoid to estimate the constant term. 
 
 # VARshrink 0.3.0
 * Date: 2019-08-13
