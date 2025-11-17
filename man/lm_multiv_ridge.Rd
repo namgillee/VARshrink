@@ -28,7 +28,7 @@ Consider the multivariate regression:
 \deqn{\mathbf{Y} = \mathbf{X \Psi} + \mathbf{e}.}
 \eqn{\mathbf{\Psi}} is a M-by-K matrix of regression coefficients.
 The ridge regression estimate for the coefficients is
-\deqn{\mathbf{\Psi} = (\mathbf{X'X} + \lambda \mathbf{I})^{-1} 
+\deqn{\mathbf{\Psi} = (\mathbf{X'X} + \lambda \mathbf{I})^{-1}
 \mathbf{X'Y}.}
 }
 \references{
