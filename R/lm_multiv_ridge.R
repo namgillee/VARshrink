@@ -6,7 +6,7 @@
 #' \deqn{\mathbf{Y} = \mathbf{X \Psi} + \mathbf{e}.}
 #' \eqn{\mathbf{\Psi}} is a M-by-K matrix of regression coefficients.
 #' The ridge regression estimate for the coefficients is
-#' \deqn{\mathbf{\Psi} = (\mathbf{X'X} + \lambda \mathbf{I})^{-1} 
+#' \deqn{\mathbf{\Psi} = (\mathbf{X'X} + \lambda \mathbf{I})^{-1}
 #' \mathbf{X'Y}.}
 #'
 #' @param Y An N x K matrix of dependent variables.
@@ -20,7 +20,7 @@
 #' Generalized cross-validation as a method for choosing a good
 #' ridge parameter. Technometrics 21(2), 215-223. doi: 10.2307/1268518
 
-lm_multiv_ridge <- function (Y, X, lambda = 0, do_scale = FALSE) {
+lm_multiv_ridge <- function(Y, X, lambda = 0, do_scale = FALSE) {
 
   n <- nrow(X)
   if (!is.matrix(Y)) {

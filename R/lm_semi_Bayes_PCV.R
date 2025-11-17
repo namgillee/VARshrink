@@ -94,53 +94,53 @@ lm_semi_Bayes_PCV <- function(Y, X, dof = Inf, lambda = NULL, lambda_var = NULL,
 
   v1 <- apply(tsDatc, 2, var)  # a row-vector of sample variances
 
-	estimate_lambda_var <- FALSE
+  estimate_lambda_var <- FALSE
 
-	if (is.null(lambda_var)) {
+  if (is.null(lambda_var)) {
     # Correlation data, w_kjj = (z_kj - z_j)^2, k=1.. lenT, j=1..K
-    DatW <- rep(0, K * lenT) 	# a data matrix, transposed
-		for (k in 1:lenT) {
-			DatW[((k - 1) * K + 1) : (k * K)] <- tsDatc[k, ] ^ 2
-		}
-		dim(DatW) <- c(K, lenT)
+    DatW <- rep(0, K * lenT)  # a data matrix, transposed
+    for (k in 1:lenT) {
+      DatW[((k - 1) * K + 1) : (k * K)] <- tsDatc[k, ] ^ 2
+    }
+    dim(DatW) <- c(K, lenT)
 
     # Center the correlation data, ie., w_kjj - w_jj
-		DatW <- DatW - rowMeans(DatW)	# don't need rep()
+    DatW <- DatW - rowMeans(DatW)  # don't need rep()
 
     # Compute var_s = var_r + cov_r
-		var_r <- 1 / ((lenT - 1) ^ 2) * sum(rowSums(DatW ^ 2))
-		cov_r <- 0
-		for (k in 1:(lenT - 1)) {
-			for (k2 in (k + 1):lenT) {
-				if (k2 - k >= lenT - 1) {
-					cov_r <- cov_r + 2 / ((lenT - 1) ^ 2) / lenT *
-					  sum(DatW[, -(((lenT - (k2 - k)) + 1):lenT)] * DatW[, -(1:(k2 - k))])
-				} else {
-					cov_r <- cov_r + 2 / ((lenT - 1) ^ 2) / lenT *
-					  sum(rowSums(DatW[, -(((lenT - (k2 - k)) + 1):lenT)] *
-					                DatW[, -(1:(k2 - k))]))
-				}
-			}
-		}
-		var_s <-  var_r + cov_r
+    var_r <- 1 / ((lenT - 1) ^ 2) * sum(rowSums(DatW ^ 2))
+    cov_r <- 0
+    for (k in 1:(lenT - 1)) {
+      for (k2 in (k + 1):lenT) {
+        if (k2 - k >= lenT - 1) {
+          cov_r <- cov_r + 2 / ((lenT - 1) ^ 2) / lenT *
+            sum(DatW[, -(((lenT - (k2 - k)) + 1):lenT)] * DatW[, -(1:(k2 - k))])
+        } else {
+          cov_r <- cov_r + 2 / ((lenT - 1) ^ 2) / lenT *
+            sum(rowSums(DatW[, -(((lenT - (k2 - k)) + 1):lenT)] *
+                          DatW[, -(1:(k2 - k))]))
+        }
+      }
+    }
+    var_s <-  var_r + cov_r
 
-		# Calculate E_vvm2 = sum of squared biases, the denominator
-		E_vvm2 <- sum((v1 - median(v1))^2)
+    # Calculate E_vvm2 = sum of squared biases, the denominator
+    E_vvm2 <- sum((v1 - median(v1))^2)
 
-		# Determine lambda_var
-		lambda_var <- var_s / E_vvm2
+    # Determine lambda_var
+    lambda_var <- var_s / E_vvm2
 
-		estimate_lambda_var <- TRUE
-	}
+    estimate_lambda_var <- TRUE
+  }
 
-	# Update variance components
+  # Update variance components
   lambda_var <- max(0, min(1, lambda_var))
   vhat <- (1 - lambda_var) * v1  + lambda_var * median(v1)
 
 
-	#----------------- correlation ----------------------------------#
-	# Estimation using X and Y with each column divided by its std
-	#----------------------------------------------------------------#
+  #----------------- correlation ----------------------------------#
+  # Estimation using X and Y with each column divided by its std
+  #----------------------------------------------------------------#
 
   # Divide by standard deviation
   Y <- Y / rep(sqrt(v1), each = N)

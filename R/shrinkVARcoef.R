@@ -30,22 +30,22 @@ shrinkVARcoef <- function(Y, X, lambda, dof = Inf, prior_type = "NCJ",
   }
 
   #Initialize
-	MaxCount <- 200 #iterative update of weight
-	d <- ncol(Y)
-	K <- ncol(X)
-	N <- nrow(Y)
+  MaxCount <- 200 #iterative update of weight
+  d <- ncol(Y)
+  K <- ncol(X)
+  N <- nrow(Y)
 
   isNormal  <-  (is.null(dof) || is.infinite(dof))
 
   ## 1. When lambda==1, return zero matrix
-	if (lambda == 1) {
+  if (lambda == 1) {
     Psihat <- matrix(0, K, d)
-		attr(Psihat, "weight.estimated") <- FALSE
-		attr(Psihat, "weight") <- NULL
+    attr(Psihat, "weight.estimated") <- FALSE
+    attr(Psihat, "weight") <- NULL
     attr(Psihat, "noiseCov") <- NULL
 
     return(Psihat)
-	}
+  }
 
 
   ## Initialize Psihat, Vhat, w via (weighted) least squares using
@@ -60,7 +60,7 @@ shrinkVARcoef <- function(Y, X, lambda, dof = Inf, prior_type = "NCJ",
   } else {
     U <- chol((t(X) %*% (X * w)) / (N - 1) * (1 - lambda) +
                 lambda * diag(rep(1, K)))
-    Psihat <- 
+    Psihat <-
       backsolve(U,
                 backsolve(U, (t(X) %*% (Y * w)) / (N - 1) *
                             (1 - lambda), transpose = TRUE))
@@ -72,11 +72,11 @@ shrinkVARcoef <- function(Y, X, lambda, dof = Inf, prior_type = "NCJ",
 
   ## 2. Normal distribution & Conjugate Prior: No iteration
   if (isNormal && (toupper(prior_type) == "CJ"))  {
-		attr(Psihat, "weight.estimated") <- FALSE
-		attr(Psihat, "weight") <- w
-		attr(Psihat, "noiseCov") <- Vhat
+    attr(Psihat, "weight.estimated") <- FALSE
+    attr(Psihat, "weight") <- w
+    attr(Psihat, "noiseCov") <- Vhat
     return(Psihat)
-	}
+  }
 
 
   ## 3. Iteration for w, Psihat, Vhat
@@ -124,7 +124,7 @@ shrinkVARcoef <- function(Y, X, lambda, dof = Inf, prior_type = "NCJ",
       }
       mXY <- t(X) %*% (Y * w) %*% iVhat
       Dv <- 1 / (kronecker(1 / pmax((eVhat$values), 1e-18), eXX$values) +
-                 lambda / (1 - lambda) * (N - 1))
+                   lambda / (1 - lambda) * (N - 1))
       Psihat <- matrix(Dv, K, d) * (t(eXX$vectors) %*% mXY %*% eVhat$vectors)
       Psihat <- eXX$vectors %*% (Psihat %*% t(eVhat$vectors))
     }
