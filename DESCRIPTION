@@ -27,7 +27,7 @@ License: GPL (>= 3)
 Depends:
     R (>= 3.5.0)
 Imports:
-    vars (>= 1.5.3),
+    vars (>= 1.6.1),
     ars (>= 0.6),
     corpcor (>= 1.6.9),
     strucchange,

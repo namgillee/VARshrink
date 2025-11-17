@@ -13,7 +13,7 @@
   - plot.varshirf.R
   - predict.varshrinkest.R
 * Polished the R documentations for all functions
-* Add installation instructions into README.md
+* Added installation instructions into README.md
 * Minor fixes to the vignette and README.md: changed from type = "const" to
   type = "none" for method = "ns".
 * Removed the redundant R source code in the vignette folder
