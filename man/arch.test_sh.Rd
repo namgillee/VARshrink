@@ -15,12 +15,19 @@ univariate ARCH statistics.}
 \item{lags.multi}{An integer of the lag order used for
 multivariate ARCH statistic.}
 
-\item{multivariate.only}{If TRUE, only the multivariate statistic
+\item{multivariate.only}{If \code{TRUE}, only the multivariate statistic
 is computed.}
+}
+\value{
+A list with class attribute "varcheck" containing the following
+elements: \code{resid}, \code{arch.uni} (available if
+\code{multivariate_only = FALSE}), \code{arch.mul}.
 }
 \description{
 Performs univariate and multivariate ARCH-LM tests for a VAR.
-This is a modification of vars::arch.test() for the class "varshrinkest".
+}
+\details{
+This function runs \code{vars::arch.test()} for the class "varshrinkest".
 }
 \examples{
 data(Canada, package = "vars")
