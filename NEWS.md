@@ -1,6 +1,7 @@
 # VARshrink 0.3.3
 * Date: 2025-11-17
 * https://github.com/namgillee/VARshrink/pull/5
+* https://github.com/namgillee/VARshrink/pull/6
 * Removed redundant R files due to the update to the **vars** package
   (version 1.6-1): arch.test_sh.R, BQ_sh.R, fevd.varshrinkest.R, h_boot.R,
   h_fecov.R, h_irf.R, normality.test_sh.R, plot.varshirf.R,
