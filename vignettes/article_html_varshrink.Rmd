@@ -208,11 +208,17 @@ Y <- simVARmodel(numT = 100, model = myModel, burnin = 10)
 resu_estim <- list()
 ```
 
+```{r modeldemo, include = FALSE}
+load("table2_modeldemo.RData")
+```
+
 Then, the multivariate ridge regression can be carried out for VAR models as follows. The result printed on the screen shows all the `lambda` values considered and the corresponding GCV values. The VAR parameters are estimated using the lambda value with the minimum GCV value. 
 
-```{r}
+```
 resu_estim$`Ridge regression` <-
   VARshrink(Y, p = 1, type = "const", method = "ridge", lambda = NULL)
+```
+```{r}
 resu_estim$`Ridge regression`
 ```
 
@@ -295,10 +301,12 @@ In specific, the package **corpcor** [@Schafer17] includes the <span style="font
 The function `VARshrink()` in the **VARshrink** package infers the NS estimates of VAR coefficients, $\widehat{\mathbf{\Psi}}^\text{N} (\lambda, \lambda_v)$, by using the covariance matrix $\widehat{\mathbf{S}}_\text{ZZ}(\lambda, \lambda_v)$.
 If the input arguments `lambda` and `lambda_var` are set as `lambda = NULL` and `lambda_var = NULL`, then $\lambda$ and $\lambda_v$ are determined automatically. We can find the estimated $\lambda$ and $\lambda_v$ values on the printed screen. For example, 
 
-```{r}
+```
 resu_estim$`Nonparametric shrinkage` <-
   VARshrink(Y, p = 1, type = "none", method = "ns",
                     lambda = NULL, lambda_var = NULL)
+```
+```{r}
 resu_estim$`Nonparametric shrinkage`
 ```
 
@@ -374,10 +382,12 @@ There are several arguments to be specified as follows.
 
 
 For example, we run the full Bayesian shrinkage method with a fixed $\nu = 6$ as follows.
-```{r}
+```
 resu_estim$`Full Bayes (fixed dof)` <-
   VARshrink(Y, p = 1, type = "const", method = "fbayes", dof = 6,
                      burnincycle = 1000, mcmccycle = 2000)
+```
+```{r}
 resu_estim$`Full Bayes (fixed dof)`
 ```
 
@@ -389,10 +399,12 @@ summary(resu_estim$`Full Bayes (fixed dof)`)
 
 Instead, we can estimate the degree of freedom, $\nu$, of multivariate t-distribution by the argument `dof = NULL` as follows:
 
-```{r}
+```
 resu_estim$`Full Bayes (estim dof)` <-
   VARshrink(Y, p = 1, type = "const", method = "fbayes", dof = NULL,
             burnincycle = 1000, mcmccycle = 2000)
+```
+```{r}
 resu_estim$`Full Bayes (estim dof)`
 ```
 
@@ -477,11 +489,13 @@ In the package **VARshrink**, the function `VARshrink(method = "sbayes", ...)` i
 - 	`m0`: The value of the hyperparameter $m_0$ of the inverse Wishart prior of $\mathbf{\Sigma}$. `m0 = `$K$ by default. On the other hand, the other hyperparameter $\mathbf{L}_0$ of the inverse Wishart prior is set by $\mathbf{L}_0 = (m_0 + K + 1) \mathbf{I}_K$.
 	
 For example, we can run the semiparametric shrinkage method as follows.
-```{r}
+```
 resu_estim$`Semi Bayes (fixed dof)` <-
   VARshrink(Y, p = 1, type = "const", method = "sbayes", dof = 6,
             lambda = NULL, lambda_var = NULL, prior_type = "NCJ",
             num_folds = 5, m0 = ncol(Y))
+```
+```{r}
 resu_estim$`Semi Bayes (fixed dof)`
 summary(resu_estim$`Semi Bayes (fixed dof)`)
 ```
@@ -489,11 +503,13 @@ summary(resu_estim$`Semi Bayes (fixed dof)`)
 We can also let the software package to choose the degree of freedom parameter $\nu$ automatically by setting `dof = NULL`.
 In this case, the package uses simply a $K$-fold cross validation to find an optimal value of $\nu$.
 
-```{r}
+```
 resu_estim$`Semi Bayes (estim dof)` <-
   VARshrink(Y, p = 1, type = "const", method = "sbayes", dof = NULL,
             lambda = NULL, lambda_var = NULL, prior_type = "NCJ",
             num_folds = 5, m0 = ncol(Y))
+```
+```{r}
 resu_estim$`Semi Bayes (estim dof)`
 ```
 
@@ -503,17 +519,19 @@ The **VARshrink** includes an implementation of the K-fold cross validation (CV)
 
 The K-fold CV method can be run as follows. The arguments to `VARshrink()` are same to those for the semiparametric Bayesian shrinkage method except for the argument `method = "kcv"`.
 
-```{r}
+```
 resu_estim$`K-fold CV (fixed dof)` <-
   VARshrink(Y, p = 1, type = "const", method = "kcv", dof = 6,
             lambda = NULL, lambda_var = NULL, prior_type = "NCJ",
             num_folds = 5, m0 = ncol(Y))
+```
+```{r}
 resu_estim$`K-fold CV (fixed dof)`
 ```
 
 Degree of freedom of multivariate t-distribution for noise can be selected automatically by setting the argument `dof = Inf` as follows. 
 
-```{r, results = "hide"}
+```{r, eval = FALSE}
 resu_estim$`K-fold CV (estim dof)` <-
   VARshrink(Y, p = 1, type = "const", method = "kcv", dof = NULL,
             lambda = NULL, lambda_var = NULL, prior_type = "NCJ",
@@ -556,7 +574,7 @@ The shrinkage methods are run with the option `const = "const"` since the mean o
 For the semiparametric Bayesian method (`method = "sbayes"`), the degree of freedom $\nu$ was automatically selected. 
 In addition, we ran the K-fold CV method (`method = "kcv"`) for choosing $\lambda$ and $\lambda_v$ values of the semiparametric Bayesian shrinkage estimator. 
 
-```{r, results = "hide", message=FALSE}
+```{r, eval = FALSE}
 set.seed(1000)
 resu_model <- array(NA, dim = c(5, 2, 3),
   dimnames = list(c("Ridge regression", "Nonparametric shrinkage",
@@ -584,6 +602,10 @@ for (p in 1:3) {
 ```
 
 We can compare several models by computing their AIC and BIC. The following results in Table 3 indicate that the NS method produced better VAR coefficients than those of the other methods, and that the AIC took the minimum at $p=3$ while the BIC took the minimum at $p=2$.
+
+```{r, include = FALSE}
+load("table3_modelcomp.RData")
+```
 
 ```{r modelcomp, echo = FALSE}
 knitr::kable(round(resu_model, 1),
