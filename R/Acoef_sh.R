@@ -7,7 +7,7 @@
 #' \deqn{\mathbf{y}_t = \mathbf{A}_1 \mathbf{y}_{t-1} + ... + \mathbf{A}_p
 #' \mathbf{y}_{t-p} + \mathbf{C} \mathbf{d}_t + \mathbf{e}_t.}
 #' The function returns the \eqn{(K \times K)} matrices
-#' \eqn{{\mathbf{A}_1, ..., \mathbf{A}_p}} as a list object.
+#' \eqn{\mathbf{A}_1, ..., \mathbf{A}_p} as a list object.
 #'
 #' This function modifies \code{vars::Acoef()} for the class "varshrinkest",
 #' preventing redundant copying of data matrix objects.
