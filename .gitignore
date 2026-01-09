@@ -40,3 +40,5 @@ inst/doc
 
 # CRAN
 cran-comments.md
+/CRAN-SUBMISSION
+revdep
