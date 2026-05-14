@@ -328,7 +328,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   if (!with(estim, exists("varresult"))) {
     warning("VAR parameters were not estimated. Check the method.")
   }
-  estim$datamat  <- cbind(datY, datX)
+  estim$datamat  <- data.frame(cbind(datY, datX))
   estim$y        <- y
   estim$type     <- type
   estim$p        <- p
