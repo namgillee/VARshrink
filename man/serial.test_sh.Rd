@@ -22,7 +22,7 @@ An object of class "varcheck" computed by
 }
 \description{
 Computes the multivariate Portmanteau- and Breusch-Godfrey test for serially
-correlated erros.
+correlated errors.
 }
 \details{
 An extension of \code{vars::serial.test()} to the class "varshrinkest".
