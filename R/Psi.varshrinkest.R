@@ -1,4 +1,12 @@
+#' Coefficient matrices of the orthogonalized MA representation
+#'
+#' Returns the estimated orthogonalized coefficient matrices of the moving
+#' average representation of a stable VAR(p).
+#'
+#' This is an extension of \code{vars::Psi.varest()} for the class
+#' "varshrinkest".
 #' @importFrom stats df.residual resid
+#' @export
 Psi.varshrinkest <- function(x, nstep = 10, ...) {
   if (!(inherits(x, "varest"))) {
     stop("\nPlease provide an object inheriting class 'varest'.\n")

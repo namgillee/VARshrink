@@ -2,7 +2,7 @@
 % Please edit documentation in R/Phi.varshrinkest.R
 \name{Phi.varshrinkest}
 \alias{Phi.varshrinkest}
-\title{Coefficient matrices of the MA represention}
+\title{Coefficient matrices of the MA representation}
 \usage{
 \method{Phi}{varshrinkest}(x, nstep = 10, ...)
 }
