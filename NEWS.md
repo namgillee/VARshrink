@@ -1,3 +1,14 @@
+# VARshrink 0.4.0
+* Date: 2026-05-15
+* https://github.com/namgillee/VARshrink/pull/7
+* Move "vars (>= 1.6.1)" from Imports to Depends in DESCRIPTION, so that
+  inherited methods from **vars** are automatically attached when loading
+  **VARshrink**.
+* Removed redundant R files due to the update to the **vars** package
+  (version 1.6-1): causality_sh.R, restrict_sh.R, roots_sh.R.
+* Fixed `VARshrink()` so that the `datamat` element in its output is a
+  "data.frame" object. This allows `vars::causality()` to run without errors.
+
 # VARshrink 0.3.3
 * Date: 2025-11-17
 * https://github.com/namgillee/VARshrink/pull/5
