@@ -10,7 +10,7 @@ VARshrink(
   type = c("const", "trend", "both", "none"),
   season = NULL,
   exogen = NULL,
-  method = c("ridge", "ns", "fbayes", "sbayes", "kcv"),
+  method = c("ols", "ridge", "ns", "fbayes", "sbayes", "kcv"),
   lambda = NULL,
   lambda_var = NULL,
   dof = Inf,
@@ -27,21 +27,22 @@ VARshrink(
 2) \code{trend} - the trend.
 3) \code{both} - both the constant and the trend.
 4) \code{none}  - no deterministic regressors.
-***Note: In the package version <= 0.3, \code{method="ns"} does not accept
-\code{type="const"} and \code{type="both"} to avoid constant term.}
+***Note: \code{method="ns"} does not accept \code{type="const"} and
+\code{type="both"} to avoid constant term.}
 
 \item{season}{An integer value of frequency for inclusion of
 centered seasonal dummy variables. \code{abs(season)} >= 3.}
 
 \item{exogen}{A T-by-L matrix of exogenous variables. Default is \code{NULL}.}
 
-\item{method}{1) \code{"ridge"} - multivariate ridge regression.
-2) \code{"ns"} - a Stein-type nonparametric shrinkage method.
-3) \code{"fbayes"} - a full Bayesian shrinkage method using noninformative
+\item{method}{1) \code{"ols"} - ordinary least squares method.
+2) \code{"ridge"} - multivariate ridge regression.
+3) \code{"ns"} - a Stein-type nonparametric shrinkage method.
+4) \code{"fbayes"} - a full Bayesian shrinkage method using noninformative
 priors.
-4) \code{"sbayes"} - a semiparametric Bayesian shrinkage method using
+5) \code{"sbayes"} - a semiparametric Bayesian shrinkage method using
 parameterized cross validation.
-5) \code{"kcv"} - a semiparametric Bayesian shrinkage method using
+6) \code{"kcv"} - a semiparametric Bayesian shrinkage method using
 K-fold cross validation}
 
 \item{lambda, lambda_var}{Shrinkage parameter value(s).
@@ -60,8 +61,7 @@ estimation method. For example, burnincycle and mcmccycle are for
 An object of class "varshrinkest" with the components:
 varresult, datamat, y, type, p, K, obs,
 totobs, restrictions, method, lambda, call.
-The class "varshrinkest" inherits the class "varest"
-in the package vars.
+The class "varshrinkest" inherits the class "varest" in the package vars.
 }
 \description{
 Shrinkage estimation methods for high-dimensional VAR models.

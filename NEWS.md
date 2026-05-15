@@ -8,6 +8,8 @@
   (version 1.6-1): causality_sh.R, restrict_sh.R, roots_sh.R.
 * Fixed `VARshrink()` so that the `datamat` element in its output is a
   "data.frame" object. This allows `vars::causality()` to run without errors.
+* Added ordinary least squares method to the available `VARshrink()` methods
+  with `method = "ols"`.
 
 # VARshrink 0.3.3
 * Date: 2025-11-17
