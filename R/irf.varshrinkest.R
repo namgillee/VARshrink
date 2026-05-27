@@ -19,7 +19,7 @@
 #' response coefficients are computed. The default value
 #' is false.
 #' @param boot Logical, if TRUE (the default) bootstrapped
-#' error bands for the imuplse response coefficients are
+#' error bands for the impulse response coefficients are
 #' computed.
 #' @param ci Numeric, the confidence interval for the
 #' bootstrapped errors bands.
