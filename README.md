@@ -11,7 +11,7 @@ The package **VARshrink** provides a simple interface function `VARshrink()`, wh
 
 The package can be installed conveniently from GitHub:
 
-```
+```r
 if (!("devtools" %in% installed.packages())) 
   install.packages("devtools")
 
@@ -20,14 +20,28 @@ devtools::install_github("namgillee/VARshrink")
 
 ## Example
 
-```
+```r
 data(Canada, package = "vars")
 y <- diff(Canada)
 estim <- VARshrink(y, p = 2, type = "none", method = "ns")
 plot(predict(estim), names = "U")
 ```
 
-### References
+## Development
+
+The package can be tested by
+
+```r
+devtools::test()
+```
+
+Style violations and syntax errors can be checked by
+
+```r
+lintr::lint_package()
+```
+
+## References
 
 N. Lee, H. Choi, and S.-H. Kim (2016). Bayes shrinkage estimation for high-dimensional VAR models with scale mixture of normal distributions for noise. Computational Statistics & Data Analysis 101, 250-276. doi: 10.1016/j.csda.2016.03.007
 

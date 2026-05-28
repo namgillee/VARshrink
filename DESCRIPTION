@@ -37,10 +37,14 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
-    kableExtra
+    kableExtra,
+    devtools,
+    lintr,
+    testthat (>= 3.0.0)
 URL: https://github.com/namgillee/VARshrink/
 BugReports: https://github.com/namgillee/VARshrink/issues/
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.0.0
+Config/testthat/edition: 3

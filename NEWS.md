@@ -10,6 +10,7 @@
   "data.frame" object. This allows `vars::causality()` to run without errors.
 * Added ordinary least squares method to the available `VARshrink()` methods
   with `method = "ols"`.
+* Added tools for testing and linting, using **usethis** and **lintr**.
 
 # VARshrink 0.3.3
 * Date: 2025-11-17

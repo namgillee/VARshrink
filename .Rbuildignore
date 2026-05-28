@@ -9,3 +9,7 @@
 ^LICENSE\.md$
 ^NEWS\.md$
 ^CRAN-SUBMISSION$
+^\.positai$
+^\.claude$
+^tests$
+^\.lintr
