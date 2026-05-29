@@ -1,5 +1,5 @@
 # VARshrink 0.4.0
-* Date: 2026-05-15
+* Date: 2026-05-30
 * https://github.com/namgillee/VARshrink/pull/7
 * Move "vars (>= 1.6.1)" from Imports to Depends in DESCRIPTION, so that
   inherited methods from **vars** are automatically attached when loading
@@ -12,7 +12,8 @@
   with `method = "ols"`.
 * Added tools for testing and linting, using **usethis** and **lintr**.
 * Updated full Bayesian estimation method
-  - Additional output: standard error of estimatßed q
+  - Additional output: standard error of estimated q
+  - Additional output: mcmc chain of parameters when `store_mcmc=TRUE`.
 
 # VARshrink 0.3.3
 * Date: 2025-11-17

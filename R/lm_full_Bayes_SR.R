@@ -71,10 +71,14 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
   vec_a4[1 + M * (0:(K - 1))] <- 0.001
   Sig <- 0.0001 + diag(1 / rgamma(K, shape = 3, scale = 1 / 4), K)  #inv-gamma
 
-  #Gibbs sampler: burn-in cycles & MCMC cycles
+  # Gibbs sampler: burn-in cycles & MCMC cycles
   Psi01 <- Psi02 <- Sig01 <- dof01 <- mean_delta <- 0
   Psi01SE <- Psi02SE <- Sig01SE <- dof01SE <- delta01SE <- 0
-
+  if (isTRUE(store_mcmc)) {
+    mcmc.param <- vector("list", length = mcmccycle)
+  } else {
+    mcmc.param <- NULL
+  }
   for (i in 1:(burnincycle + mcmccycle)) {
     #update phi, delta and Sig:
 
@@ -109,7 +113,6 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
     phi <- mu0 + sqrt(Dv) * rnorm(J, 0, 1)		# U'phi
     dim(phi) <- c(M, K)
     phi <- eXX$vectors %*% (phi %*% t(eSig$vectors))  # U * U'phi
-    ######################################
 
     # (2) Draw delta #####################
     # Draw delta from InvGamma(J/2-1, x/2)
@@ -118,7 +121,6 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
       delta <- max(x / J, 1e-30)
     else
       delta <- 1 / rgamma(1, shape = J / 2 - 1, scale = 2 / x) # inverse gamma
-    ######################################
 
     # (3) Draw Sig #######################
     # Draw Sig based on Sun & Ni (2004)
@@ -164,11 +166,10 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
         t(eW$vectors)
       eSig <- list(vectors = eW$vectors, values = exp(Cstar))
     } #if not, use previous eSig
-    ######################################
 
     # (4) draw Q from gamma ##############
     if (is.null(dof) || !is.infinite(dof)) {
-      #If dof is Inf, then it is a multivarate normal distribution,
+      #If dof is Inf, then it is a multivariate normal distribution,
       #and do not update Q.
       #If dof is not Inf, then it is a multivariate t-distribution, and update Q
       if (is.infinite(w)) {
@@ -181,10 +182,9 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
         Q <- rgamma(N, shape = (w + 0.5 * K), scale = 1) / x
       }
     }
-    ######################################
 
     # (5) draw w by MCMC #################
-    if (estimate_dof) {
+    if (isTRUE(estimate_dof)) {
       f_log <- function(x, N, Q) {
         N * x * log(x) + x * sum(log(Q), na.rm = TRUE) - N * lgamma(x) -
           (1 + sum(Q)) * x
@@ -198,7 +198,6 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
                       lb = TRUE, xlb = 1e-15, N = N, Q = Q)
       })
     }
-    ######################################
 
     # update Psi01, Psi02, Sig01 #########
     if (i >= (burnincycle + 1)) {
@@ -217,10 +216,29 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
       if (estimate_dof)
         dof01SE <- dof01SE + (w * 2)^2 / mcmccycle / (mcmccycle - 1)
 
-    }
-    ######################################
-
-  }
+      # Store parameters across MCMC cycle
+      if (isTRUE(store_mcmc)) {
+        mcmc.param[[i - burnincycle]] <- list(
+          Psi = matrix(phi, M, K),
+          Sigma = Sig,
+          dof.estimated = estimate_dof,
+          dof = if (isTRUE(estimate_dof)) w * 2 else dof,
+          delta = delta,
+          lambda = 1 / delta,
+          lambda.estimated = TRUE
+        )
+        mcmc_local_dof <- mcmc.param[[i - burnincycle]]$dof
+        if (is.infinite(mcmc_local_dof)) {
+          mcmc_local_q <- rep(1, N)
+        } else {
+          x <- (Y - X %*% phi)
+          x <- 0.5 * mcmc_local_dof + 0.5 * rowSums(x * t(solve(Sig, t(x))))
+          mcmc_local_q <- (0.5 * mcmc_local_dof + 0.5 * K - 1) / pmin(x, 1e10)
+        }
+        mcmc.param[[i - burnincycle]]$q <- mcmc_local_q
+      } # End of if (isTRUE(store_mcmc))
+    } # End of if (i >= (burnincycle + 1))
+  } # End of for (i in 1:(burnincycle + mcmccycle))
 
   #Compute Psi02 first
   #se.linex_Psi: SE value (before -log)
@@ -247,12 +265,12 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
   # (see, lines 175--179)
   if (is.infinite(mean_dof)) {
     mode_q <- rep(1, N)
-    se.mode_q <- 0
+    se.mode_q <- rep(0, N)
   } else {
     x <- (Y - X %*% mean_Psi)
     x <- 0.5 * mean_dof + 0.5 * rowSums(x * t(solve(mean_Sigma, t(x))))
-    mode_q <- (0.5 * mean_dof + 0.5 * K - 1) / min(x, 1e10)
-    se.mode_q <- sqrt(0.5 * mean_dof + 0.5 * K) / min(x, 1e10)
+    mode_q <- (0.5 * mean_dof + 0.5 * K - 1) / pmin(x, 1e10)
+    se.mode_q <- sqrt(0.5 * mean_dof + 0.5 * K) / pmin(x, 1e10)
   }
 
   res <- list(
@@ -275,12 +293,12 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
     q = se.mode_q
   )
 
-  res$mcmc.param <- NULL
-
   res$linex.param <- list(
     Psi = linex_Psi,
     se.linex.param = list(Psi = se.linex_Psi)
   )
+
+  res$mcmc.param <- mcmc.param
 
   res
 }
