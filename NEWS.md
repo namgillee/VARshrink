@@ -11,6 +11,8 @@
 * Added ordinary least squares method to the available `VARshrink()` methods
   with `method = "ols"`.
 * Added tools for testing and linting, using **usethis** and **lintr**.
+* Updated full Bayesian estimation method
+  - Additional output: standard error of estimatßed q
 
 # VARshrink 0.3.3
 * Date: 2025-11-17
