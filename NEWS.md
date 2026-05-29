@@ -1,7 +1,7 @@
 # VARshrink 0.4.0
 * Date: 2026-05-30
 * https://github.com/namgillee/VARshrink/pull/7
-* Move "vars (>= 1.6.1)" from Imports to Depends in DESCRIPTION, so that
+* Move "vars (>= 1.6.1)" from Imports to Depends in `DESCRIPTION`, so that
   inherited methods from **vars** are automatically attached when loading
   **VARshrink**.
 * Removed redundant R files due to the update to the **vars** package
@@ -10,10 +10,12 @@
   "data.frame" object. This allows `vars::causality()` to run without errors.
 * Added ordinary least squares method to the available `VARshrink()` methods
   with `method = "ols"`.
-* Added tools for testing and linting, using **usethis** and **lintr**.
-* Updated full Bayesian estimation method
-  - Additional output: standard error of estimated q
-  - Additional output: mcmc chain of parameters when `store_mcmc=TRUE`.
+* Added tools for testing and linting by using **usethis** and **lintr**.
+* Updated the full Bayesian estimation method in `lm_full_Bayes_SR()`, so that
+  its output additionally includes (1) `$se.param$q`: standard error of
+  estimated q, and (2) `$mcmc.param`: MCMC chain of parameters when `store_mcmc=TRUE`.
+* Bayesian methods can compute irf confidence bands fast by using an MCMC chain of
+  parameters within `irf.varshrinkest()`
 
 # VARshrink 0.3.3
 * Date: 2025-11-17

@@ -256,6 +256,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     estim$Sigma <- resu_fbayes$Sigma
     estim$dof <- resu_fbayes$dof
     estim$dof.estimated <- resu_fbayes$dof.estimated
+    estim$mcmc.param <- resu_fbayes$mcmc.param
 
     myPsi <- resu_fbayes$Psi
     rownames(myPsi) <- colnames(datX)

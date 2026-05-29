@@ -39,11 +39,11 @@ response coefficients are computed. The default value
 is false.}
 
 \item{boot}{Logical, if TRUE (the default) bootstrapped
-error bands for the imuplse response coefficients are
-computed.}
+confidence bands or Bayesian credible bands for the impulse
+response coefficients are computed.}
 
-\item{ci}{Numeric, the confidence interval for the
-bootstrapped errors bands.}
+\item{ci}{Numeric, the confidence level for the
+bootstrapped confidence or Bayesian credible bands.}
 
 \item{runs}{An integer, specifying the runs for the
 bootstrap.}
@@ -54,14 +54,22 @@ rng of the bootstrap.}
 \item{...}{Currently not used.}
 }
 \value{
-An object of class "varirf", computed by \code{vars::irf()}.
+An object of class "varirf" with the same component structure as
+\code{vars::irf()}.
 }
 \description{
 Computes the impulse response coefficients of a VAR(p)
 (or transformed VECM to VAR(p)) for n.ahead steps.
 }
 \details{
-This function runs \code{vars::irf()} for an object of class "varshrinkest".
+Confidence intervals are computed by bootstrap methods in \code{vars::irf()}
+or by Bayesian posterior distributions for an object of class
+"varshrinkest".
+
+For objects without stored MCMC draws, this method delegates to
+\code{vars::irf()}. For objects with \code{mcmc.param}, point estimates are
+computed from the fitted VAR coefficients and credible bands are computed
+from posterior MCMC draws.
 }
 \seealso{
 \code{\link[vars]{irf}}
