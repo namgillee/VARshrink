@@ -32,7 +32,7 @@
 #' initially generated sample values to drop. Number of MCMC cycles is the
 #' number of generated sample values to compute estimates.
 #' @param store_mcmc TRUE to return all MCMC chain of estimated parameters
-#' across mcmccycle. Default is FALSE.
+#' across mcmccycle. Default is TRUE.
 #' @return A list object with estimated parameters: Psi, Sigma, dof, delta
 #' (delta is the reciprocal of lambda), and lambda.
 #' Additional components are se.param (standard error of the parameters),
@@ -45,7 +45,7 @@
 #' @importFrom utils capture.output
 
 lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
-                             mcmccycle = 2000, store_mcmc = FALSE) {
+                             mcmccycle = 2000, store_mcmc = TRUE) {
   K <- ncol(Y)
   M <- ncol(X)
 

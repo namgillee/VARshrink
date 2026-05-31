@@ -164,6 +164,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
   if (method == "ols") {
     estim <- VAR(y, p = p, type = type, season = season, exogen = exogen, ...)
     estim$lambda <- 0
+    estim$lambda.estimated <- FALSE
   }
 
   #---------- (2) Multivariate Ridge ----------------
