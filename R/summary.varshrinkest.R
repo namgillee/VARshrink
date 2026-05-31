@@ -3,7 +3,7 @@
 #'
 #' Extend \code{summary.varest()} to the class "varshrinkest" to incorporate
 #' adapted methods for the new classes:
-#' \code{summary.shrinklm()}, \code{logLik.varshrinkest()}, \code{roots_sh()}.
+#' \code{summary.shrinklm()}, \code{logLik.varshrinkest()}.
 #'
 #' The code has been modified to eliminate direct calls to the data matrices
 #' (\code{$y}, \code{$datamat}) and to use the effective numbers of parameters
@@ -11,7 +11,6 @@
 #' covariance matrix \code{Sigma} and the degrees-of-freedom \code{dof}
 #' of the multivariate t-distribution for the residuals.
 #'
-# Last modified: 2019.7.30. Namgil Lee @ Kangwon National University
 #' @param object An object of class "varshrinkest", usually
 #' a result of call to "VARshrink()".
 #' @param equations Subset of names of endogenous time series variables
@@ -50,7 +49,7 @@ summary.varshrinkest <- function(object, equations = NULL, ...) {
   covres <- cov(resids) * (obs - 1) / min(sapply(object$varresult, df.residual))
   corres <- cor(resids)
   logLik <- as.numeric(logLik(object))
-  roots <- roots_sh(object)
+  roots <- roots(object)
   result <- list(names = ysubnames, varresult = eqest, covres = covres,
                  corres = corres, logLik = logLik, obs = obs, roots = roots,
                  type = object$type, call = object$call,

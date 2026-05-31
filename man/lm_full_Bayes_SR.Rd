@@ -4,7 +4,14 @@
 \alias{lm_full_Bayes_SR}
 \title{Full Bayesian Shrinkage Estimation Method for Multivariate Regression}
 \usage{
-lm_full_Bayes_SR(Y, X, dof = Inf, burnincycle = 1000, mcmccycle = 2000)
+lm_full_Bayes_SR(
+  Y,
+  X,
+  dof = Inf,
+  burnincycle = 1000,
+  mcmccycle = 2000,
+  store_mcmc = TRUE
+)
 }
 \arguments{
 \item{Y}{An N x K matrix of dependent variables.}
@@ -20,12 +27,16 @@ If \code{dof} is a positive number, q is estimated.}
 \item{burnincycle, mcmccycle}{Number of burnin cycles is the number of
 initially generated sample values to drop. Number of MCMC cycles is the
 number of generated sample values to compute estimates.}
+
+\item{store_mcmc}{TRUE to return all MCMC chain of estimated parameters
+across mcmccycle. Default is TRUE.}
 }
 \value{
 A list object with estimated parameters: Psi, Sigma, dof, delta
 (delta is the reciprocal of lambda), and lambda.
-Additional components are se.param (standard error of the parameters) and
-LINEXVARmodel (estimates under LINEX loss).
+Additional components are se.param (standard error of the parameters),
+mcmc.param (parameters for whole mcmc chain, stored if store_mcmc is TRUE),
+and linex.param (parameters estimates under LINEX loss).
 }
 \description{
 Estimate regression coefficients and scale matrix for noise by using

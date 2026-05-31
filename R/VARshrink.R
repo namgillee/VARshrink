@@ -19,18 +19,19 @@
 #' 2) \code{trend} - the trend.
 #' 3) \code{both} - both the constant and the trend.
 #' 4) \code{none}  - no deterministic regressors.
-#' ***Note: In the package version <= 0.3, \code{method="ns"} does not accept
-#' \code{type="const"} and \code{type="both"} to avoid constant term.
+#' ***Note: \code{method="ns"} does not accept \code{type="const"} and
+#' \code{type="both"} to avoid constant term.
 #' @param season An integer value of frequency for inclusion of
 #' centered seasonal dummy variables. \code{abs(season)} >= 3.
 #' @param exogen A T-by-L matrix of exogenous variables. Default is \code{NULL}.
-#' @param method 1) \code{"ridge"} - multivariate ridge regression.
-#' 2) \code{"ns"} - a Stein-type nonparametric shrinkage method.
-#' 3) \code{"fbayes"} - a full Bayesian shrinkage method using noninformative
+#' @param method 1) \code{"ols"} - ordinary least squares method.
+#' 2) \code{"ridge"} - multivariate ridge regression.
+#' 3) \code{"ns"} - a Stein-type nonparametric shrinkage method.
+#' 4) \code{"fbayes"} - a full Bayesian shrinkage method using noninformative
 #' priors.
-#' 4) \code{"sbayes"} - a semiparametric Bayesian shrinkage method using
+#' 5) \code{"sbayes"} - a semiparametric Bayesian shrinkage method using
 #' parameterized cross validation.
-#' 5) \code{"kcv"} - a semiparametric Bayesian shrinkage method using
+#' 6) \code{"kcv"} - a semiparametric Bayesian shrinkage method using
 #' K-fold cross validation
 #' @param lambda,lambda_var  Shrinkage parameter value(s).
 #' Use of this parameter is slightly different for each method:
@@ -44,8 +45,7 @@
 #' @return An object of class "varshrinkest" with the components:
 #' varresult, datamat, y, type, p, K, obs,
 #' totobs, restrictions, method, lambda, call.
-#' The class "varshrinkest" inherits the class "varest"
-#' in the package vars.
+#' The class "varshrinkest" inherits the class "varest" in the package vars.
 #' @import vars
 #' @examples
 #' data(Canada, package = "vars")
@@ -54,13 +54,16 @@
 #' @export
 VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
                        season = NULL, exogen = NULL,
-                       method = c("ridge", "ns", "fbayes", "sbayes", "kcv"),
+                       method =
+                         c("ols", "ridge", "ns", "fbayes", "sbayes", "kcv"),
                        lambda = NULL, lambda_var = NULL, dof = Inf, ...) {
   cl <- match.call()
+  type <- match.arg(type)
+  method <- match.arg(method)
   y <- as.matrix(y)
-  totobs <- nrow(y)   #total number of observations
-  K <- ncol(y)        #dimension of output response
-  N <- totobs - p     #sample size
+  totobs <- nrow(y)  # Total number of observations
+  K <- ncol(y)       # Dimension of output response
+  N <- totobs - p    # Sample size
 
   if (any(is.na(y)))
     stop("\nNAs in y.\n")
@@ -83,7 +86,8 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
       warning("'ns' method does not allow type='both'.. changed to 'trend'.")
     }
   }
-  ######## Build Data Matrices: datX, datY ########
+
+  #========== Build Data Matrices: datX, datY ============
 
   datY <- y[(p + 1):totobs, ] #N-by-K
   colnames(datY) <- tsnames
@@ -152,11 +156,18 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     colnames(datX) <- c(tmp, colnames(exogen))
   }
 
-  #### Run a Shrinkage Estimation Method: estim ####
+  #========== Run a Shrinkage Estimation Method ==========
 
-  estim <- NULL
+  estim <- list(restrictions = NULL)
 
-  #---------- (1) Multivariate Ridge ----------------
+  #---------- (1) Ordinary Least Squares ------------
+  if (method == "ols") {
+    estim <- VAR(y, p = p, type = type, season = season, exogen = exogen, ...)
+    estim$lambda <- 0
+    estim$lambda.estimated <- FALSE
+  }
+
+  #---------- (2) Multivariate Ridge ----------------
   if (method == "ridge") {
 
     # Compute the coefficient matrix: myPsi (M-by-K)
@@ -177,7 +188,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     estim$GCV <- resu_ridge$GCV
 
   }
-  ##--------- (2) Nonparametric Shrinkage ----------
+  #---------- (3) Nonparametric Shrinkage -----------
   if (method == "ns") {
 
     # datY and datX are centered separately by dybar and dxbar.
@@ -231,7 +242,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     estim$lambda_var.estimated <- attr(SZ, "lambda.var.estimated")
 
   }
-  ##--------- (3) Full Bayesian with Noninformative Priors ----------
+  #---------- (4) Full Bayesian with Noninformative Priors ----------
   if (method == "fbayes") {
 
     # Compute the coefficient matrix: myPsi
@@ -246,6 +257,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     estim$Sigma <- resu_fbayes$Sigma
     estim$dof <- resu_fbayes$dof
     estim$dof.estimated <- resu_fbayes$dof.estimated
+    estim$mcmc.param <- resu_fbayes$mcmc.param
 
     myPsi <- resu_fbayes$Psi
     rownames(myPsi) <- colnames(datX)
@@ -260,7 +272,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
         Q_values = resu_fbayes$q, callstr = cl
       )
   }
-  ##--------- (4) Semi-parametric Bayesian with lambda by P-CV ----------
+  #---------- (5) Semi-parametric Bayesian with lambda by P-CV ----------
   if (method == "sbayes") {
 
     resu_sbayes <-
@@ -291,7 +303,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
         Q_values = resu_sbayes$q, callstr = cl
       )
   }
-  ##--------- (5) Semi-parametric Bayesian with lambda by K-CV ----------
+  #---------- (6) Semi-parametric Bayesian with lambda by K-CV ----------
   if (method == "kcv") {
 
     resu_kcv <- lm_ShVAR_KCV(datY, datX, dof = dof,
@@ -321,24 +333,23 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
         callstr = cl
       )
   }
-  ##---------------------------------------------------
 
-  ## Check return value ##
-  ## components for 'varest'
+  #========== Check return value =========================
+  # Components for 'varest'
   if (!with(estim, exists("varresult"))) {
     warning("VAR parameters were not estimated. Check the method.")
   }
-  estim$datamat  <- cbind(datY, datX)
+  if (is.null(estim$datamat))
+    estim$datamat <- data.frame(cbind(datY, datX))
   estim$y        <- y
   estim$type     <- type
   estim$p        <- p
   estim$K        <- K
   estim$obs      <- N
   estim$totobs   <- totobs
-  estim$restrictions <- NULL
   estim$call     <- cl
 
-  ## components for 'varshrinkest':
+  # Components for 'varshrinkest'
   estim$method   <- method
 
   class(estim) <- c("varshrinkest", "varest")

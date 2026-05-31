@@ -1,7 +1,7 @@
 #' Test for serially correlated errors
 #'
 #' Computes the multivariate Portmanteau- and Breusch-Godfrey test for serially
-#' correlated erros.
+#' correlated errors.
 #'
 #' An extension of \code{vars::serial.test()} to the class "varshrinkest".
 #' @param x An object of class "varshrinkest" obtained by VARshrink().

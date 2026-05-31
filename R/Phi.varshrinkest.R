@@ -1,4 +1,4 @@
-#' Coefficient matrices of the MA represention
+#' Coefficient matrices of the MA representation
 #'
 #' Returns the estimated coefficient matrices of the moving average
 #' representation of a stable VAR(p).

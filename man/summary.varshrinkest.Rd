@@ -24,7 +24,7 @@ varresult, covres, corres, Sigma, dof.
 \description{
 Extend \code{summary.varest()} to the class "varshrinkest" to incorporate
 adapted methods for the new classes:
-\code{summary.shrinklm()}, \code{logLik.varshrinkest()}, \code{roots_sh()}.
+\code{summary.shrinklm()}, \code{logLik.varshrinkest()}.
 }
 \details{
 The code has been modified to eliminate direct calls to the data matrices

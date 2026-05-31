@@ -147,16 +147,31 @@ The methods and functions available in the **VARshrink** package are summarized 
 
 ```{r, echo = FALSE, warning=FALSE}
 text_tbl <- data.frame(
-FM = c("VAR",                  "fevd",    "irf",              "predict", "summary",        "arch.test_sh", "normality.test_sh", "serial.test_sh", "stability_sh"), 
-CL = c("varshrinkest, varest", "varfevd", "varshirf, varirf", "varprd",  "varshsum, varsum",    "varcheck",      "varcheck",          "varcheck",       "varstabil"),
-MC = c("coef, fevd, fitted, irf, logLik, Phi, plot, predict, print, Psi, resid, summary",                              "plot, print", "plot, print",  "plot, print", "print",                "plot, print",   "plot, print",       "plot, print",    "plot, print"), 
-FC = c("Acoef_sh, arch.test_sh, Bcoef_sh, BQ_sh, causality_sh, normality.test_sh, restrict_sh, roots_sh, serial.test_sh, stability_sh", " ", " ", "fanchart", " ", " ", " ", " ", " ")
+  FM = c("VAR", "fevd", "irf", "predict", "summary", "arch.test_sh",
+         "normality.test_sh", "serial.test_sh", "stability_sh"),
+  CL = c("varshrinkest, varest", "varfevd", "varshirf, varirf", "varprd",
+         "varshsum, varsum", "varcheck", "varcheck", "varcheck", "varstabil"),
+  MC = c(paste0("coef, fevd, fitted, irf, logLik, Phi, plot, predict, print, ",
+                "Psi, resid, summary"),
+         "plot, print", "plot, print", "plot, print", "print",
+         "plot, print", "plot, print", "plot, print", "plot, print"),
+  FC = c(paste0("Acoef_sh, arch.test_sh, Bcoef_sh, BQ_sh, causality_sh, ",
+                "normality.test_sh, restrict_sh, roots_sh, serial.test_sh, ",
+                "stability_sh"),
+         " ", " ", "fanchart", " ", " ", " ", " ", " ")
 )
-colnames(text_tbl) <- c("Function or method", "Class", "Methods for class", "Functions for class")
+colnames(text_tbl) <- c("Function or method", "Class", "Methods for class",
+                        "Functions for class")
 kableExtra::column_spec(
-  knitr::kable(text_tbl,
-       caption = "Table 1. Structure of the package VARshrink."),
-  1:4, width = "7em", border_left = FALSE, border_right = FALSE)
+  knitr::kable(
+    text_tbl,
+    caption = "Table 1. Structure of the package VARshrink."
+  ),
+  1:4,
+  width = "7em",
+  border_left = FALSE,
+  border_right = FALSE
+)
 ```
 
 
@@ -541,13 +556,19 @@ resu_estim$`K-fold CV (estim dof)` <-
 After all, the function `calcSSE_Acoef()` computes the sum of squared errors (SSEs) between two VAR model parameters, $\{\mathbf{A}_k^{(1)}\}$ and $\{\mathbf{A}_k^{(2)}\}$, as $SSE = \sum_{k=1}^p \sum_{i,j} (\mathbf{A}^{(1)}_{kij} - \mathbf{A}^{(2)}_{kij})^2$. For example, Table 2 shows the SSEs of the estimated VAR coefficients. 
 
 ```{r}
-resu_sse <- data.frame(SSE = sapply(resu_estim,
-  function(x) calcSSE_Acoef(Acoef_sh(x), myCoef$A)))
+resu_sse <- data.frame(
+  SSE = sapply(
+    resu_estim,
+    function(x) calcSSE_Acoef(Acoef_sh(x), myCoef$A)
+  )
+)
 ```
 
 ```{r, echo = FALSE}
 knitr::kable(round(resu_sse, 3),
-             caption = "Table 2. Sum of squared errors of VAR coefficients estimated by the shrinkage methods.")
+             caption = paste0("Table 2. Sum of squared errors of VAR ",
+                              "coefficients estimated by the shrinkage ",
+                              "methods."))
 ```
 
 ---
@@ -566,7 +587,7 @@ It contains four time series variables representing employment(`e`), labor produ
 
 ```{r diffCanada, out.width='70%', fig.cap = "Figure 1. The benchmark data set obtained by differencing the Canada data."}
 data(Canada, package = "vars")
-Y = diff(Canada)
+Y <- diff(Canada)
 plot(Y, cex.lab = 1.3)
 ```
 
@@ -576,10 +597,16 @@ In addition, we ran the K-fold CV method (`method = "kcv"`) for choosing $\lambd
 
 ```{r, eval = FALSE}
 set.seed(1000)
-resu_model <- array(NA, dim = c(5, 2, 3),
-  dimnames = list(c("Ridge regression", "Nonparametric shrinkage",
-                    "Full Bayes", "Semi Bayes", "K-fold CV"),
-                  c("AIC", "BIC"), c("p=1", "p=2", "p=3")))
+resu_model <- array(NA,
+  dim = c(5, 2, 3),
+  dimnames = list(
+    c(
+      "Ridge regression", "Nonparametric shrinkage",
+      "Full Bayes", "Semi Bayes", "K-fold CV"
+    ),
+    c("AIC", "BIC"), c("p=1", "p=2", "p=3")
+  )
+)
 for (p in 1:3) {
   EstimRidge <- VARshrink(Y, p = p, type = "const", method = "ridge")
   resu_model["Ridge regression", , p] <- c(AIC(EstimRidge), BIC(EstimRidge))
@@ -596,7 +623,7 @@ for (p in 1:3) {
   resu_model["Semi Bayes", , p] <- c(AIC(EstimSB), BIC(EstimSB))
 
   EstimKCV <- VARshrink(Y, p = p, type = "const", method = "kcv",
-                          dof = NULL, prior_type = "NCJ")
+                        dof = NULL, prior_type = "NCJ")
   resu_model["K-fold CV", , p] <- c(AIC(EstimKCV), BIC(EstimKCV))
 }
 ```
@@ -609,7 +636,8 @@ load("table3_modelcomp.RData")
 
 ```{r modelcomp, echo = FALSE}
 knitr::kable(round(resu_model, 1),
-             caption = "Table 3. Information criteria (AIC, BIC) for model comparison.")
+             caption = paste0("Table 3. Information criteria (AIC, BIC) for ",
+                              "model comparison."))
 ```
 
 The estimated parameters by the NS method with $p=2$ can be analyzed further by using the methods and functions in Table 1. For example, we can perform time series forecasting as in Figure 2.

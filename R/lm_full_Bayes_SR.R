@@ -31,21 +31,21 @@
 #' @param burnincycle,mcmccycle Number of burnin cycles is the number of
 #' initially generated sample values to drop. Number of MCMC cycles is the
 #' number of generated sample values to compute estimates.
+#' @param store_mcmc TRUE to return all MCMC chain of estimated parameters
+#' across mcmccycle. Default is TRUE.
 #' @return A list object with estimated parameters: Psi, Sigma, dof, delta
 #' (delta is the reciprocal of lambda), and lambda.
-#' Additional components are se.param (standard error of the parameters) and
-#' LINEXVARmodel (estimates under LINEX loss).
+#' Additional components are se.param (standard error of the parameters),
+#' mcmc.param (parameters for whole mcmc chain, stored if store_mcmc is TRUE),
+#' and linex.param (parameters estimates under LINEX loss).
 #' @references S. Ni and D. Sun (2005). Bayesian estimates for vector
 #' autoregressive models. Journal of Business & Economic Statistics 23(1),
 #' 105-117.
 #' @importFrom stats rgamma rnorm runif
 #' @importFrom utils capture.output
-#
-# Last modified: 13th Oct 2025 by Namgil Lee @ Kangwon National University,
-# South Korea.
 
 lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
-                             mcmccycle = 2000) {
+                             mcmccycle = 2000, store_mcmc = TRUE) {
   K <- ncol(Y)
   M <- ncol(X)
 
@@ -71,14 +71,19 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
   vec_a4[1 + M * (0:(K - 1))] <- 0.001
   Sig <- 0.0001 + diag(1 / rgamma(K, shape = 3, scale = 1 / 4), K)  #inv-gamma
 
-  #Gibbs sampler: burn-in cycles & MCMC cycles
-  Psi01 <- Psi02 <- Sig01 <- dof01 <- delta01 <- 0
+  # Gibbs sampler: burn-in cycles & MCMC cycles
+  Psi01 <- Psi02 <- Sig01 <- dof01 <- mean_delta <- 0
   Psi01SE <- Psi02SE <- Sig01SE <- dof01SE <- delta01SE <- 0
-
+  if (isTRUE(store_mcmc)) {
+    mcmc.param <- vector("list", length = mcmccycle)
+  } else {
+    mcmc.param <- NULL
+  }
   for (i in 1:(burnincycle + mcmccycle)) {
     #update phi, delta and Sig:
 
-    ##### (1) draw phi from a multivariate normal distribution #####
+    # (1) Draw phi #######################
+    # Draw phi from a multivariate normal distribution.
     # Suppose that phi ~ N_J(mu_Q, V_Q)
     # mu_Q = delta * (Sig \otimes (X'QX)^{-1} + delta I_J)^{-1} vec(hat{phi}_Q)
     #            = ( (1/delta) I \otimes I  +  Sig^{-1} \otimes X'QX )^{-1} %*%
@@ -108,19 +113,17 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
     phi <- mu0 + sqrt(Dv) * rnorm(J, 0, 1)		# U'phi
     dim(phi) <- c(M, K)
     phi <- eXX$vectors %*% (phi %*% t(eSig$vectors))  # U * U'phi
-    ######################################
 
-
-    ##### (2) draw delta from InvGamma(J/2-1, x/2) #####
+    # (2) Draw delta #####################
+    # Draw delta from InvGamma(J/2-1, x/2)
     x <- sum(phi^2)
     if (x < 1e-20)
       delta <- max(x / J, 1e-30)
     else
       delta <- 1 / rgamma(1, shape = J / 2 - 1, scale = 2 / x) # inverse gamma
-    ######################################
 
-
-    ##### (3) draw Sig based on Sun & Ni (2004) #####
+    # (3) Draw Sig #######################
+    # Draw Sig based on Sun & Ni (2004)
     Sk <- Y - X %*% phi
     Sk <- t(Sk) %*% (Sk * Q)					# S_k
 
@@ -163,11 +166,10 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
         t(eW$vectors)
       eSig <- list(vectors = eW$vectors, values = exp(Cstar))
     } #if not, use previous eSig
-    ######################################
 
-    ##### (4) draw Q from gamma #####
+    # (4) draw Q from gamma ##############
     if (is.null(dof) || !is.infinite(dof)) {
-      #If dof is Inf, then it is a multivarate normal distribution,
+      #If dof is Inf, then it is a multivariate normal distribution,
       #and do not update Q.
       #If dof is not Inf, then it is a multivariate t-distribution, and update Q
       if (is.infinite(w)) {
@@ -180,10 +182,9 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
         Q <- rgamma(N, shape = (w + 0.5 * K), scale = 1) / x
       }
     }
-    ######################################
 
-    ##### (5) draw w by MCMC #####
-    if (estimate_dof) {
+    # (5) draw w by MCMC #################
+    if (isTRUE(estimate_dof)) {
       f_log <- function(x, N, Q) {
         N * x * log(x) + x * sum(log(Q), na.rm = TRUE) - N * lgamma(x) -
           (1 + sum(Q)) * x
@@ -192,20 +193,19 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
         N * log(x) + N + sum(log(Q), na.rm = TRUE) - N * digamma(x) -
           (1 + sum(Q))
       }
-      tmp <- capture.output({
+      capture.output({
         w <- ars::ars(n = 1, f = f_log, fprima = f_dif, x = 10, m = 1,
                       lb = TRUE, xlb = 1e-15, N = N, Q = Q)
       })
     }
-    ##############################
 
-    ##### update Psi01, Psi02, Sig01 #####
+    # update Psi01, Psi02, Sig01 #########
     if (i >= (burnincycle + 1)) {
 
       Psi01 <- Psi01 + phi / mcmccycle
       Psi02 <- Psi02 + exp(-vec_a4 * phi) / mcmccycle
       Sig01 <- Sig01 + Sig / mcmccycle
-      delta01 <- delta01 + delta / mcmccycle
+      mean_delta <- mean_delta + delta / mcmccycle
       dof01 <- dof01 + w * 2 / mcmccycle
 
       # Note that, SE^2 = S^2/n = sum(x_i^2/n/(n-1)) - xbar^2/(n-1)
@@ -216,63 +216,89 @@ lm_full_Bayes_SR <- function(Y, X, dof = Inf, burnincycle = 1000,
       if (estimate_dof)
         dof01SE <- dof01SE + (w * 2)^2 / mcmccycle / (mcmccycle - 1)
 
-    }
-    ##########
-
-  }
+      # Store parameters across MCMC cycle
+      if (isTRUE(store_mcmc)) {
+        mcmc.param[[i - burnincycle]] <- list(
+          Psi = matrix(phi, M, K),
+          Sigma = Sig,
+          dof.estimated = estimate_dof,
+          dof = if (isTRUE(estimate_dof)) w * 2 else dof,
+          delta = delta,
+          lambda = 1 / delta,
+          lambda.estimated = TRUE
+        )
+        mcmc_local_dof <- mcmc.param[[i - burnincycle]]$dof
+        if (is.infinite(mcmc_local_dof)) {
+          mcmc_local_q <- rep(1, N)
+        } else {
+          x <- (Y - X %*% phi)
+          x <- 0.5 * mcmc_local_dof + 0.5 * rowSums(x * t(solve(Sig, t(x))))
+          mcmc_local_q <- (0.5 * mcmc_local_dof + 0.5 * K - 1) / pmin(x, 1e10)
+        }
+        mcmc.param[[i - burnincycle]]$q <- mcmc_local_q
+      } # End of if (isTRUE(store_mcmc))
+    } # End of if (i >= (burnincycle + 1))
+  } # End of for (i in 1:(burnincycle + mcmccycle))
 
   #Compute Psi02 first
-  #mySE.Psi02: SE value (before -log)
-  mySE.Psi02 <- matrix(sqrt(Psi02SE - Psi02^2 / (mcmccycle - 1)), M, K)
+  #se.linex_Psi: SE value (before -log)
+  se.linex_Psi <- matrix(sqrt(Psi02SE - Psi02^2 / (mcmccycle - 1)), M, K)
   Psi02 <- -log(Psi02) / vec_a4     #(after -log)
-  myPsi02 <- matrix(Psi02, M, K)  #(after -log)
-  mySE.Psi02 <- mySE.Psi02 / abs(vec_a4)  #Lipshitz constant: 1/a
+  linex_Psi <- matrix(Psi02, M, K)  #(after -log)
+  se.linex_Psi <- se.linex_Psi / abs(vec_a4)  #Lipshitz constant: 1/a
 
   #######
 
   # Collect return values
-  myPsi01 <- matrix(Psi01, M, K)   # Psi01 matrix
-  mySE.Psi01 <- matrix(sqrt(Psi01SE - Psi01^2 / (mcmccycle - 1)), M, K)
-  mySigma <- Sig01
-  mySE.Sigma <- sqrt(Sig01SE - Sig01^2 / (mcmccycle - 1))
+  mean_Psi <- matrix(Psi01, M, K)   # Psi01 matrix
+  se.mean_Psi <- matrix(sqrt(Psi01SE - Psi01^2 / (mcmccycle - 1)), M, K)
+  mean_Sigma <- Sig01
+  se.mean_Sigma <- sqrt(Sig01SE - Sig01^2 / (mcmccycle - 1))
   if (estimate_dof) {
-    mydof <- dof01
-    mySE.dof <- sqrt(dof01SE - dof01^2 / (mcmccycle - 1))
+    mean_dof <- dof01
+    se.mean_dof <- sqrt(dof01SE - dof01^2 / (mcmccycle - 1))
   } else {
-    mydof <- dof
-    mySE.dof <- 0
+    mean_dof <- dof
+    se.mean_dof <- 0
   }
   # Estimate Q values by the mode of posterior, (shape-1)*scale
-  #(see, lines 175--186)
-  if (is.infinite(mydof)) {
-    myq <- rep(1, N)
+  # (see, lines 175--179)
+  if (is.infinite(mean_dof)) {
+    mode_q <- rep(1, N)
+    se.mode_q <- rep(0, N)
   } else {
-    x <- (Y - X %*% myPsi01)
-    x <- 0.5 * mydof + 0.5 * rowSums(x * t(solve(mySigma, t(x))))
-    myq <- (0.5 * mydof + 0.5 * K - 1) / min(x, 1e10)
+    x <- (Y - X %*% mean_Psi)
+    x <- 0.5 * mean_dof + 0.5 * rowSums(x * t(solve(mean_Sigma, t(x))))
+    mode_q <- (0.5 * mean_dof + 0.5 * K - 1) / pmin(x, 1e10)
+    se.mode_q <- sqrt(0.5 * mean_dof + 0.5 * K) / pmin(x, 1e10)
   }
 
-  res <- NULL
-  res$Psi <- myPsi01
-  res$Sigma <- mySigma
-  res$dof <- mydof
-  res$delta <- delta01
-  res$lambda <- 1 / delta01
-  res$lambda.estimated <- TRUE
-  res$dof.estimated <- estimate_dof
-  res$q <- myq
+  res <- list(
+    Psi = mean_Psi,
+    Sigma = mean_Sigma,
+    dof.estimated = estimate_dof,
+    dof = mean_dof,
+    delta = mean_delta,
+    lambda = 1 / mean_delta,
+    lambda.estimated = TRUE,
+    q = mode_q
+  )
 
-  res$se.param <- NULL
-  res$se.param$Psi <- mySE.Psi01
-  res$se.param$Sigma <- mySE.Sigma
-  res$se.param$dof <- mySE.dof
-  res$se.param$delta <- sqrt(delta01SE - delta01^2 / (mcmccycle - 1))
-  res$se.param$lambda <- res$se.param$delta / delta01^2
+  res$se.param <- list(
+    Psi = se.mean_Psi,
+    Sigma = se.mean_Sigma,
+    dof = se.mean_dof,
+    delta = sqrt(delta01SE - mean_delta^2 / (mcmccycle - 1)),
+    lambda = res$se.param$delta / mean_delta^2,
+    q = se.mode_q
+  )
 
-  res$LINEXparam <- NULL
-  res$LINEXparam$Psi <- myPsi02
-  res$se.LINEXparam <- NULL
-  res$se.LINEXparam$Psi <- mySE.Psi02
+  res$linex.param <- list(
+    Psi = linex_Psi,
+    se.linex.param = list(Psi = se.linex_Psi)
+  )
+
+  res$mcmc.param <- mcmc.param
 
   res
 }
