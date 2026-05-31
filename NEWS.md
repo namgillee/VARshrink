@@ -1,5 +1,5 @@
 # VARshrink 0.4.0
-* Date: 2026-05-30
+* Date: 2026-06-01
 * https://github.com/namgillee/VARshrink/pull/7
 * Move "vars (>= 1.6.1)" from Imports to Depends in `DESCRIPTION`, so that
   inherited methods from **vars** are automatically attached when loading

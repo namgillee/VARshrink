@@ -10,7 +10,7 @@ lm_full_Bayes_SR(
   dof = Inf,
   burnincycle = 1000,
   mcmccycle = 2000,
-  store_mcmc = FALSE
+  store_mcmc = TRUE
 )
 }
 \arguments{
@@ -29,7 +29,7 @@ initially generated sample values to drop. Number of MCMC cycles is the
 number of generated sample values to compute estimates.}
 
 \item{store_mcmc}{TRUE to return all MCMC chain of estimated parameters
-across mcmccycle. Default is FALSE.}
+across mcmccycle. Default is TRUE.}
 }
 \value{
 A list object with estimated parameters: Psi, Sigma, dof, delta
