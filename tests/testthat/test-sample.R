@@ -1,29 +1,27 @@
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
-})
-
 test_that("Bayesian IRF returns vars-compatible varirf object", {
   data(Canada, package = "vars")
-  fit <- VARshrink(diff(Canada), p = 1, method = "ridge")
-  coef_draw <- t(Bcoef_sh(fit))
-  expect_gt(nrow(coef_draw), fit$K * fit$p)
-  sigma_draw <- crossprod(resid(fit)) / df.residual(fit$varresult[[1]])
-  fit$mcmc.param <- list(
-    list(Psi = coef_draw, Sigma = sigma_draw),
-    list(Psi = coef_draw * 1.01, Sigma = sigma_draw * 1.02),
-    list(Psi = coef_draw * 0.99, Sigma = sigma_draw * 0.98)
-  )
+  fit <- VARshrink(diff(Canada), p = 1, method = "fbayes", type = "const",
+                   burnincycle = 20, mcmccycle = 50, store_mcmc = TRUE)
 
-  result <- irf(fit, impulse = "e", response = c("prod", "rw"),
-                n.ahead = 3, boot = TRUE, ci = 0.9)
+  # Bayesian irf with CI
+  result_bayes <- irf(fit, impulse = "e", response = c("prod", "rw"),
+                n.ahead = 3, ortho = FALSE, boot = TRUE, ci = 0.9)
 
-  expect_s3_class(result, "varirf")
-  expect_named(result$irf, "e")
-  expect_equal(dim(result$irf$e), c(4, 2))
-  expect_equal(dim(result$Lower$e), c(4, 2))
-  expect_equal(dim(result$Upper$e), c(4, 2))
-  expect_equal(result$runs, 3)
-  expect_equal(result$ci, 0.1)
+  expect_s3_class(result_bayes, "varirf")
+  expect_named(result_bayes$irf, "e")
+  expect_equal(dim(result_bayes$irf$e), c(4, 2))
+  expect_equal(dim(result_bayes$Lower$e), c(4, 2))
+  expect_equal(dim(result_bayes$Upper$e), c(4, 2))
+  expect_equal(result_bayes$runs, 50)
+  expect_equal(result_bayes$ci, 0.1)
+
+  # Compare point irfs of Bayesian irf and vars::irf when ortho=FALSE
+  fit_nomcmc <- fit
+  fit_nomcmc$mcmc.param <- NULL
+  result_nomcmc <- irf(fit_nomcmc, impulse = "e", response = c("prod", "rw"),
+                     n.ahead = 3, ortho = FALSE, boot = FALSE)
+
+  expect_equal(result_bayes$irf$e, result_nomcmc$irf$e)
 })
 
 test_that("Bayesian IRF supports non-orthogonal point IRF without bands", {
