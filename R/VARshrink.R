@@ -183,9 +183,9 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
         lambda0 = resu_ridge$lambda[id_min_gcv] * N,
         type = type, callstr = cl
       )
-    estim$lambda <- resu_ridge$lambda
+    estim$lambda <- resu_ridge$lambda[id_min_gcv]
     estim$lambda.estimated <- as.logical(length(resu_ridge$lambda) > 1)
-    estim$GCV <- resu_ridge$GCV
+    estim$GCV <- resu_ridge$GCV[id_min_gcv]
 
   }
   #---------- (3) Nonparametric Shrinkage -----------
