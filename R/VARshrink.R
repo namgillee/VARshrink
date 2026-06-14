@@ -247,7 +247,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
 
     # Compute the coefficient matrix: myPsi
     # Arguments 'burnincycle' and 'mcmccycle' are included in '...'
-    resu_fbayes <- lm_full_Bayes_SR(datY, datX, dof = dof, ...)
+    resu_fbayes <- lm_full_Bayes(datY, datX, dof = dof, ...)
 
     # Update the return value
     estim$lambda <- resu_fbayes$lambda
