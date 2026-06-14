@@ -1,10 +1,11 @@
 # VARshrink 0.5.0
 * Date:
 * https://github.com/namgillee/VARshrink/pull/8
-* Ridge regression estimate has a single lambda value at the minimum of GCV.
 * Added conjugate prior to the full Bayesian method, which is available by
   `VARshrink(method = "fbayes", prior_type = "CJ")`.
 * Removes linex loss estimates from full Bayesian methods.
+* Reduced number of eigenvalue computation in full Bayesian method.
+* Ridge regression estimate has a single lambda value at the minimum of GCV.
 
 # VARshrink 0.4.0
 * Date: 2026-06-01

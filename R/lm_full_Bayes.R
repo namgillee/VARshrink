@@ -71,6 +71,9 @@ lm_full_Bayes <- function(Y, X, dof = Inf, prior_type = "NCJ",
   Q <- rep(1, N) #weight vector
   Sig <- 0.0001 + diag(1 / rgamma(K, shape = 3, scale = 1 / 4), K)  #inv-gamma
 
+  # Initialize an EVD of X'QX with Q of 1's
+  eXXone <- eigen(t(X) %*% X)
+
   # Gibbs sampler: burn-in cycles & MCMC cycles
   Psi01 <- Sig01 <- dof01 <- mean_delta <- 0
   Psi01SE <- Sig01SE <- dof01SE <- delta01SE <- 0
@@ -90,7 +93,11 @@ lm_full_Bayes <- function(Y, X, dof = Inf, prior_type = "NCJ",
       eSig <- eigen(Sig)
       invSig <- eSig$vectors %*% (t(eSig$vectors) / pmax(eSig$values, 1e-20))
     }
-    eXX <- eigen(t(X) %*% (X * Q))
+    if ((!is.null(dof) && is.infinite(dof)) || identical(Q, rep(1, N))) {
+      eXX <- eXXone
+    } else {
+      eXX <- eigen(t(X) %*% (X * Q))
+    }
     mXY <- t(X) %*% (Y * Q) %*% invSig
 
     if (prior_type == "CJ") {
@@ -178,12 +185,11 @@ lm_full_Bayes <- function(Y, X, dof = Inf, prior_type = "NCJ",
 
     # (4) draw Q from gamma ##############
     if (is.null(dof) || !is.infinite(dof)) {
-      #If dof is Inf, then it is a multivariate normal distribution,
-      #and do not update Q.
-      #If dof is not Inf, then it is a multivariate t-distribution, and update Q
       if (is.infinite(w)) {
+        # Likelihood is a multivariate normal distribution, and Q is fixed.
         Q <- rep(1, N)
       } else {
+        # Likelihood is a multivariate t-distribution, and update Q
         x <- (Y - X %*% phi)
         x <- w + 0.5 * rowSums(x * (x %*% invSig))  # x : rate, beta, 1/scale
 
