@@ -24,15 +24,15 @@
 #' @param season An integer value of frequency for inclusion of
 #' centered seasonal dummy variables. \code{abs(season)} >= 3.
 #' @param exogen A T-by-L matrix of exogenous variables. Default is \code{NULL}.
-#' @param method 1) \code{"ols"} - ordinary least squares method.
-#' 2) \code{"ridge"} - multivariate ridge regression.
-#' 3) \code{"ns"} - a Stein-type nonparametric shrinkage method.
-#' 4) \code{"fbayes"} - a full Bayesian shrinkage method using noninformative
+#' @param method 1) \code{"ridge"} - multivariate ridge regression.
+#' 2) \code{"ns"} - a Stein-type nonparametric shrinkage method.
+#' 3) \code{"fbayes"} - a full Bayesian shrinkage method using noninformative
 #' priors.
-#' 5) \code{"sbayes"} - a semiparametric Bayesian shrinkage method using
+#' 4) \code{"sbayes"} - a semiparametric Bayesian shrinkage method using
 #' parameterized cross validation.
-#' 6) \code{"kcv"} - a semiparametric Bayesian shrinkage method using
-#' K-fold cross validation
+#' 5) \code{"kcv"} - a semiparametric Bayesian shrinkage method using
+#' K-fold cross validation.
+#' 6) \code{"ols"} - ordinary least squares method.
 #' @param lambda,lambda_var  Shrinkage parameter value(s).
 #' Use of this parameter is slightly different for each method:
 #' the same value does not imply the same shrinkage estimates.
@@ -55,7 +55,7 @@
 VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
                        season = NULL, exogen = NULL,
                        method =
-                         c("ols", "ridge", "ns", "fbayes", "sbayes", "kcv"),
+                         c("ridge", "ns", "fbayes", "sbayes", "kcv", "ols"),
                        lambda = NULL, lambda_var = NULL, dof = Inf, ...) {
   cl <- match.call()
   type <- match.arg(type)
