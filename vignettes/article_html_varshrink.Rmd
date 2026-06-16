@@ -553,23 +553,6 @@ resu_estim$`K-fold CV (estim dof)` <-
             num_folds = 5, m0 = ncol(Y))
 ```
 
-After all, the function `calcSSE_Acoef()` computes the sum of squared errors (SSEs) between two VAR model parameters, $\{\mathbf{A}_k^{(1)}\}$ and $\{\mathbf{A}_k^{(2)}\}$, as $SSE = \sum_{k=1}^p \sum_{i,j} (\mathbf{A}^{(1)}_{kij} - \mathbf{A}^{(2)}_{kij})^2$. For example, Table 2 shows the SSEs of the estimated VAR coefficients. 
-
-```{r}
-resu_sse <- data.frame(
-  SSE = sapply(
-    resu_estim,
-    function(x) calcSSE_Acoef(Acoef_sh(x), myCoef$A)
-  )
-)
-```
-
-```{r, echo = FALSE}
-knitr::kable(round(resu_sse, 3),
-             caption = paste0("Table 2. Sum of squared errors of VAR ",
-                              "coefficients estimated by the shrinkage ",
-                              "methods."))
-```
 
 ---
 

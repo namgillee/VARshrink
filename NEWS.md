@@ -4,8 +4,10 @@
 * Added conjugate prior to the full Bayesian method, which is available by
   `VARshrink(method = "fbayes", prior_type = "CJ")`.
 * Removes linex loss estimates from full Bayesian methods.
-* Reduced number of eigenvalue computation in full Bayesian method.
+* Avoided an unnecessary eigenvalue decomposition computation in full Bayesian
+  method: perform the computation only when Q has been updated to not-all-1's.
 * Ridge regression estimate has a single lambda value at the minimum of GCV.
+* Removed the trivial function `calcSSE_Acoef()`.
 
 # VARshrink 0.4.0
 * Date: 2026-06-01
