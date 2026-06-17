@@ -40,6 +40,8 @@
 #' is computed and concatenated to the coefficients.
 #' @param Q_values Nonnegative weight vector of length N. Default is NULL.
 #' Take weights on rows (samples) of Y and X by sqrt(Q).
+#' @param noise_variances A length-K vector for variances of noises. If NULL,
+#' it is assumed as a vector of one's.
 #' @param callstr The call to VARshrink().
 #' @returns A list object with objects of class c("shrinklm", "lm").
 #' Each "shrinklm" object has components: coefficients, residuals,
@@ -48,11 +50,14 @@
 convPsi2varresult <- function(Psi, Y, X, lambda0,
                               type = c("const", "trend", "both", "none"),
                               ybar = NULL, xbar = NULL,
-                              Q_values = NULL,
+                              Q_values = NULL, noise_variances = NULL,
                               callstr = "") {
 
   N <- nrow(Y)
   K <- ncol(Y)
+  if (is.null(noise_variances)) noise_variances <- rep(1, K)
+  if (length(noise_variances) < K) noise_variances <-
+    rep(noise_variances, ceiling(K / length(noise_variances)))
 
   #### Compute the fitted values and the residuals ####
 
@@ -78,8 +83,8 @@ convPsi2varresult <- function(Psi, Y, X, lambda0,
     my_fitted <- my_fitted + rep(ybar, each = N)
   }
 
-  #### Compute the effective number of parameters: mykapp ####
-  ####   based on Trace(X(X'X+lambda0*I)^{-1}X')          ####
+  # Compute the effective number of parameters: mykapp
+  # based on Trace(X(X'QX + lambda0 * sigma_{ii} * I)^{-1} X'Q)
 
   if (is.null(Q_values)) {
     s <- svd(X)
@@ -89,9 +94,6 @@ convPsi2varresult <- function(Psi, Y, X, lambda0,
     sing_val <- s$d
   }
   idnonzero <- (abs(sing_val) >= 1e-14)
-  mykapp <- sum((sing_val[idnonzero]^2) /
-                  (sing_val[idnonzero]^2 + lambda0),
-                na.rm = TRUE) + nparam_to_adjust
 
   #### Return value ####
 
@@ -102,7 +104,6 @@ convPsi2varresult <- function(Psi, Y, X, lambda0,
     residuals = my_resid[, 1],
     fitted.values = my_fitted[, 1],
     rank = sum(idnonzero) + nparam_to_adjust,
-    df.residual = max(1, N - mykapp),
     lambda0 = lambda0,
     call = callstr,
     terms = terms(y ~ ., data = X),
@@ -111,9 +112,13 @@ convPsi2varresult <- function(Psi, Y, X, lambda0,
   class(obj) <- c("shrinklm", "lm")
 
   for (i in 1:K){
+    mykapp <- sum((sing_val[idnonzero]^2) /
+                    (sing_val[idnonzero]^2 + lambda0 * noise_variances[i]),
+                  na.rm = TRUE) + nparam_to_adjust
     obj$coefficients <- Psi[, i]
     obj$residuals <- my_resid[, i]
     obj$fitted.values <- my_fitted[, i]
+    obj$df.residual <- max(1, N - mykapp)
     varresult[[i]] <- obj
   }
 

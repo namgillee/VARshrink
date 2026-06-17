@@ -13,6 +13,7 @@ convPsi2varresult(
   ybar = NULL,
   xbar = NULL,
   Q_values = NULL,
+  noise_variances = NULL,
   callstr = ""
 )
 }
@@ -37,6 +38,9 @@ is computed and concatenated to the coefficients.}
 
 \item{Q_values}{Nonnegative weight vector of length N. Default is NULL.
 Take weights on rows (samples) of Y and X by sqrt(Q).}
+
+\item{noise_variances}{A length-K vector for variances of noises. If NULL,
+it is assumed as a vector of one's.}
 
 \item{callstr}{The call to VARshrink().}
 }

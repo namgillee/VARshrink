@@ -262,14 +262,15 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     myPsi <- resu_fbayes$Psi
     rownames(myPsi) <- colnames(datX)
     colnames(myPsi) <- colnames(datY)
-    sigbar <- ifelse(K >= 2, mean(diag(resu_fbayes$Sigma), na.rm = TRUE),
-                     resu_fbayes$Sigma)
+    noise_variances <- if (K >= 2) diag(resu_fbayes$Sigma) else resu_fbayes$Sigma
     estim$varresult <-
       convPsi2varresult(
         Psi = myPsi, Y = datY, X = datX,
-        lambda0 = resu_fbayes$lambda * sigbar,
+        lambda0 = resu_fbayes$lambda,
         type = type,
-        Q_values = resu_fbayes$q, callstr = cl
+        Q_values = resu_fbayes$q,
+        noise_variances = noise_variances,
+        callstr = cl
       )
   }
   #---------- (5) Semi-parametric Bayesian with lambda by P-CV ----------
@@ -292,15 +293,15 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     myPsi <- resu_sbayes$Psi
     rownames(myPsi) <- colnames(datX)
     colnames(myPsi) <- colnames(datY)
-    sigbar <- ifelse(K >= 2, mean(diag(resu_sbayes$Sigma), na.rm = TRUE),
-                     resu_sbayes$Sigma)
+    noise_variances <- if (K >= 2) diag(resu_sbayes$Sigma) else resu_sbayes$Sigma
     estim$varresult <-
       convPsi2varresult(
         Psi = myPsi, Y = datY, X = datX,
-        lambda0 = resu_sbayes$lambda * sigbar / (1 - resu_sbayes$lambda) *
-          (N - 1),
+        lambda0 = resu_sbayes$lambda / (1 - resu_sbayes$lambda) * (N - 1),
         type = type,
-        Q_values = resu_sbayes$q, callstr = cl
+        Q_values = resu_sbayes$q,
+        noise_variances = noise_variances,
+        callstr = cl
       )
   }
   #---------- (6) Semi-parametric Bayesian with lambda by K-CV ----------
@@ -322,14 +323,14 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     myPsi <- resu_kcv$Psi
     rownames(myPsi) <- colnames(datX)
     colnames(myPsi) <- colnames(datY)
-    sigbar <- ifelse(K >= 2, mean(diag(resu_kcv$Sigma), na.rm = TRUE),
-                     resu_kcv$Sigma)
+    noise_variances <- if (K >= 2) diag(resu_kcv$Sigma) else resu_kcv$Sigma
     estim$varresult <-
       convPsi2varresult(
         Psi = myPsi, Y = datY, X = datX,
-        lambda0 = resu_kcv$lambda * sigbar / (1 - resu_kcv$lambda) * (N - 1),
+        lambda0 = resu_kcv$lambda / (1 - resu_kcv$lambda) * (N - 1),
         type = type,
         Q_values = resu_kcv$q,
+        noise_variances = noise_variances,
         callstr = cl
       )
   }

@@ -8,6 +8,7 @@
   method: perform the computation only when Q has been updated to not-all-1's.
 * Ridge regression estimate has a single lambda value at the minimum of GCV.
 * Removed the trivial function `calcSSE_Acoef()`.
+* Improved computation of the degrees-of-freedom of shrinkage VAR model.
 
 # VARshrink 0.4.0
 * Date: 2026-06-01
