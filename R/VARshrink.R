@@ -24,15 +24,15 @@
 #' @param season An integer value of frequency for inclusion of
 #' centered seasonal dummy variables. \code{abs(season)} >= 3.
 #' @param exogen A T-by-L matrix of exogenous variables. Default is \code{NULL}.
-#' @param method 1) \code{"ols"} - ordinary least squares method.
-#' 2) \code{"ridge"} - multivariate ridge regression.
-#' 3) \code{"ns"} - a Stein-type nonparametric shrinkage method.
-#' 4) \code{"fbayes"} - a full Bayesian shrinkage method using noninformative
+#' @param method 1) \code{"ridge"} - multivariate ridge regression.
+#' 2) \code{"ns"} - a Stein-type nonparametric shrinkage method.
+#' 3) \code{"fbayes"} - a full Bayesian shrinkage method using noninformative
 #' priors.
-#' 5) \code{"sbayes"} - a semiparametric Bayesian shrinkage method using
+#' 4) \code{"sbayes"} - a semiparametric Bayesian shrinkage method using
 #' parameterized cross validation.
-#' 6) \code{"kcv"} - a semiparametric Bayesian shrinkage method using
-#' K-fold cross validation
+#' 5) \code{"kcv"} - a semiparametric Bayesian shrinkage method using
+#' K-fold cross validation.
+#' 6) \code{"ols"} - ordinary least squares method.
 #' @param lambda,lambda_var  Shrinkage parameter value(s).
 #' Use of this parameter is slightly different for each method:
 #' the same value does not imply the same shrinkage estimates.
@@ -55,7 +55,7 @@
 VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
                        season = NULL, exogen = NULL,
                        method =
-                         c("ols", "ridge", "ns", "fbayes", "sbayes", "kcv"),
+                         c("ridge", "ns", "fbayes", "sbayes", "kcv", "ols"),
                        lambda = NULL, lambda_var = NULL, dof = Inf, ...) {
   cl <- match.call()
   type <- match.arg(type)
@@ -183,9 +183,9 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
         lambda0 = resu_ridge$lambda[id_min_gcv] * N,
         type = type, callstr = cl
       )
-    estim$lambda <- resu_ridge$lambda
+    estim$lambda <- resu_ridge$lambda[id_min_gcv]
     estim$lambda.estimated <- as.logical(length(resu_ridge$lambda) > 1)
-    estim$GCV <- resu_ridge$GCV
+    estim$GCV <- resu_ridge$GCV[id_min_gcv]
 
   }
   #---------- (3) Nonparametric Shrinkage -----------
@@ -247,7 +247,7 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
 
     # Compute the coefficient matrix: myPsi
     # Arguments 'burnincycle' and 'mcmccycle' are included in '...'
-    resu_fbayes <- lm_full_Bayes_SR(datY, datX, dof = dof, ...)
+    resu_fbayes <- lm_full_Bayes(datY, datX, dof = dof, ...)
 
     # Update the return value
     estim$lambda <- resu_fbayes$lambda
@@ -262,14 +262,16 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     myPsi <- resu_fbayes$Psi
     rownames(myPsi) <- colnames(datX)
     colnames(myPsi) <- colnames(datY)
-    sigbar <- ifelse(K >= 2, mean(diag(resu_fbayes$Sigma), na.rm = TRUE),
-                     resu_fbayes$Sigma)
+    noise_variances <-
+      if (K >= 2) diag(resu_fbayes$Sigma) else resu_fbayes$Sigma
     estim$varresult <-
       convPsi2varresult(
         Psi = myPsi, Y = datY, X = datX,
-        lambda0 = resu_fbayes$lambda * sigbar,
+        lambda0 = resu_fbayes$lambda,
         type = type,
-        Q_values = resu_fbayes$q, callstr = cl
+        Q_values = resu_fbayes$q,
+        noise_variances = noise_variances,
+        callstr = cl
       )
   }
   #---------- (5) Semi-parametric Bayesian with lambda by P-CV ----------
@@ -292,15 +294,16 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     myPsi <- resu_sbayes$Psi
     rownames(myPsi) <- colnames(datX)
     colnames(myPsi) <- colnames(datY)
-    sigbar <- ifelse(K >= 2, mean(diag(resu_sbayes$Sigma), na.rm = TRUE),
-                     resu_sbayes$Sigma)
+    noise_variances <-
+      if (K >= 2) diag(resu_sbayes$Sigma) else resu_sbayes$Sigma
     estim$varresult <-
       convPsi2varresult(
         Psi = myPsi, Y = datY, X = datX,
-        lambda0 = resu_sbayes$lambda * sigbar / (1 - resu_sbayes$lambda) *
-          (N - 1),
+        lambda0 = resu_sbayes$lambda / (1 - resu_sbayes$lambda) * (N - 1),
         type = type,
-        Q_values = resu_sbayes$q, callstr = cl
+        Q_values = resu_sbayes$q,
+        noise_variances = noise_variances,
+        callstr = cl
       )
   }
   #---------- (6) Semi-parametric Bayesian with lambda by K-CV ----------
@@ -322,14 +325,14 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     myPsi <- resu_kcv$Psi
     rownames(myPsi) <- colnames(datX)
     colnames(myPsi) <- colnames(datY)
-    sigbar <- ifelse(K >= 2, mean(diag(resu_kcv$Sigma), na.rm = TRUE),
-                     resu_kcv$Sigma)
+    noise_variances <- if (K >= 2) diag(resu_kcv$Sigma) else resu_kcv$Sigma
     estim$varresult <-
       convPsi2varresult(
         Psi = myPsi, Y = datY, X = datX,
-        lambda0 = resu_kcv$lambda * sigbar / (1 - resu_kcv$lambda) * (N - 1),
+        lambda0 = resu_kcv$lambda / (1 - resu_kcv$lambda) * (N - 1),
         type = type,
         Q_values = resu_kcv$q,
+        noise_variances = noise_variances,
         callstr = cl
       )
   }

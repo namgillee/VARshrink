@@ -25,7 +25,7 @@ Description:
     Ni and Sun (2005) <doi:10.1198/073500104000000622>.
 License: GPL (>= 3)
 Depends:
-    R (>= 3.5.0),
+    R (>= 3.6.0),
     vars (>= 1.6.1)
 Imports:
     ars (>= 0.6),
@@ -33,7 +33,8 @@ Imports:
     strucchange,
     stats,
     MASS,
-    mvtnorm
+    mvtnorm,
+    MCMCpack
 Suggests:
     knitr,
     rmarkdown,

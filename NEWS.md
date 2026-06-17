@@ -1,3 +1,15 @@
+# VARshrink 0.5.0
+* Date:
+* https://github.com/namgillee/VARshrink/pull/8
+* Added conjugate prior to the full Bayesian method, which is available by
+  `VARshrink(method = "fbayes", prior_type = "CJ")`.
+* Removes linex loss estimates from full Bayesian methods.
+* Avoided an unnecessary eigenvalue decomposition computation in full Bayesian
+  method: perform the computation only when Q has been updated to not-all-1's.
+* Ridge regression estimate has a single lambda value at the minimum of GCV.
+* Removed the trivial function `calcSSE_Acoef()`.
+* Improved computation of the degrees-of-freedom of shrinkage VAR model.
+
 # VARshrink 0.4.0
 * Date: 2026-06-01
 * https://github.com/namgillee/VARshrink/pull/7
