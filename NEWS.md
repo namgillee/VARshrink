@@ -1,6 +1,7 @@
 # VARshrink 0.5.0
-* Date:
-* https://github.com/namgillee/VARshrink/pull/8
+* Date: 2026-06-17
+* [#8](https://github.com/namgillee/VARshrink/pull/8),
+  [#9](https://github.com/namgillee/VARshrink/pull/9)
 * Added conjugate prior to the full Bayesian method, which is available by
   `VARshrink(method = "fbayes", prior_type = "CJ")`.
 * Removes linex loss estimates from full Bayesian methods.
@@ -12,7 +13,7 @@
 
 # VARshrink 0.4.0
 * Date: 2026-06-01
-* https://github.com/namgillee/VARshrink/pull/7
+* [#7](https://github.com/namgillee/VARshrink/pull/7)
 * Move "vars (>= 1.6.1)" from Imports to Depends in `DESCRIPTION`, so that
   inherited methods from **vars** are automatically attached when loading
   **VARshrink**.
@@ -31,8 +32,8 @@
 
 # VARshrink 0.3.3
 * Date: 2025-11-17
-* https://github.com/namgillee/VARshrink/pull/5
-* https://github.com/namgillee/VARshrink/pull/6
+* [#5](https://github.com/namgillee/VARshrink/pull/5)
+* [#6](https://github.com/namgillee/VARshrink/pull/6)
 * Removed redundant R files due to the update to the **vars** package
   (version 1.6-1): arch.test_sh.R, BQ_sh.R, fevd.varshrinkest.R, h_boot.R,
   h_fecov.R, h_irf.R, normality.test_sh.R, plot.varshirf.R,
@@ -46,7 +47,7 @@
 
 # VARshrink 0.3.2
 * Date: 2025-10-13
-* https://github.com/namgillee/VARshrink/pull/4
+* [#4](https://github.com/namgillee/VARshrink/pull/4)
 * Fixed errors in all methods to allow larger column sizes in the input data
   matrix for season >= 3.
 * Fixed `"sbayes"` and `"kcv"` to correctly compute the lag order.
@@ -54,7 +55,7 @@
 
 # VARshrink 0.3.1.9100
 * Date: 2025-10-07
-* https://github.com/namgillee/VARshrink/pull/3
+* [#3](https://github.com/namgillee/VARshrink/pull/3)
 * vignettes/article_varshrink.R was added.
 * Redundant tokens were removed from .gitignore and .Rbuildignore.
 * .Rproj file was removed.
