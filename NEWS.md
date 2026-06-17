@@ -1,5 +1,5 @@
 # VARshrink 0.5.0
-* Date:
+* Date: 2026-06-17
 * https://github.com/namgillee/VARshrink/pull/8
 * Added conjugate prior to the full Bayesian method, which is available by
   `VARshrink(method = "fbayes", prior_type = "CJ")`.
