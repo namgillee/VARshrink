@@ -1,7 +1,6 @@
 # VARshrink 0.5.0
 * Date: 2026-06-17
 * [#8](https://github.com/namgillee/VARshrink/pull/8),
-  [#9](https://github.com/namgillee/VARshrink/pull/9)
 * Added conjugate prior to the full Bayesian method, which is available by
   `VARshrink(method = "fbayes", prior_type = "CJ")`.
 * Removes linex loss estimates from full Bayesian methods.
