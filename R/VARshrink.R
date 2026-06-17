@@ -262,7 +262,8 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     myPsi <- resu_fbayes$Psi
     rownames(myPsi) <- colnames(datX)
     colnames(myPsi) <- colnames(datY)
-    noise_variances <- if (K >= 2) diag(resu_fbayes$Sigma) else resu_fbayes$Sigma
+    noise_variances <-
+      if (K >= 2) diag(resu_fbayes$Sigma) else resu_fbayes$Sigma
     estim$varresult <-
       convPsi2varresult(
         Psi = myPsi, Y = datY, X = datX,
@@ -293,7 +294,8 @@ VARshrink  <- function(y, p = 1, type = c("const", "trend", "both", "none"),
     myPsi <- resu_sbayes$Psi
     rownames(myPsi) <- colnames(datX)
     colnames(myPsi) <- colnames(datY)
-    noise_variances <- if (K >= 2) diag(resu_sbayes$Sigma) else resu_sbayes$Sigma
+    noise_variances <-
+      if (K >= 2) diag(resu_sbayes$Sigma) else resu_sbayes$Sigma
     estim$varresult <-
       convPsi2varresult(
         Psi = myPsi, Y = datY, X = datX,
